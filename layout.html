@@ -20,12 +20,20 @@
         margin: -0.5em -0.5em 0;
         padding: 0.5em;
       }
-      table tr:nth-child(even) td {
-        background-color: lightgray;
-        font-size: 1.4rem;
+
+      div.container {
+        display: flex;
+        flex-direction: column;
       }
-      table tr:nth-child(odd) td {
-        font-size: 2.8rem;
+      details div p:nth-child(odd) {
+        font-size: 2em;
+      }
+      details div p:nth-child(even) {
+        font-size: 1.4em;
+      }
+
+      details div:nth-child(even) {
+        background-color: lightgray;
       }
     </style>
   </head>
@@ -36,20 +44,16 @@
       <article>
         <details>
           <summary>{{.Title}}</summary>
-          <table>
-            {{range .Entries}}
-            <tr>
-              <td>{{.Title}}</td>
-            </tr>
-            <tr>
-              <td>
-                <a href="{{.Url}}">
-                  <time datetime="{{.MachineDate}}">{{.HumanDate}}</time>
-                </a>
-              </td>
-            </tr>
-            {{end}}
-          </table>
+          {{range .Entries}}
+          <div>
+            <p>{{.Title}}</p>
+            <p>
+              <a href="{{.Url}}">
+                <time datetime="{{.MachineDate}}">{{.HumanDate}}</time>
+              </a>
+            </p>
+          </div>
+          {{end}}
         </details>
       </article>
       {{end}}
