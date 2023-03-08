@@ -5,6 +5,10 @@
       :root {
         font-size: calc(0.5em + 1vw);
       }
+      header {
+        font-size: 2em;
+        text-align: center;
+      }
       details {
         border: 1px solid #aaa;
         border-radius: 5px;
@@ -16,14 +20,12 @@
         margin: -0.5em -0.5em 0;
         padding: 0.5em;
       }
-      td.entry-title {
-        font-size: 2.8rem;
-        padding: 0;
-        margin: 0;
+      table tr:nth-child(even) td {
+        background-color: lightgray;
+        font-size: 1.4rem;
       }
-      td.entry-date {
-        font-size: 2rem;
-        text-overflow: clip;
+      table tr:nth-child(odd) td {
+        font-size: 2.8rem;
       }
     </style>
   </head>
@@ -31,21 +33,25 @@
     <header>newspod</header>
     <main>
       {{range .}}
-      <details>
-        <summary>{{.Title}}</summary>
-        <table>
-          {{range .Entries}}
-          <tr>
-            <td class="entry-date">
-              <a href="{{.Url}}">
-                <time datetime="{{.MachineDate}}">{{.HumanDate}}</time>
-              </a>
-            </td>
-            <td class="entry-title">{{.Title}}</td>
-          </tr>
-          {{end}}
-        </table>
-      </details>
+      <article>
+        <details>
+          <summary>{{.Title}}</summary>
+          <table>
+            {{range .Entries}}
+            <tr>
+              <td>{{.Title}}</td>
+            </tr>
+            <tr>
+              <td>
+                <a href="{{.Url}}">
+                  <time datetime="{{.MachineDate}}">{{.HumanDate}}</time>
+                </a>
+              </td>
+            </tr>
+            {{end}}
+          </table>
+        </details>
+      </article>
       {{end}}
     </main>
   </body>
