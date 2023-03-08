@@ -47,29 +47,26 @@ func getFeeds() (feeds []Feed) {
 	return
 }
 
-func (feed *Feed) getEntries() {
+func (feed *Feed) fillEntries() {
 	fp := gofeed.NewParser()
 	rawFeed, err := fp.ParseURL(feed.Url)
 	if err != nil {
 		panic(err)
 	}
-
 	feed.Title = rawFeed.Title
-
 	for _, item := range rawFeed.Items {
 		entry := Entry{
 			item.Title,
-			entryUrl(item),
+			entryUrl(*item),
 			*item.PublishedParsed,
 			item.PublishedParsed.Format("2006-1-2 15:4"),
 			humanize.Time(*item.PublishedParsed),
 		}
 		feed.Entries = append(feed.Entries, entry)
-
 	}
 }
 
-func entryUrl(item *gofeed.Item) string {
+func entryUrl(item gofeed.Item) string {
 	if len(item.Enclosures) > 0 {
 		return item.Enclosures[0].URL
 	}
@@ -82,15 +79,17 @@ func entryUrl(item *gofeed.Item) string {
 func main() {
 	var feeds []Feed
 	for _, feed := range getFeeds() {
-		feed.getEntries()
+		feed.fillEntries()
 		feeds = append(feeds, feed)
 	}
+
 	sort.Slice(feeds, func(i, j int) bool {
 		if len(feeds[i].Entries) == 0 || len(feeds[j].Entries) == 0 {
 			return false
 		}
 		return feeds[j].Entries[0].Date.Before(feeds[i].Entries[0].Date)
 	})
+
 	tmpl := template.Must(template.ParseFiles(TEMPLATE))
 	tmpl.Execute(os.Stdout, feeds)
 }
