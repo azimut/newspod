@@ -19,7 +19,6 @@ const TEMPLATE = "layout.html"
 type Entry struct {
 	Title       string
 	Url         string
-	Format      string
 	Date        time.Time
 	MachineDate string
 	HumanDate   string
@@ -58,18 +57,26 @@ func (feed *Feed) getEntries() {
 	feed.Title = rawFeed.Title
 
 	for _, item := range rawFeed.Items {
-		for _, enclosure := range item.Enclosures {
-			entry := Entry{
-				item.Title,
-				enclosure.URL,
-				enclosure.Type,
-				*item.PublishedParsed,
-				item.PublishedParsed.Format("2006-1-2 15:4"),
-				humanize.Time(*item.PublishedParsed),
-			}
-			feed.Entries = append(feed.Entries, entry)
+		entry := Entry{
+			item.Title,
+			entryUrl(item),
+			*item.PublishedParsed,
+			item.PublishedParsed.Format("2006-1-2 15:4"),
+			humanize.Time(*item.PublishedParsed),
 		}
+		feed.Entries = append(feed.Entries, entry)
+
 	}
+}
+
+func entryUrl(item *gofeed.Item) string {
+	if len(item.Enclosures) > 0 {
+		return item.Enclosures[0].URL
+	}
+	if strings.Contains(item.Link, "www.youtube.com") {
+		return strings.Replace(item.Link, "www.youtube.com", "piped.kavin.rocks", 1) + "&listen=1"
+	}
+	return item.Link
 }
 
 func main() {
