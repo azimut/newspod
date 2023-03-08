@@ -1,13 +1,31 @@
 <html>
   <head>
     <title>newspod</title>
+    <style>
+      :root {
+        font-size: calc(0.5em + 1vw); /* 0.5em is the min */
+      }
+      details {
+        border: 1px solid #aaa;
+        border-radius: 5px;
+        padding: 0.5em 0.5em 0;
+      }
+      summary {
+        font-weight: bold;
+        margin: -0.5em -0.5em 0;
+        padding: 0.5em;
+      }
+      table {
+        font-size: 1rem;
+      }
+    </style>
   </head>
   <body>
     <header>newspod</header>
     <main>
       {{range .}}
       <details>
-        <summary><h3>{{.Title}}</h3></summary>
+        <summary>{{.Title}}</summary>
         <table>
           {{range .Entries}}
           <tr>
