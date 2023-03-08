@@ -1,0 +1,27 @@
+<html>
+  <head>
+    <title>NewsPod</title>
+  </head>
+  <body>
+    <header>NewsPod</header>
+    <main>
+      {{range .}}
+      <details>
+        <summary><h3>{{.Title}}</h3></summary>
+        <table>
+          {{range .Entries}}
+          <tr>
+            <td>
+              <a href="{{.Url}}">
+                <time datetime="{{.MachineDate}}">{{.HumanDate}}</time>
+              </a>
+            </td>
+            <td>{{.Title}}</td>
+          </tr>
+          {{end}}
+        </table>
+      </details>
+      {{end}}
+    </main>
+  </body>
+</html>
