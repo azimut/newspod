@@ -1,8 +1,4 @@
-https://anchor.fm/s/13c26f60/podcast/rss
 https://anchor.fm/s/2b386e88/podcast/rss
-https://anchor.fm/s/34c6f190/podcast/rss
-https://anchor.fm/s/47fdfdbc/podcast/rss
-https://anchor.fm/s/4d6c93f8/podcast/rss
 https://feeds.buzzsprout.com/1830936.rss
 https://feeds.fireside.fm/compositional/rss
 https://feeds.fireside.fm/wtfsharp/rss
@@ -11,3 +7,5 @@ https://feeds.simplecast.com/oM_1xVen
 https://feeds.transistor.fm/thoughts-on-functional-programming-podcast-by-eric-normand
 https://link.chtbl.com/corecursive?platform=rss
 https://www.sicpers.info/feed/podcast
+https://seradio.libsyn.com/rss
+https://feeds.megaphone.fm/darknetdiaries
