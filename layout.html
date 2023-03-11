@@ -27,7 +27,7 @@
         padding: 1.2em 0.5em;
       }
       div.episode:nth-child(even) {
-        background-color: lightgray;
+        background-color: hsl(24, 5%, 10%);
       }
 
       div.episode-title {
@@ -35,6 +35,26 @@
       }
       div.episode-date {
         font-size: 1.4em;
+      }
+      a:link {
+        color: hsl(200, 100%, 80%);
+      }
+      a:visited {
+        color: hsl(200, 50%, 30%);
+      }
+      body {
+        background-color: hsl(24, 10%, 5%);
+        color: hsl(24, 100%, 98%);
+      }
+
+      @media (prefers-color-scheme: light) {
+        body {
+          background-color: hsl(24, 100%, 98%);
+          color: hsl(24, 10%, 5%);
+        }
+        div.episode:nth-child(even) {
+          background-color: lightgray;
+        }
       }
     </style>
   </head>
