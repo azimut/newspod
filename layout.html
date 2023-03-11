@@ -5,10 +5,12 @@
       :root {
         font-size: calc(0.5em + 1vw);
       }
+
       header {
         font-size: 2em;
         text-align: center;
       }
+
       details {
         border: 1px solid #aaa;
         border-radius: 5px;
@@ -21,21 +23,18 @@
         padding: 0.5em;
       }
 
-      details div p:nth-child(odd) {
-        font-size: 2em;
-      }
-      details div p:nth-child(even) {
-        font-size: 1.4em;
-      }
-      details div p {
-        margin: 0;
-      }
-
-      details div {
+      div.episode {
         padding: 1.2em 0.5em;
       }
-      details div:nth-child(even) {
+      div.episode:nth-child(even) {
         background-color: lightgray;
+      }
+
+      div.episode-title {
+        font-size: 2em;
+      }
+      div.episode-date {
+        font-size: 1.4em;
       }
     </style>
   </head>
@@ -47,13 +46,13 @@
         <details>
           <summary>{{.Title}}</summary>
           {{range .Entries}}
-          <div>
-            <p>{{.Title}}</p>
-            <p>
+          <div class="episode">
+            <div class="episode-title">{{.Title}}</div>
+            <div class="episode-date">
               <a href="{{.Url}}">
                 <time datetime="{{.MachineDate}}">{{.HumanDate}}</time>
               </a>
-            </p>
+            </div>
           </div>
           {{end}}
         </details>
