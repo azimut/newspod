@@ -57,7 +57,7 @@ func (feed *Feed) fillEntries() {
 	feed.Title = rawFeed.Title
 	for _, item := range rawFeed.Items {
 		entry := Entry{
-			entryTitle(item.Title),
+			entryTitle(item.Title, feed.Title),
 			entryUrl(*item),
 			*item.PublishedParsed,
 			item.PublishedParsed.Format("2006-1-2 15:4"),
@@ -67,10 +67,12 @@ func (feed *Feed) fillEntries() {
 	}
 }
 
-func entryTitle(title string) string {
-	tmp1 := strings.Replace(title, "Episode ", "", 1)
-	tmp2 := strings.Replace(tmp1, "Ep ", "", 1)
-	return tmp2
+func entryTitle(itemTitle string, feedTitle string) string {
+	tmp1 := strings.TrimSpace(strings.TrimPrefix(itemTitle, feedTitle))
+	tmp2 := strings.TrimPrefix(tmp1, "Episode ")
+	tmp3 := strings.TrimPrefix(tmp2, "Ep ")
+	tmp4 := strings.TrimPrefix(tmp3, "SE Radio ")
+	return tmp4
 }
 
 func entryUrl(item gofeed.Item) string {
