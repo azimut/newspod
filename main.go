@@ -30,6 +30,11 @@ type Feed struct {
 	Entries []Entry
 }
 
+type Content struct {
+	Feeds []Feed
+	Now   string
+}
+
 func getFeeds() (feeds []Feed) {
 	f, err := os.Open(INPUT_FEEDS)
 	if err != nil {
@@ -85,20 +90,24 @@ func entryUrl(item gofeed.Item) string {
 	return item.Link
 }
 
+func NewContent() Content {
+	return Content{Now: time.Now().Format("2006-1-2 15:4")}
+}
+
 func main() {
-	var feeds []Feed
+	content := NewContent()
 	for _, feed := range getFeeds() {
 		feed.fillEntries()
-		feeds = append(feeds, feed)
+		content.Feeds = append(content.Feeds, feed)
 	}
 
-	sort.Slice(feeds, func(i, j int) bool {
-		if len(feeds[i].Entries) == 0 || len(feeds[j].Entries) == 0 {
+	sort.Slice(content.Feeds, func(i, j int) bool {
+		if len(content.Feeds[i].Entries) == 0 || len(content.Feeds[j].Entries) == 0 {
 			return false
 		}
-		return feeds[j].Entries[0].Date.Before(feeds[i].Entries[0].Date)
+		return content.Feeds[j].Entries[0].Date.Before(content.Feeds[i].Entries[0].Date)
 	})
 
 	tmpl := template.Must(template.ParseFiles(TEMPLATE))
-	tmpl.Execute(os.Stdout, feeds)
+	tmpl.Execute(os.Stdout, content)
 }

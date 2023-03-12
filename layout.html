@@ -56,12 +56,16 @@
           background-color: lightgray;
         }
       }
+      footer {
+        text-align: center;
+        padding: 1em 0em;
+      }
     </style>
   </head>
   <body>
     <header>newspod</header>
     <main>
-      {{range .}}
+      {{range .Feeds}}
       <article>
         <details>
           <summary>{{.Title}}</summary>
@@ -79,5 +83,8 @@
       </article>
       {{end}}
     </main>
+    <footer>
+      <div>Generated on <time datetime="{{.Now}}">{{.Now}}</time></div>
+    </footer>
   </body>
 </html>
