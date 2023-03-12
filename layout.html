@@ -9,6 +9,10 @@
       header {
         font-size: 2em;
         text-align: center;
+        padding: 1em 0;
+      }
+      header span.pod {
+        color: hsl(24, 90%, 80%);
       }
 
       details {
@@ -63,7 +67,7 @@
     </style>
   </head>
   <body>
-    <header>newspod</header>
+    <header>news<span class="pod">pod</span></header>
     <main>
       {{range .Feeds}}
       <article>
