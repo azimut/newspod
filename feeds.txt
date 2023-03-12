@@ -1,5 +1,6 @@
 https://www.functionalgeekery.com/feed/mp3/
 https://www.youtube.com/feeds/videos.xml?channel_id=UC4QZ_LsYcvcq7qOsOhpAX4A
+https://www.youtube.com/feeds/videos.xml?playlist_id=PLa28R7QEiMbk_b2pJGzaqOK_yoLrDpeVV
 https://anchor.fm/s/2b386e88/podcast/rss
 https://feeds.buzzsprout.com/1830936.rss
 https://feeds.fireside.fm/compositional/rss
