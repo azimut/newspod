@@ -93,7 +93,7 @@ func entryUrl(item gofeed.Item) string {
 }
 
 func NewContent() Content {
-	return Content{Now: time.Now().Format("2006-1-2 15:4")}
+	return Content{Now: time.Now().Format(time.RFC850)}
 }
 
 func main() {
