@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"sort"
 	"strings"
@@ -14,7 +15,7 @@ import (
 )
 
 const INPUT_FEEDS = "feeds.txt"
-const TEMPLATE = "layout.html"
+const OUTPUT_TEMPLATE = "layout.html"
 
 type Entry struct {
 	Title       string
@@ -35,8 +36,8 @@ type Content struct {
 	Now   string
 }
 
-func getFeeds() (feeds []Feed) {
-	f, err := os.Open(INPUT_FEEDS)
+func readLines(inputFeeds string) (feeds []Feed) {
+	f, err := os.Open(inputFeeds)
 	if err != nil {
 		panic(err)
 	}
@@ -52,11 +53,11 @@ func getFeeds() (feeds []Feed) {
 	return
 }
 
-func (feed *Feed) fillEntries() {
+func (feed *Feed) fillEntries() error {
 	fp := gofeed.NewParser()
 	rawFeed, err := fp.ParseURL(feed.Url)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	feed.Title = rawFeed.Title
@@ -70,6 +71,7 @@ func (feed *Feed) fillEntries() {
 		}
 		feed.Entries = append(feed.Entries, entry)
 	}
+	return nil
 }
 
 func entryTitle(itemTitle string, feedTitle string) string {
@@ -96,8 +98,11 @@ func NewContent() Content {
 
 func main() {
 	content := NewContent()
-	for _, feed := range getFeeds() {
-		feed.fillEntries()
+	for _, feed := range readLines(INPUT_FEEDS) {
+		if err := feed.fillEntries(); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			continue
+		}
 		content.Feeds = append(content.Feeds, feed)
 	}
 
@@ -108,6 +113,6 @@ func main() {
 		return content.Feeds[j].Entries[0].Date.Before(content.Feeds[i].Entries[0].Date)
 	})
 
-	tmpl := template.Must(template.ParseFiles(TEMPLATE))
+	tmpl := template.Must(template.ParseFiles(OUTPUT_TEMPLATE))
 	tmpl.Execute(os.Stdout, content)
 }
