@@ -1,5 +1,9 @@
-public/index.html: main.go feeds.txt layout.html
+public/index.html: main.go feed.go file.go feeds.json layout.html
 	mkdir -p public
 	rm -f $@
-	go run main.go > $@
+	go run . > $@
 	tail -50 $@
+
+.PHONY: clean
+clean:
+	rm -rf public

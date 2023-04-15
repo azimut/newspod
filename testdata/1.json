@@ -1,0 +1,9 @@
+{
+  "feeds": [
+    {
+      "title": "Noticias Platzi",
+      "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=PLa28R7QEiMbk_b2pJGzaqOK_yoLrDpeVV",
+      "trim_suffixes": ["\\s+|\\s+NOTICIAS", "\\s+|\\s+NotiHacks"]
+    }
+  ]
+}
