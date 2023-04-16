@@ -4,7 +4,10 @@
     {
       "url": "https://feeds.transistor.fm/thoughts-on-functional-programming-podcast-by-eric-normand"
     },
-    { "url": "https://anchor.fm/s/1e4a0eac/podcast/rss" },
+    {
+      "title": "ML Street Talk",
+      "url": "https://anchor.fm/s/1e4a0eac/podcast/rss"
+    },
     { "url": "https://anchor.fm/s/2b386e88/podcast/rss" },
     { "url": "https://anchor.fm/s/7c624c84/podcast/rss" },
     { "url": "https://anchor.fm/s/a121a24/podcast/rss" },
@@ -16,7 +19,7 @@
     { "url": "https://lexfridman.com/feed/podcast/" },
     { "url": "https://link.chtbl.com/corecursive?platform=rss" },
     {
-      "title": "Software Engineering Radio",
+      "title": "SE Radio",
       "url": "https://seradio.libsyn.com/rss",
       "trim_prefixes": ["SE Radio"]
     },
@@ -27,9 +30,8 @@
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC4QZ_LsYcvcq7qOsOhpAX4A"
     },
     {
-      "title": "YT | Platzi Noticias",
-      "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=PLa28R7QEiMbk_b2pJGzaqOK_yoLrDpeVV",
-      "trim_suffixes": ["| NOTICIAS", "| NotiHacks"]
+      "title": "YT | Platzi - Freddy Vega",
+      "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=PLwbyjg7-bjocjc5yp3Hkt3PAc1zCKi9OL"
     }
   ]
 }
