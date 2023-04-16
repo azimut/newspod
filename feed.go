@@ -25,6 +25,22 @@ type Item struct {
 	Url         string
 }
 
+type Feeds []Feed
+
+func (a Feeds) Less(i, j int) bool {
+	iDate := a[i].Entries[0].Date
+	jDate := a[j].Entries[0].Date
+	return iDate.After(jDate)
+}
+
+func (a Feeds) Len() int {
+	return len(a)
+}
+
+func (a Feeds) Swap(i, j int) {
+	a[i], a[j] = a[j], a[i]
+}
+
 func (feed *Feed) fetch() error {
 	fp := gofeed.NewParser()
 	rawFeed, err := fp.ParseURL(feed.Url)

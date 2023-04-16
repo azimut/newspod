@@ -15,7 +15,9 @@ type HTMLContent struct {
 }
 
 func main() {
-	content := HTMLContent{Now: time.Now().Format(time.RFC850)}
+
+	htmlContent := HTMLContent{Now: time.Now().Format(time.RFC850)}
+
 	feeds, err := readJsonFeeds("feeds.json")
 	if err != nil {
 		panic(err)
@@ -26,16 +28,11 @@ func main() {
 			fmt.Fprintln(os.Stderr, err)
 			continue
 		}
-		content.Feeds = append(content.Feeds, feed)
+		htmlContent.Feeds = append(htmlContent.Feeds, feed)
 	}
 
-	sort.Slice(content.Feeds, func(i, j int) bool {
-		if len(content.Feeds[i].Entries) == 0 || len(content.Feeds[j].Entries) == 0 {
-			return false
-		}
-		return content.Feeds[j].Entries[0].Date.Before(content.Feeds[i].Entries[0].Date)
-	})
+	sort.Sort(Feeds(htmlContent.Feeds))
 
 	tmpl := template.Must(template.ParseFiles("layout.html"))
-	tmpl.Execute(os.Stdout, content)
+	tmpl.Execute(os.Stdout, htmlContent)
 }
