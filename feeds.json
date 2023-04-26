@@ -1,5 +1,8 @@
 {
   "feeds": [
+    {
+      "url": "https://feeds.soundcloud.com/users/soundcloud:users:220484243/sounds.rss"
+    },
     { "url": "https://feeds.simplecast.com/oM_1xVen" },
     {
       "url": "https://feeds.transistor.fm/thoughts-on-functional-programming-podcast-by-eric-normand"
