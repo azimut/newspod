@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"os"
 )
 
 type JsonFile struct {
@@ -10,7 +10,7 @@ type JsonFile struct {
 }
 
 func readJsonFeeds(filename string) (feeds []Feed, err error) {
-	jsonRawContent, err := ioutil.ReadFile(filename)
+	jsonRawContent, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
