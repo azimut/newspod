@@ -8,6 +8,8 @@ import (
 	"github.com/mmcdole/gofeed"
 )
 
+type Feeds []Feed
+
 type Feed struct {
 	Entries      []Entry
 	RawTitle     string
@@ -23,9 +25,9 @@ type Entry struct {
 	MachineDate string
 	Title       string
 	Url         string
+	Description string
+	Content     string
 }
-
-type Feeds []Feed
 
 func (a Feeds) Less(i, j int) bool {
 	iDate := a[i].Entries[0].Date
@@ -42,7 +44,6 @@ func (a Feeds) Swap(i, j int) {
 }
 
 func (feed *Feed) fetch() error {
-
 	rawFeed, err := gofeed.NewParser().ParseURL(feed.Url)
 	if err != nil {
 		return err
@@ -60,6 +61,11 @@ func (feed *Feed) fetch() error {
 			MachineDate: item.PublishedParsed.Format("2006-1-2 15:4"),
 			Title:       itemTitle(item.Title, *feed),
 			Url:         itemUrl(*item),
+			Description: item.Description,
+			Content:     item.Content,
+		}
+		if item.Content == item.Description {
+			entry.Description = ""
 		}
 		feed.Entries = append(feed.Entries, entry)
 	}
