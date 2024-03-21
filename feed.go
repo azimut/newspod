@@ -9,7 +9,7 @@ import (
 )
 
 type Feed struct {
-	Entries      []Item
+	Entries      []Entry
 	RawTitle     string
 	Title        string   `json:"title"`
 	TrimPrefixes []string `json:"trim_prefixes"`
@@ -17,7 +17,7 @@ type Feed struct {
 	Url          string   `json:"url"`
 }
 
-type Item struct {
+type Entry struct {
 	Date        time.Time
 	HumanDate   string
 	MachineDate string
@@ -42,8 +42,8 @@ func (a Feeds) Swap(i, j int) {
 }
 
 func (feed *Feed) fetch() error {
-	fp := gofeed.NewParser()
-	rawFeed, err := fp.ParseURL(feed.Url)
+
+	rawFeed, err := gofeed.NewParser().ParseURL(feed.Url)
 	if err != nil {
 		return err
 	}
@@ -54,15 +54,16 @@ func (feed *Feed) fetch() error {
 	}
 
 	for _, item := range rawFeed.Items {
-		item := Item{
+		entry := Entry{
 			Date:        *item.PublishedParsed,
 			HumanDate:   humanize.Time(*item.PublishedParsed),
 			MachineDate: item.PublishedParsed.Format("2006-1-2 15:4"),
 			Title:       itemTitle(item.Title, *feed),
 			Url:         itemUrl(*item),
 		}
-		feed.Entries = append(feed.Entries, item)
+		feed.Entries = append(feed.Entries, entry)
 	}
+
 	return nil
 }
 
