@@ -58,6 +58,8 @@ func initDb() (*sql.DB, error) {
 	}
 
 	initStmt := `
+    pragma journal_mode = delete;
+    pragma page_size = 1024;
     create table feeds (
         id integer not null primary key,
         title text,
@@ -93,7 +95,9 @@ func insertSearch(db *sql.DB) error {
 	sqlStmt := `
     insert into search
     select id,title,description,content
-      from entries
+      from entries;
+    insert into search(search) values('optimize');
+    vacuum;
     `
 	_, err := db.Exec(sqlStmt)
 	if err != nil {
