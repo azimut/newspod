@@ -10,7 +10,7 @@ import (
 )
 
 type HTMLContent struct {
-	Feeds []Feed
+	Feeds Feeds
 	Now   string
 }
 
@@ -32,6 +32,11 @@ func main() {
 	}
 
 	sort.Sort(Feeds(htmlContent.Feeds))
+
+	err = htmlContent.Feeds.Save()
+	if err != nil {
+		panic(err)
+	}
 
 	tmpl := template.Must(template.ParseFiles("layout.html"))
 	tmpl.Execute(os.Stdout, htmlContent)

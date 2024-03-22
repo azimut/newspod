@@ -1,12 +1,17 @@
 package main
 
 import (
+	"database/sql"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/dustin/go-humanize"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/mmcdole/gofeed"
 )
+
+const DB_NAME = "./feeds.db"
 
 type Feeds []Feed
 
@@ -16,7 +21,8 @@ type Feed struct {
 	Title        string   `json:"title"`
 	TrimPrefixes []string `json:"trim_prefixes"`
 	TrimSuffixes []string `json:"trim_suffixes"`
-	Url          string   `json:"url"`
+	Description  string
+	Url          string `json:"url"`
 }
 
 type Entry struct {
@@ -43,14 +49,132 @@ func (a Feeds) Swap(i, j int) {
 	a[i], a[j] = a[j], a[i]
 }
 
+func initDb() (*sql.DB, error) {
+	os.Remove(DB_NAME)
+
+	db, err := sql.Open("sqlite3", DB_NAME)
+	if err != nil {
+		return nil, err
+	}
+
+	initStmt := `
+    create table feeds (
+        id integer not null primary key,
+        title text,
+        url text,
+        description text
+    );
+    create table entries (
+        id integer not null primary key,
+        feedid integer,
+        date text,
+        title text,
+        description text,
+        content text,
+        url text,
+        foreign key(feedid) references feeds(id)
+    );
+    create virtual table search using fts5(
+        entriesid,
+        title,
+        description,
+        content
+    );
+    `
+	_, err = db.Exec(initStmt)
+	if err != nil {
+		return nil, err
+	}
+
+	return db, nil
+}
+
+func insertSearch(db *sql.DB) error {
+	sqlStmt := `
+    insert into search
+    select id,title,description,content
+      from entries
+    `
+	_, err := db.Exec(sqlStmt)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func insertFeeds(db *sql.DB, feeds Feeds) error {
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	stmt_feeds, err := tx.Prepare("insert into feeds(id,title,url,description) values(?,?,?,?)")
+	if err != nil {
+		return err
+	}
+	defer stmt_feeds.Close()
+	stmt_entry, err := tx.Prepare(
+		"insert into entries(feedid,date,title,description,content,url) values(?,?,?,?,?,?)",
+	)
+	if err != nil {
+		return err
+	}
+	defer stmt_entry.Close()
+	for feedid, feed := range feeds {
+		_, err = stmt_feeds.Exec(feedid, feed.Title, feed.Url, feed.Description)
+		if err != nil {
+			return err
+		}
+		for _, entry := range feed.Entries {
+			_, err = stmt_entry.Exec(
+				feedid,
+				entry.MachineDate,
+				entry.Title,
+				entry.Description,
+				entry.Content,
+				entry.Url,
+			)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (feeds Feeds) Save() error {
+	db, err := initDb()
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	err = insertFeeds(db, feeds)
+	if err != nil {
+		return err
+	}
+
+	err = insertSearch(db)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (feed *Feed) fetch() error {
 	rawFeed, err := gofeed.NewParser().ParseURL(feed.Url)
 	if err != nil {
 		return err
 	}
 
+	feed.Description = rawFeed.Description
 	feed.RawTitle = rawFeed.Title
-	if feed.Title == "" {
+	if strings.TrimSpace(feed.Title) == "" {
 		feed.Title = rawFeed.Title
 	}
 

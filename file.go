@@ -9,7 +9,7 @@ type JsonFile struct {
 	Feeds []Feed `json:"feeds"`
 }
 
-func readJsonFeeds(filename string) (feeds []Feed, err error) {
+func readJsonFeeds(filename string) (feeds Feeds, err error) {
 	jsonRawContent, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
