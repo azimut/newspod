@@ -114,16 +114,21 @@ initFeed { id, title } =
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
-update msg model =
+update msg ({ entries } as model) =
     case msg of
         AskForEntries feedid ->
-            ( model, askForEntries feedid )
+            case Dict.get feedid entries of
+                Nothing ->
+                    ( model, askForEntries feedid )
+
+                Just _ ->
+                    ( model, Cmd.none )
 
         InitFeeds feeds ->
             ( initFeeds feeds, Cmd.none )
 
-        NewEntries entries ->
-            ( newEntries model entries, Cmd.none )
+        NewEntries es ->
+            ( newEntries model es, Cmd.none )
 
 
 feedView : Feed -> Dict Int (List Entry) -> Html Msg
