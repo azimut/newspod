@@ -2,7 +2,8 @@ port module Main exposing (..)
 
 import Browser
 import Dict exposing (Dict)
-import Html exposing (Html, article, details, div, summary, text)
+import Html exposing (Html, a, article, details, div, summary, text, time)
+import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
 
 
@@ -125,17 +126,40 @@ update msg model =
             ( newEntries model entries, Cmd.none )
 
 
-feedView : Feed -> Html Msg
-feedView { title, id } =
+feedView : Feed -> Dict Int (List Entry) -> Html Msg
+feedView { title, id } entries =
     article [ onClick (AskForEntries id) ]
-        [ details []
-            [ summary [] [ text title ] ]
+        [ details [] <|
+            summary [] [ text title ]
+                :: (entriesView <|
+                        Maybe.withDefault []
+                            (Dict.get id entries)
+                   )
         ]
 
 
+entryView : Entry -> Html Msg
+entryView { title, date, url } =
+    div [ class "episode" ]
+        [ div [ class "episode-title" ]
+            [ text title ]
+        , div [ class "episode-date" ]
+            [ a [ href url ]
+                [ time [] [ text date ] ]
+            ]
+        ]
+
+
+entriesView : List Entry -> List (Html Msg)
+entriesView entries =
+    List.map entryView entries
+
+
 view : Model -> Html Msg
-view { feeds } =
-    div [] (List.map feedView feeds)
+view { feeds, entries } =
+    div [] <|
+        List.map (\feed -> feedView feed entries)
+            feeds
 
 
 subscriptions : model -> Sub Msg
