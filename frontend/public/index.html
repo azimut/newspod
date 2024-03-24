@@ -1,0 +1,95 @@
+<html>
+  <head>
+    <title>newspod</title>
+    <style>
+      :root {
+        font-size: calc(0.5em + 1vw);
+      }
+
+      header {
+        font-size: 2em;
+        text-align: center;
+        padding: 1em 0;
+      }
+      header span.pod {
+        color: hsl(24, 90%, 80%);
+      }
+
+      details {
+        border: 1px solid #aaa;
+        border-radius: 5px;
+        padding: 0.5em 0.5em 0;
+      }
+      summary {
+        font-size: 3rem;
+        font-weight: bold;
+        margin: -0.5em -0.5em 0;
+        padding: 0.5em;
+      }
+
+      div.episode {
+        padding: 1.2em 0.5em;
+      }
+      div.episode:nth-child(even) {
+        background-color: hsl(24, 5%, 13%);
+      }
+
+      div.episode-title {
+        font-size: 2em;
+      }
+      div.episode-date {
+        font-size: 1.2em;
+      }
+      a:link {
+        color: hsl(200, 100%, 80%);
+      }
+      a:visited {
+        color: hsl(200, 50%, 30%);
+      }
+      body {
+        background-color: hsl(24, 10%, 5%);
+        color: hsl(24, 100%, 98%);
+      }
+
+      @media (prefers-color-scheme: light) {
+        body {
+          background-color: hsl(24, 100%, 98%);
+          color: hsl(24, 10%, 5%);
+        }
+        div.episode:nth-child(even) {
+          background-color: lightgray;
+        }
+      }
+      footer {
+        text-align: center;
+        padding: 1em 0em;
+      }
+    </style>
+  </head>
+  <body>
+    <header>news<span class="pod">pod</span></header>
+    <main>
+      <div id="app"></div>
+      <script src="temp/bundle.js"></script>
+      <script src="elm.js"></script>
+      <script>
+        let db = Muh.initConnection();
+        var app = Elm.Main.init({
+          node: document.getElementById("app"),
+        });
+        Muh.getFeeds(db).then((fs) => {
+          console.log(fs);
+          app.ports.receiveInitFeeds.send(fs);
+        });
+        app.ports.askForEntries.subscribe((feedid) => {
+          Muh.getEntries(db, feedid).then(app.ports.receiveEntries.send);
+        });
+      </script>
+    </main>
+    <footer>
+      <div>
+        Check the <a href="https://github.com/azimut/newspod">source code</a>
+      </div>
+    </footer>
+  </body>
+</html>
