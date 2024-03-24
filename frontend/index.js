@@ -23,14 +23,18 @@ export async function getFeeds(dbarg) {
   let db = await dbarg;
   let queue = [];
   await db('exec', {
-    sql: 'SELECT id, title FROM feeds',
+    sql: `SELECT feeds.id, feeds.title, count(*)
+            FROM feeds JOIN entries ON feeds.id=entries.feedid
+        GROUP BY entries.feedid
+          HAVING count(*) > 0`,
     bind: {},
     callback: (msg) => {
       if (msg.row) {
-        let [id,title] = msg.row;
+        let [id,title,count] = msg.row;
         queue.push({
           id: id,
-          title: title
+          title: title,
+          nEntries: count
         });
       }
     }

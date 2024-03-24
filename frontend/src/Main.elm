@@ -5,6 +5,7 @@ import Dict exposing (Dict)
 import Html exposing (Html, a, article, details, div, summary, text, time)
 import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
+import String exposing (fromInt)
 
 
 main : Program () Model Msg
@@ -28,6 +29,7 @@ type alias Feed =
     , title : String
     , description : String
     , isVisible : Bool
+    , nEntries : Int
     }
 
 
@@ -52,6 +54,7 @@ type Msg
 type alias InitFeed =
     { id : Int
     , title : String
+    , nEntries : Int
     }
 
 
@@ -109,8 +112,8 @@ initFeeds ifs =
 
 
 initFeed : InitFeed -> Feed
-initFeed { id, title } =
-    { id = id, title = title, description = "", isVisible = True }
+initFeed { id, title, nEntries } =
+    { id = id, title = title, description = "", isVisible = True, nEntries = nEntries }
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
@@ -132,10 +135,10 @@ update msg ({ entries } as model) =
 
 
 feedView : Feed -> Dict Int (List Entry) -> Html Msg
-feedView { title, id } entries =
+feedView { title, id, nEntries } entries =
     article [ onClick (AskForEntries id) ]
         [ details [] <|
-            summary [] [ text title ]
+            summary [] [ text (title ++ " [" ++ fromInt nEntries ++ "]") ]
                 :: (entriesView <|
                         Maybe.withDefault []
                             (Dict.get id entries)
