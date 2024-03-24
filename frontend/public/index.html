@@ -78,7 +78,6 @@
           node: document.getElementById("app"),
         });
         Muh.getFeeds(db).then((fs) => {
-          console.log(fs);
           app.ports.receiveInitFeeds.send(fs);
         });
         app.ports.askForEntries.subscribe((feedid) => {
