@@ -5,6 +5,18 @@
       :root {
         font-size: calc(0.5em + 1vw);
       }
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: hsl(24, 10%, 5%);
+        color: hsl(24, 100%, 98%);
+      }
+      @media (prefers-color-scheme: light) {
+        body {
+          background-color: hsl(24, 100%, 98%);
+          color: hsl(24, 10%, 5%);
+        }
+      }
 
       header {
         font-size: 2em;
@@ -53,16 +65,7 @@
       a:visited {
         color: hsl(200, 50%, 30%);
       }
-      body {
-        background-color: hsl(24, 10%, 5%);
-        color: hsl(24, 100%, 98%);
-      }
-
       @media (prefers-color-scheme: light) {
-        body {
-          background-color: hsl(24, 100%, 98%);
-          color: hsl(24, 10%, 5%);
-        }
         div.episode:nth-child(even) {
           background-color: lightgray;
         }

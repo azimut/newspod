@@ -169,7 +169,7 @@ view { feeds, entries } =
     case feeds of
         [] ->
             div [ class "loader" ]
-                [ Loaders.puff 100 "#fff" ]
+                [ Loaders.ballTriangle 150 "#fff" ]
 
         _ ->
             div []
