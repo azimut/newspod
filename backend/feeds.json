@@ -5,6 +5,7 @@
     },
     { "url": "https://feeds.simplecast.com/oM_1xVen" },
     {
+      "title": "Eric Normand",
       "url": "https://feeds.transistor.fm/thoughts-on-functional-programming-podcast-by-eric-normand"
     },
     {
@@ -18,9 +19,15 @@
     { "url": "https://feeds.fireside.fm/compositional/rss" },
     { "url": "https://feeds.fireside.fm/wtfsharp/rss" },
     { "url": "https://feeds.megaphone.fm/darknetdiaries" },
-    { "url": "https://feeds.pacific-content.com/commandlineheroes" },
+    {
+      "title": "CLI Heroes",
+      "url": "https://feeds.pacific-content.com/commandlineheroes"
+    },
     { "url": "https://lexfridman.com/feed/podcast/" },
-    { "url": "https://link.chtbl.com/corecursive?platform=rss" },
+    {
+      "title": "CoRecursive",
+      "url": "https://link.chtbl.com/corecursive?platform=rss"
+    },
     {
       "title": "SE Radio",
       "url": "https://seradio.libsyn.com/rss",
@@ -33,7 +40,7 @@
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC4QZ_LsYcvcq7qOsOhpAX4A"
     },
     {
-      "title": "YT | Platzi - Freddy Vega",
+      "title": "YT | Freddy Vega (Platzi)",
       "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=PLwbyjg7-bjocjc5yp3Hkt3PAc1zCKi9OL"
     }
   ]
