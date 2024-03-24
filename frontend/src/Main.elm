@@ -30,6 +30,7 @@ type alias Feed =
     , title : String
     , description : String
     , isVisible : Bool
+    , isSelected : Bool
     , nEntries : Int
     }
 
@@ -114,7 +115,7 @@ initFeeds ifs =
 
 initFeed : InitFeed -> Feed
 initFeed { id, title, nEntries } =
-    { id = id, title = title, description = "", isVisible = True, nEntries = nEntries }
+    { id = id, title = title, description = "", isVisible = True, isSelected = False, nEntries = nEntries }
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
@@ -123,23 +124,47 @@ update msg ({ entries } as model) =
         AskForEntries feedid ->
             case Dict.get feedid entries of
                 Nothing ->
-                    ( model, askForEntries feedid )
+                    ( selectFeed model feedid, askForEntries feedid )
 
                 Just _ ->
-                    ( model, Cmd.none )
+                    ( selectFeed model feedid, Cmd.none )
 
-        InitFeeds feeds ->
-            ( initFeeds feeds, Cmd.none )
+        InitFeeds iFeeds ->
+            ( initFeeds iFeeds, Cmd.none )
 
         NewEntries es ->
             ( newEntries model es, Cmd.none )
 
 
+selectFeed : Model -> Int -> Model
+selectFeed ({ feeds } as model) feedid =
+    { model
+        | feeds =
+            List.map
+                (\feed ->
+                    if feed.id == feedid then
+                        { feed | isSelected = not feed.isSelected }
+
+                    else
+                        feed
+                )
+                feeds
+    }
+
+
 feedView : Feed -> Dict Int (List Entry) -> Html Msg
-feedView { title, id, nEntries } entries =
-    article [ onClick (AskForEntries id) ]
+feedView { title, id, nEntries, isSelected } entries =
+    article
+        [ onClick (AskForEntries id) ]
         [ details [] <|
-            summary [] [ text (title ++ " [" ++ fromInt nEntries ++ "]") ]
+            summary
+                [ if isSelected then
+                    class "selected"
+
+                  else
+                    class ""
+                ]
+                [ text (title ++ " [" ++ fromInt nEntries ++ "]") ]
                 :: (entriesView <|
                         Maybe.withDefault []
                             (Dict.get id entries)

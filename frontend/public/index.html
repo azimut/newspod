@@ -4,18 +4,41 @@
     <style>
       :root {
         font-size: calc(0.5em + 1vw);
+        --darkness: hsl(24, 10%, 5%);
+        --light: hsl(24, 100%, 98%);
       }
+
       body {
         margin: 0;
         padding: 0;
-        background-color: hsl(24, 10%, 5%);
-        color: hsl(24, 100%, 98%);
+        background-color: var(--darkness);
+        color: var(--light);
       }
       @media (prefers-color-scheme: light) {
         body {
-          background-color: hsl(24, 100%, 98%);
-          color: hsl(24, 10%, 5%);
+          background-color: var(--light);
+          color: var(--darkness);
         }
+      }
+
+      .selected {
+        background-color: var(--light);
+        color: var(--darkness);
+      }
+      @media (prefers-color-scheme: light) {
+        .selected {
+          background-color: var(--darkness);
+          color: var(--light);
+        }
+      }
+
+      div.loader {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        height: 100vh;
+        margin: 0 auto;
       }
 
       header {
@@ -37,14 +60,7 @@
         font-weight: bold;
         margin: -0.5em -0.5em 0;
         padding: 0.5em;
-      }
-      div.loader {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        height: 100vh;
-        margin: 0 auto;
+        list-style: none;
       }
       div.episode {
         padding: 1.2em 0.5em;
