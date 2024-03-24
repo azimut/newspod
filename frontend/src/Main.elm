@@ -168,7 +168,7 @@ view { feeds, entries } =
 
 
 subscriptions : model -> Sub Msg
-subscriptions model =
+subscriptions _ =
     Sub.batch
         [ receiveInitFeeds InitFeeds
         , receiveEntries NewEntries

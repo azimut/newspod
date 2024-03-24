@@ -68,7 +68,7 @@ func initDb() (*sql.DB, error) {
     );
     create table entries (
         id integer not null primary key,
-        feedid integer,
+        feedid integer not null,
         date text,
         title text,
         description text,
@@ -76,6 +76,7 @@ func initDb() (*sql.DB, error) {
         url text,
         foreign key(feedid) references feeds(id)
     );
+    create index entriesindex on entries(feedid);
     create virtual table search using fts5(
         entriesid,
         title,
