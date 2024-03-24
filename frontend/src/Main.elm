@@ -2,9 +2,10 @@ port module Main exposing (..)
 
 import Browser
 import Dict exposing (Dict)
-import Html exposing (Html, a, article, details, div, summary, text, time)
+import Html exposing (Html, a, article, details, div, footer, header, span, summary, text, time)
 import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
+import Loaders
 import String exposing (fromInt)
 
 
@@ -165,9 +166,32 @@ entriesView entries =
 
 view : Model -> Html Msg
 view { feeds, entries } =
-    div [] <|
-        List.map (\feed -> feedView feed entries)
-            feeds
+    case feeds of
+        [] ->
+            div [ class "loader" ]
+                [ Loaders.puff 100 "#fff" ]
+
+        _ ->
+            div []
+                [ header []
+                    [ text "news"
+                    , span [ class "pod" ] [ text "pod" ]
+                    ]
+                , Html.node "main"
+                    []
+                    [ div [] <|
+                        List.map
+                            (\feed -> feedView feed entries)
+                            feeds
+                    ]
+                , footer []
+                    [ div []
+                        [ text "Check the "
+                        , a [ href "https://github.com/azimut/newspod" ]
+                            [ text "source code" ]
+                        ]
+                    ]
+                ]
 
 
 subscriptions : model -> Sub Msg

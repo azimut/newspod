@@ -26,7 +26,14 @@
         margin: -0.5em -0.5em 0;
         padding: 0.5em;
       }
-
+      div.loader {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        height: 100vh;
+        margin: 0 auto;
+      }
       div.episode {
         padding: 1.2em 0.5em;
       }
@@ -67,28 +74,20 @@
     </style>
   </head>
   <body>
-    <header>news<span class="pod">pod</span></header>
-    <main>
-      <div id="app"></div>
-      <script src="temp/bundle.js"></script>
-      <script src="elm.js"></script>
-      <script>
-        let db = Muh.initConnection();
-        var app = Elm.Main.init({
-          node: document.getElementById("app"),
-        });
-        Muh.getFeeds(db).then((fs) => {
-          app.ports.receiveInitFeeds.send(fs);
-        });
-        app.ports.askForEntries.subscribe((feedid) => {
-          Muh.getEntries(db, feedid).then(app.ports.receiveEntries.send);
-        });
-      </script>
-    </main>
-    <footer>
-      <div>
-        Check the <a href="https://github.com/azimut/newspod">source code</a>
-      </div>
-    </footer>
+    <div id="app"></div>
+    <script src="temp/bundle.js"></script>
+    <script src="elm.js"></script>
+    <script>
+      let db = Muh.initConnection();
+      var app = Elm.Main.init({
+        node: document.getElementById("app"),
+      });
+      Muh.getFeeds(db).then((fs) => {
+        app.ports.receiveInitFeeds.send(fs);
+      });
+      app.ports.askForEntries.subscribe((feedid) => {
+        Muh.getEntries(db, feedid).then(app.ports.receiveEntries.send);
+      });
+    </script>
   </body>
 </html>
