@@ -3,7 +3,6 @@ import { createSQLiteThread, createHttpBackend } from 'sqlite-wasm-http';
 export async function initConnection() {
   const remoteURL = 'http://127.0.0.1/feeds.db';
   const httpBackend = createHttpBackend({
-    //maxPageSize: 1024,
     maxPageSize: 1024,
     timeout: 10000,
     cacheSize: 4096
@@ -16,14 +15,10 @@ export async function initConnection() {
       });
       return db;
     });
-  // db('close', {}); // await
-  // db.close();
-  // httpBackend.close(); // await
 }
 
 export async function getFeeds(dbarg) {
   let db = await dbarg;
-  console.log(db);
   let queue = [];
   await db('exec', {
     sql: 'SELECT id, title FROM feeds',
@@ -44,11 +39,10 @@ export async function getFeeds(dbarg) {
 export async function getEntries(dbarg, feedid) {
   let db = await dbarg;
   let queue = [];
-  await db('exec', { // await
+  await db('exec', {
     sql: `SELECT id, title, date, url
           FROM entries
-          WHERE feedid=$fid
-    `,
+          WHERE feedid=$fid`,
     bind: {$fid: feedid},
     callback: (msg) => {
       if (msg.row) {
