@@ -211,8 +211,7 @@ view { feeds, entries } =
                     ]
                 , footer []
                     [ div []
-                        [ text "Check the "
-                        , a [ href "https://github.com/azimut/newspod" ]
+                        [ a [ href "https://github.com/azimut/newspod" ]
                             [ text "source code" ]
                         ]
                     ]
