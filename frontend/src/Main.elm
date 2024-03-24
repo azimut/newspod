@@ -2,9 +2,9 @@ port module Main exposing (..)
 
 import Browser
 import Dict exposing (Dict)
-import Html exposing (Html, a, article, details, div, footer, header, span, summary, text, time)
-import Html.Attributes exposing (class, href)
-import Html.Events exposing (onClick)
+import Html exposing (Html, a, article, details, div, footer, header, input, main_, span, summary, text, time)
+import Html.Attributes exposing (class, href, placeholder, value)
+import Html.Events exposing (onClick, onInput)
 import Loaders
 import String exposing (fromInt)
 
@@ -22,6 +22,7 @@ main =
 type alias Model =
     { feeds : List Feed
     , entries : Dict Int (List Entry)
+    , search : String
     }
 
 
@@ -51,6 +52,7 @@ type Msg
     = InitFeeds (List InitFeed)
     | AskForEntries Int
     | NewEntries (List NewEntry)
+    | NewInput String
 
 
 type alias InitFeed =
@@ -80,7 +82,7 @@ port receiveInitFeeds : (List InitFeed -> msg) -> Sub msg
 
 init : flags -> ( Model, Cmd msg )
 init _ =
-    ( Model [] Dict.empty, Cmd.none )
+    ( Model [] Dict.empty "", Cmd.none )
 
 
 newEntry : NewEntry -> Entry
@@ -106,13 +108,6 @@ newEntries ({ entries } as model) nes =
             { model | entries = Dict.insert entry.feedid (List.map newEntry nes) entries }
 
 
-initFeeds : List InitFeed -> Model
-initFeeds ifs =
-    { feeds = List.map initFeed ifs
-    , entries = Dict.empty
-    }
-
-
 initFeed : InitFeed -> Feed
 initFeed { id, title, nEntries } =
     { id = id, title = title, description = "", isVisible = True, isSelected = False, nEntries = nEntries }
@@ -121,6 +116,9 @@ initFeed { id, title, nEntries } =
 update : Msg -> Model -> ( Model, Cmd msg )
 update msg ({ entries } as model) =
     case msg of
+        NewInput s ->
+            ( { model | search = s }, Cmd.none )
+
         AskForEntries feedid ->
             case Dict.get feedid entries of
                 Nothing ->
@@ -130,7 +128,9 @@ update msg ({ entries } as model) =
                     ( selectFeed model feedid, Cmd.none )
 
         InitFeeds iFeeds ->
-            ( initFeeds iFeeds, Cmd.none )
+            ( Model (List.map initFeed iFeeds) Dict.empty ""
+            , Cmd.none
+            )
 
         NewEntries es ->
             ( newEntries model es, Cmd.none )
@@ -152,8 +152,8 @@ selectFeed ({ feeds } as model) feedid =
     }
 
 
-feedView : Feed -> Dict Int (List Entry) -> Html Msg
-feedView { title, id, nEntries, isSelected } entries =
+viewFeed : Feed -> Dict Int (List Entry) -> Html Msg
+viewFeed { title, id, nEntries, isSelected } entries =
     article
         [ onClick (AskForEntries id) ]
         [ details [] <|
@@ -165,15 +165,15 @@ feedView { title, id, nEntries, isSelected } entries =
                     class ""
                 ]
                 [ text (title ++ " [" ++ fromInt nEntries ++ "]") ]
-                :: (entriesView <|
+                :: (viewEntries <|
                         Maybe.withDefault []
                             (Dict.get id entries)
                    )
         ]
 
 
-entryView : Entry -> Html Msg
-entryView { title, date, url } =
+viewEntry : Entry -> Html Msg
+viewEntry { title, date, url } =
     div [ class "episode" ]
         [ div [ class "episode-title" ]
             [ text title ]
@@ -184,13 +184,13 @@ entryView { title, date, url } =
         ]
 
 
-entriesView : List Entry -> List (Html Msg)
-entriesView entries =
-    List.map entryView entries
+viewEntries : List Entry -> List (Html Msg)
+viewEntries entries =
+    List.map viewEntry entries
 
 
 view : Model -> Html Msg
-view { feeds, entries } =
+view { feeds, entries, search } =
     case feeds of
         [] ->
             div [ class "loader" ]
@@ -201,14 +201,10 @@ view { feeds, entries } =
                 [ header []
                     [ text "news"
                     , span [ class "pod" ] [ text "pod" ]
+                    , input [ placeholder "search", value search, onInput NewInput ] []
                     ]
-                , Html.node "main"
-                    []
-                    [ div [] <|
-                        List.map
-                            (\feed -> feedView feed entries)
-                            feeds
-                    ]
+                , main_ [] <|
+                    List.map (\feed -> viewFeed feed entries) feeds
                 , footer []
                     [ div []
                         [ a [ href "https://github.com/azimut/newspod" ]
