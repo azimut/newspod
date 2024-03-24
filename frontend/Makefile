@@ -5,7 +5,7 @@ public/temp/bundle.js: index.js
 	npm run build
 
 public/elm.js: src/Main.elm
-	elm make src/Main.elm --output=public/elm.js
+	elm make src/Main.elm --output=public/elm.js --optimize
 
 .PHONY: dev
 dev:
