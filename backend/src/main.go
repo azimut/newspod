@@ -4,40 +4,26 @@ import (
 	"fmt"
 	"os"
 	"sort"
-	"time"
-
-	"html/template"
 )
 
-type HTMLContent struct {
-	Feeds Feeds
-	Now   string
-}
-
 func main() {
-
-	htmlContent := HTMLContent{Now: time.Now().Format(time.RFC850)}
 
 	feeds, err := readJsonFeeds("feeds.json")
 	if err != nil {
 		panic(err)
 	}
 
-	for _, feed := range feeds {
-		if err := feed.fetch(); err != nil {
-			fmt.Fprintln(os.Stderr, err)
+	for i := range feeds {
+		if err := feeds[i].fetch(); err != nil {
+			fmt.Fprintf(os.Stderr, "processing of url (%s) failed (%v)\n", feeds[i].Url, err)
 			continue
 		}
-		htmlContent.Feeds = append(htmlContent.Feeds, feed)
 	}
 
-	sort.Sort(Feeds(htmlContent.Feeds))
+	sort.Sort(feeds)
 
-	err = htmlContent.Feeds.Save()
+	err = feeds.Save()
 	if err != nil {
 		panic(err)
 	}
-
-	tmpl := template.Must(template.ParseFiles("layout.html"))
-	tmpl.Execute(os.Stdout, htmlContent)
 }

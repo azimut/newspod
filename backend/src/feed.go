@@ -36,6 +36,12 @@ type Entry struct {
 }
 
 func (a Feeds) Less(i, j int) bool {
+	if len(a[i].Entries) == 0 {
+		return false
+	}
+	if len(a[j].Entries) == 0 {
+		return true
+	}
 	iDate := a[i].Entries[0].Date
 	jDate := a[j].Entries[0].Date
 	return iDate.After(jDate)
