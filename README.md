@@ -1,6 +1,6 @@
 # newspod
 
-Generates a (crude) HTML page with direct audio links, from a list of RSS feeds. Updated with Gitub Actions.
+From a list of RSS feeds. Generates an HTML page with direct links to audio fieles. Updated with Gitub Actions.
 
 ## Why?
 
