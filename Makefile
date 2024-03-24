@@ -1,9 +1,8 @@
-public/index.html: main.go feed.go file.go feeds.json layout.html
-	mkdir -p public
-	rm -f $@
-	go run . > $@
-	tail -50 $@
+.PHONY: all
+all:
+	cd backend/ && make
+	cp backend/feeds.db frontend/public/
+	cd frontend/ && npm install && make
 
-.PHONY: clean
-clean:
-	rm -rf public
+.PHONY: cloc
+cloc:; cloc . --vcs=git --exclude-lang=JSON

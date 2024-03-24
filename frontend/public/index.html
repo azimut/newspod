@@ -69,26 +69,27 @@
   <body>
     <header>news<span class="pod">pod</span></header>
     <main>
-      {{range .Feeds}}
-      <article>
-        <details>
-          <summary>{{.Title}}</summary>
-          {{range .Entries}}
-          <div class="episode">
-            <div class="episode-title">{{.Title}}</div>
-            <div class="episode-date">
-              <a href="{{.Url}}">
-                <time datetime="{{.MachineDate}}">{{.HumanDate}}</time>
-              </a>
-            </div>
-          </div>
-          {{end}}
-        </details>
-      </article>
-      {{end}}
+      <div id="app"></div>
+      <script src="temp/bundle.js"></script>
+      <script src="elm.js"></script>
+      <script>
+        let db = Muh.initConnection();
+        var app = Elm.Main.init({
+          node: document.getElementById("app"),
+        });
+        Muh.getFeeds(db).then((fs) => {
+          console.log(fs);
+          app.ports.receiveInitFeeds.send(fs);
+        });
+        app.ports.askForEntries.subscribe((feedid) => {
+          Muh.getEntries(db, feedid).then(app.ports.receiveEntries.send);
+        });
+      </script>
     </main>
     <footer>
-      <div>Generated on <time datetime="{{.Now}}">{{.Now}}</time></div>
+      <div>
+        Check the <a href="https://github.com/azimut/newspod">source code</a>
+      </div>
     </footer>
   </body>
 </html>

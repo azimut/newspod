@@ -2,15 +2,15 @@ package main
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"os"
 )
 
 type JsonFile struct {
 	Feeds []Feed `json:"feeds"`
 }
 
-func readJsonFeeds(filename string) (feeds []Feed, err error) {
-	jsonRawContent, err := ioutil.ReadFile(filename)
+func readJsonFeeds(filename string) (feeds Feeds, err error) {
+	jsonRawContent, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}

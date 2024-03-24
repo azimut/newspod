@@ -1,0 +1,27 @@
+{
+  "name": "newspod",
+  "version": "1.0.0",
+  "description": "My favority podcasts",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack --mode=production",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/azimut/newspod.git"
+  },
+  "author": "azimut <azimut.github@protonmail.com> (https://github.com/azimut)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/azimut/newspod/issues"
+  },
+  "homepage": "https://github.com/azimut/newspod#readme",
+  "dependencies": {
+    "sqlite-wasm-http": "^1.2.0"
+  },
+  "devDependencies": {
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4"
+  }
+}
