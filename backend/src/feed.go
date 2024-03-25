@@ -6,6 +6,9 @@ import (
 	"strings"
 	"time"
 
+	md "github.com/JohannesKaufmann/html-to-markdown"
+	"github.com/adrg/strutil"
+	"github.com/adrg/strutil/metrics"
 	"github.com/dustin/go-humanize"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/mmcdole/gofeed"
@@ -67,19 +70,19 @@ func initDb() (*sql.DB, error) {
     pragma journal_mode = delete;
     pragma page_size = 1024;
     create table feeds (
-        id integer not null primary key,
-        title text,
-        url text,
+        id           integer not null primary key,
+        title        text,
+        url          text,
         description text
     );
     create table entries (
-        id integer not null primary key,
-        feedid integer not null,
-        date text,
-        title text,
+        id          integer not null primary key,
+        feedid      integer not null,
+        date        text,
+        title       text,
         description text,
-        content text,
-        url text,
+        content     text,
+        url         text,
         foreign key(feedid) references feeds(id)
     );
     create index entriesindex on entries(feedid);
@@ -189,6 +192,8 @@ func (feed *Feed) fetch() error {
 		feed.Title = rawFeed.Title
 	}
 
+	converter := md.NewConverter("", true, nil)
+
 	for _, item := range rawFeed.Items {
 		entry := Entry{
 			Date:        *item.PublishedParsed,
@@ -199,7 +204,26 @@ func (feed *Feed) fetch() error {
 			Description: item.Description,
 			Content:     item.Content,
 		}
-		if item.Content == item.Description {
+		if item.Content == item.Description { // prefer content
+			entry.Description = ""
+		}
+		if item.Description != "" && item.Content == "" { // prefer content (2)
+			entry.Content = item.Description
+		}
+		entry.Description, err = converter.ConvertString(entry.Description)
+		if err != nil {
+			return err
+		}
+		entry.Content, err = converter.ConvertString(entry.Content)
+		if err != nil {
+			return err
+		}
+		metric := strutil.Similarity(
+			entry.Description,
+			entry.Content,
+			metrics.NewHamming(),
+		)
+		if metric > 0.1 { // prefer content (3)
 			entry.Description = ""
 		}
 		feed.Entries = append(feed.Entries, entry)
