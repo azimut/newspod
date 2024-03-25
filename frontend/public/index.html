@@ -109,7 +109,7 @@
       });
       app.ports.askForEntryDetails.subscribe((entryId) => {
         Muh.getEntryDetails(db, entryId).then(
-          app.ports.receiveEntryDetails.send;
+          app.ports.receiveEntryDetails.send,
         );
       });
     </script>
