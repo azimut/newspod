@@ -107,6 +107,11 @@
       app.ports.askForEntries.subscribe((feedid) => {
         Muh.getEntries(db, feedid).then(app.ports.receiveEntries.send);
       });
+      app.ports.askForEntryDetails.subscribe((entryId) => {
+        Muh.getEntryDetails(db, entryId).then(
+          app.ports.receiveEntryDetails.send;
+        );
+      });
     </script>
   </body>
 </html>

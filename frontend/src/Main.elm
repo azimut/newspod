@@ -4,8 +4,10 @@ import Browser
 import Dict exposing (Dict)
 import Html exposing (Html, a, article, details, div, footer, header, input, main_, span, summary, text, time)
 import Html.Attributes exposing (class, href, placeholder, value)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onClick, onInput, stopPropagationOn)
+import Json.Decode as JD
 import Loaders
+import Markdown
 import String exposing (fromInt)
 
 
@@ -45,6 +47,7 @@ type alias Entry =
     , description : String
     , content : String
     , isVisible : Bool
+    , isShowingDetails : Bool
     }
 
 
@@ -53,12 +56,22 @@ type Msg
     | AskForEntries Int
     | NewEntries (List NewEntry)
     | NewInput String
+    | AskForDetails Int Int
+    | NewDetails EntryDetails
 
 
 type alias InitFeed =
     { id : Int
     , title : String
     , nEntries : Int
+    }
+
+
+type alias EntryDetails =
+    { id : Int
+    , feedid : Int
+    , description : String
+    , content : String
     }
 
 
@@ -71,10 +84,16 @@ type alias NewEntry =
     }
 
 
+port askForEntryDetails : Int -> Cmd msg
+
+
 port askForEntries : Int -> Cmd msg
 
 
 port receiveEntries : (List NewEntry -> msg) -> Sub msg
+
+
+port receiveEntryDetails : (EntryDetails -> msg) -> Sub msg
 
 
 port receiveInitFeeds : (List InitFeed -> msg) -> Sub msg
@@ -95,6 +114,7 @@ newEntry { id, feedid, title, date, url } =
     , description = ""
     , content = ""
     , isVisible = True
+    , isShowingDetails = False
     }
 
 
@@ -113,19 +133,56 @@ initFeed { id, title, nEntries } =
     { id = id, title = title, description = "", isVisible = True, isSelected = False, nEntries = nEntries }
 
 
+toggleEntryDetails : Int -> List Entry -> List Entry
+toggleEntryDetails id entries =
+    List.map
+        (\entry ->
+            if entry.id == id then
+                { entry | isShowingDetails = not entry.isShowingDetails }
+
+            else
+                entry
+        )
+        entries
+
+
+fillDetails : EntryDetails -> List Entry -> List Entry
+fillDetails eDetails entries =
+    List.map
+        (\entry ->
+            if entry.id == eDetails.id then
+                { entry | content = eDetails.content, description = eDetails.description }
+
+            else
+                entry
+        )
+        entries
+
+
 update : Msg -> Model -> ( Model, Cmd msg )
 update msg ({ entries } as model) =
     case msg of
-        NewInput s ->
-            ( { model | search = s }, Cmd.none )
+        AskForDetails feedId entryId ->
+            -- TODO: check if already has details
+            ( { model | entries = Dict.update feedId (Maybe.map (toggleEntryDetails entryId)) entries }
+            , askForEntryDetails entryId
+            )
 
-        AskForEntries feedid ->
-            case Dict.get feedid entries of
+        NewDetails ({ feedid } as entryDetails) ->
+            ( { model | entries = Dict.update feedid (Maybe.map (fillDetails entryDetails)) entries }
+            , Cmd.none
+            )
+
+        NewInput newSearch ->
+            ( { model | search = newSearch }, Cmd.none )
+
+        AskForEntries feedId ->
+            case Dict.get feedId entries of
                 Nothing ->
-                    ( selectFeed model feedid, askForEntries feedid )
+                    ( selectFeed model feedId, askForEntries feedId )
 
                 Just _ ->
-                    ( selectFeed model feedid, Cmd.none )
+                    ( selectFeed model feedId, Cmd.none )
 
         InitFeeds iFeeds ->
             ( Model (List.map initFeed iFeeds) Dict.empty ""
@@ -154,8 +211,7 @@ selectFeed ({ feeds } as model) feedid =
 
 viewFeed : Feed -> Dict Int (List Entry) -> Html Msg
 viewFeed { title, id, nEntries, isSelected } entries =
-    article
-        [ onClick (AskForEntries id) ]
+    article [ onClick (AskForEntries id) ]
         [ details [] <|
             summary
                 [ if isSelected then
@@ -165,28 +221,41 @@ viewFeed { title, id, nEntries, isSelected } entries =
                     class ""
                 ]
                 [ text (title ++ " [" ++ fromInt nEntries ++ "]") ]
-                :: (viewEntries <|
-                        Maybe.withDefault []
-                            (Dict.get id entries)
-                   )
+                :: viewFeedEntries id entries
         ]
 
 
-viewEntry : Entry -> Html Msg
-viewEntry { title, date, url } =
-    div [ class "episode" ]
+viewFeedEntries : Int -> Dict Int (List Entry) -> List (Html Msg)
+viewFeedEntries feedId entries =
+    List.map (viewEntry feedId) <|
+        Maybe.withDefault [] (Dict.get feedId entries)
+
+
+onClickWithStopPropagation : msg -> Html.Attribute msg
+onClickWithStopPropagation msg =
+    stopPropagationOn "click" (JD.map (\m -> ( m, True )) (JD.succeed msg))
+
+
+viewEntry : Int -> Entry -> Html Msg
+viewEntry feedId { title, date, url, id, isShowingDetails, content } =
+    div
+        [ class "episode"
+
+        -- TODO: do not ask when closing...
+        , onClickWithStopPropagation (AskForDetails feedId id)
+        ]
         [ div [ class "episode-title" ]
             [ text title ]
         , div [ class "episode-date" ]
             [ a [ href url ]
                 [ time [] [ text date ] ]
             ]
+        , if isShowingDetails then
+            Markdown.toHtml [] content
+
+          else
+            div [] []
         ]
-
-
-viewEntries : List Entry -> List (Html Msg)
-viewEntries entries =
-    List.map viewEntry entries
 
 
 view : Model -> Html Msg
@@ -201,7 +270,8 @@ view { feeds, entries, search } =
                 [ header []
                     [ text "news"
                     , span [ class "pod" ] [ text "pod" ]
-                    , input [ placeholder "search", value search, onInput NewInput ] []
+
+                    -- , input [ placeholder "search", value search, onInput NewInput ] []
                     ]
                 , main_ [] <|
                     List.map (\feed -> viewFeed feed entries) feeds
@@ -219,4 +289,5 @@ subscriptions _ =
     Sub.batch
         [ receiveInitFeeds InitFeeds
         , receiveEntries NewEntries
+        , receiveEntryDetails NewDetails
         ]

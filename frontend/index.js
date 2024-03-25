@@ -65,3 +65,26 @@ export async function getEntries(dbarg, feedid) {
   });
   return queue;
 }
+
+export async function getEntryDetails(dbarg, entryId) {
+  let db = await dbarg;
+  let result;
+  await db('exec', {
+    sql: `SELECT feedid, description, content
+          FROM entries
+          WHERE id=$eid`,
+    bind: {$eid: entryId},
+    callback: (msg) => {
+      if (msg.row) {
+        let [feedid,description,content] = msg.row;
+        result = {
+          id: entryId,
+          feedid: feedid,
+          description: description,
+          content: content
+        };
+      }
+    }
+  });
+  return result;
+}
