@@ -159,6 +159,15 @@ fillDetails eDetails entries =
         entries
 
 
+closeDetailsIfOpen : Entry -> Entry
+closeDetailsIfOpen entry =
+    if entry.isShowingDetails then
+        { entry | isShowingDetails = False }
+
+    else
+        entry
+
+
 update : Msg -> Model -> ( Model, Cmd msg )
 update msg ({ entries } as model) =
     case msg of
@@ -177,12 +186,11 @@ update msg ({ entries } as model) =
             ( { model | search = newSearch }, Cmd.none )
 
         AskForEntries feedId ->
-            case Dict.get feedId entries of
-                Nothing ->
-                    ( selectFeed model feedId, askForEntries feedId )
+            if Dict.member feedId entries then
+                ( toggleSelectedFeed model feedId, Cmd.none )
 
-                Just _ ->
-                    ( selectFeed model feedId, Cmd.none )
+            else
+                ( toggleSelectedFeed model feedId, askForEntries feedId )
 
         InitFeeds iFeeds ->
             ( Model (List.map initFeed iFeeds) Dict.empty ""
@@ -193,8 +201,8 @@ update msg ({ entries } as model) =
             ( newEntries model es, Cmd.none )
 
 
-selectFeed : Model -> Int -> Model
-selectFeed ({ feeds } as model) feedid =
+toggleSelectedFeed : Model -> Int -> Model
+toggleSelectedFeed ({ feeds, entries } as model) feedid =
     { model
         | feeds =
             List.map
@@ -206,6 +214,20 @@ selectFeed ({ feeds } as model) feedid =
                         feed
                 )
                 feeds
+        , entries =
+            Dict.update feedid
+                (Maybe.map
+                    (List.map
+                        (\entry ->
+                            if entry.isShowingDetails then
+                                { entry | isShowingDetails = False }
+
+                            else
+                                entry
+                        )
+                    )
+                )
+                entries
     }
 
 
