@@ -54,8 +54,9 @@ type alias Entry =
 
 
 type State
-    = Searching
+    = Starting
     | Idle
+    | Searching
 
 
 type Msg
@@ -116,7 +117,7 @@ port receiveInitFeeds : (List InitFeed -> msg) -> Sub msg
 
 init : flags -> ( Model, Cmd msg )
 init _ =
-    ( Model [] Dict.empty "" 0 Idle, Cmd.none )
+    ( Model [] Dict.empty "" 0 Starting, Cmd.none )
 
 
 newEntry : NewEntry -> Entry
@@ -343,32 +344,54 @@ viewEntry feedId { title, date, url, id, isShowingDetails, content } =
         ]
 
 
+viewHeader : String -> Html Msg
+viewHeader search =
+    header []
+        [ text "news"
+        , span [ class "pod" ] [ text "pod" ]
+        , form [ onSubmit AskForSearch ]
+            [ input
+                [ type_ "search"
+                , placeholder "search..."
+                , value search
+                , onInput NewInput
+                , minlength 3
+                , maxlength 30
+                , size 12
+                , autofocus True
+                ]
+                []
+            ]
+        ]
+
+
+viewFooter : Html Msg
+viewFooter =
+    footer []
+        [ div []
+            [ a [ href "https://github.com/azimut/newspod" ]
+                [ text "source code" ]
+            ]
+        ]
+
+
 view : Model -> Html Msg
 view { feeds, entries, search, state } =
-    case feeds of
-        [] ->
+    case state of
+        Starting ->
             div [ class "loader" ]
                 [ Loaders.ballTriangle 150 "#fff" ]
 
-        _ ->
+        Searching ->
             div []
-                [ header []
-                    [ text "news"
-                    , span [ class "pod" ] [ text "pod" ]
-                    , form [ onSubmit AskForSearch ]
-                        [ input
-                            [ type_ "search"
-                            , placeholder "search..."
-                            , value search
-                            , onInput NewInput
-                            , minlength 3
-                            , maxlength 30
-                            , size 12
-                            , autofocus True
-                            ]
-                            []
-                        ]
-                    ]
+                [ viewHeader search
+                , div [ class "loader" ]
+                    [ Loaders.ballTriangle 150 "#fff" ]
+                ]
+
+        Idle ->
+            div []
+                [ viewHeader search
                 , main_ [] <|
                     let
                         filteredFeeds =
@@ -387,20 +410,8 @@ view { feeds, entries, search, state } =
                             [ text "no results :(" ]
 
                         fs ->
-                            case state of
-                                Idle ->
-                                    fs
-
-                                Searching ->
-                                    [ div [ class "loader" ]
-                                        [ Loaders.ballTriangle 150 "#fff" ]
-                                    ]
-                , footer []
-                    [ div []
-                        [ a [ href "https://github.com/azimut/newspod" ]
-                            [ text "source code" ]
-                        ]
-                    ]
+                            fs
+                , viewFooter
                 ]
 
 
