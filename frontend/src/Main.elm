@@ -274,10 +274,19 @@ toggleSelectedFeed ({ feeds, entries } as model) feedid =
     }
 
 
+open : Bool -> Html.Attribute msg
+open flag =
+    if flag then
+        attribute "open" ""
+
+    else
+        class ""
+
+
 viewFeed : Feed -> Dict Int (List Entry) -> Html Msg
 viewFeed { title, id, nEntries, isSelected } entries =
     article [ onClick (AskForEntries id) ]
-        [ details [ attribute "open" "" ] <|
+        [ details [ open isSelected ] <|
             summary
                 [ if isSelected then
                     class "selected"
