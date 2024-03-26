@@ -45,9 +45,21 @@
         font-size: 2.8em;
         text-align: center;
         padding: 0.5em 0;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
       }
       header span.pod {
         color: hsl(24, 90%, 80%);
+      }
+      input[type="search"] {
+        background-color: var(--light);
+        color: var(--darkness);
+        font-family: inherit;
+        font-size: 0.5em;
+        align-self: center;
+        margin-left: 1em;
+        border-radius: 0.1em;
       }
 
       details {
@@ -65,10 +77,14 @@
       div.episode {
         padding: 1.2em 0.5em;
       }
+      @media (prefers-color-scheme: light) {
+        div.episode:nth-child(even) {
+          background-color: lightgray;
+        }
+      }
       div.episode:nth-child(even) {
         background-color: hsl(24, 5%, 13%);
       }
-
       div.episode-title {
         font-size: 2em;
       }
@@ -80,11 +96,6 @@
       }
       a:visited {
         color: hsl(200, 50%, 30%);
-      }
-      @media (prefers-color-scheme: light) {
-        div.episode:nth-child(even) {
-          background-color: lightgray;
-        }
       }
       footer {
         text-align: center;

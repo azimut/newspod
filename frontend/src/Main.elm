@@ -3,7 +3,7 @@ port module Main exposing (..)
 import Browser
 import Dict exposing (Dict)
 import Html exposing (Html, a, article, details, div, footer, header, input, main_, span, summary, text, time)
-import Html.Attributes exposing (class, href, placeholder, value)
+import Html.Attributes exposing (autofocus, class, href, maxlength, minlength, placeholder, size, type_, value)
 import Html.Events exposing (onClick, onInput, stopPropagationOn)
 import Json.Decode as JD
 import Loaders
@@ -292,8 +292,17 @@ view { feeds, entries, search } =
                 [ header []
                     [ text "news"
                     , span [ class "pod" ] [ text "pod" ]
-
-                    -- , input [ placeholder "search", value search, onInput NewInput ] []
+                    , input
+                        [ type_ "search"
+                        , placeholder "search..."
+                        , value search
+                        , onInput NewInput
+                        , minlength 3
+                        , maxlength 30
+                        , size 10
+                        , autofocus True
+                        ]
+                        []
                     ]
                 , main_ [] <|
                     List.map (\feed -> viewFeed feed entries) feeds
