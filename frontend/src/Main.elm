@@ -2,12 +2,13 @@ port module Main exposing (..)
 
 import Browser
 import Dict exposing (Dict)
-import Html exposing (Html, a, article, details, div, footer, header, input, main_, span, summary, text, time)
-import Html.Attributes exposing (autofocus, class, href, maxlength, minlength, placeholder, size, type_, value)
-import Html.Events exposing (onClick, onInput, stopPropagationOn)
+import Html exposing (Html, a, article, details, div, footer, form, header, input, main_, span, summary, text, time)
+import Html.Attributes exposing (attribute, autofocus, class, href, maxlength, minlength, placeholder, size, type_, value)
+import Html.Events exposing (onClick, onInput, onSubmit, stopPropagationOn)
 import Json.Decode as JD
 import Loaders
 import Markdown
+import Set
 import String exposing (fromInt)
 
 
@@ -25,6 +26,7 @@ type alias Model =
     { feeds : List Feed
     , entries : Dict Int (List Entry)
     , search : String
+    , nResults : Int
     }
 
 
@@ -32,8 +34,8 @@ type alias Feed =
     { id : Int
     , title : String
     , description : String
-    , isVisible : Bool
     , isSelected : Bool
+    , isVisible : Bool
     , nEntries : Int
     }
 
@@ -46,7 +48,6 @@ type alias Entry =
     , url : String
     , description : String
     , content : String
-    , isVisible : Bool
     , isShowingDetails : Bool
     }
 
@@ -58,6 +59,8 @@ type Msg
     | NewInput String
     | AskForDetails Int Int
     | NewDetails EntryDetails
+    | AskForSearch
+    | NewSearchResults (List NewEntry)
 
 
 type alias InitFeed =
@@ -90,6 +93,12 @@ port askForEntryDetails : Int -> Cmd msg
 port askForEntries : Int -> Cmd msg
 
 
+port askForSearch : String -> Cmd msg
+
+
+port receiveSearchResults : (List NewEntry -> msg) -> Sub msg
+
+
 port receiveEntries : (List NewEntry -> msg) -> Sub msg
 
 
@@ -101,7 +110,7 @@ port receiveInitFeeds : (List InitFeed -> msg) -> Sub msg
 
 init : flags -> ( Model, Cmd msg )
 init _ =
-    ( Model [] Dict.empty "", Cmd.none )
+    ( Model [] Dict.empty "" 0, Cmd.none )
 
 
 newEntry : NewEntry -> Entry
@@ -113,7 +122,6 @@ newEntry { id, feedid, title, date, url } =
     , url = url
     , description = ""
     , content = ""
-    , isVisible = True
     , isShowingDetails = False
     }
 
@@ -130,7 +138,7 @@ newEntries ({ entries } as model) nes =
 
 initFeed : InitFeed -> Feed
 initFeed { id, title, nEntries } =
-    { id = id, title = title, description = "", isVisible = True, isSelected = False, nEntries = nEntries }
+    { id = id, title = title, description = "", isSelected = False, isVisible = True, nEntries = nEntries }
 
 
 toggleEntryDetails : Int -> List Entry -> List Entry
@@ -169,8 +177,11 @@ closeDetailsIfOpen entry =
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
-update msg ({ entries } as model) =
+update msg ({ entries, search } as model) =
     case msg of
+        AskForSearch ->
+            ( model, askForSearch search )
+
         AskForDetails feedId entryId ->
             -- TODO: check if already has details
             ( { model | entries = Dict.update feedId (Maybe.map (toggleEntryDetails entryId)) entries }
@@ -193,12 +204,45 @@ update msg ({ entries } as model) =
                 ( toggleSelectedFeed model feedId, askForEntries feedId )
 
         InitFeeds iFeeds ->
-            ( Model (List.map initFeed iFeeds) Dict.empty ""
+            ( Model (List.map initFeed iFeeds) Dict.empty "" 0
             , Cmd.none
             )
 
         NewEntries es ->
             ( newEntries model es, Cmd.none )
+
+        NewSearchResults es ->
+            ( newSearchResults model es, Cmd.none )
+
+
+newSearchResults : Model -> List NewEntry -> Model
+newSearchResults model nEntries =
+    let
+        feedIds =
+            List.foldl (\e acc -> Set.insert e.feedid acc) Set.empty nEntries
+
+        feeds =
+            List.map (\feed -> { feed | isSelected = Set.member feed.id feedIds })
+                model.feeds
+
+        entries =
+            List.foldl
+                (\entry ->
+                    Dict.update entry.feedid
+                        (\foo ->
+                            case foo of
+                                Nothing ->
+                                    Just [ entry ]
+
+                                Just bar ->
+                                    Just (entry :: bar)
+                        )
+                 -- (Maybe.map ((::) entry))
+                )
+                Dict.empty
+                (List.map newEntry nEntries)
+    in
+    { model | feeds = feeds, entries = entries }
 
 
 toggleSelectedFeed : Model -> Int -> Model
@@ -234,7 +278,7 @@ toggleSelectedFeed ({ feeds, entries } as model) feedid =
 viewFeed : Feed -> Dict Int (List Entry) -> Html Msg
 viewFeed { title, id, nEntries, isSelected } entries =
     article [ onClick (AskForEntries id) ]
-        [ details [] <|
+        [ details [ attribute "open" "" ] <|
             summary
                 [ if isSelected then
                     class "selected"
@@ -292,17 +336,19 @@ view { feeds, entries, search } =
                 [ header []
                     [ text "news"
                     , span [ class "pod" ] [ text "pod" ]
-                    , input
-                        [ type_ "search"
-                        , placeholder "search..."
-                        , value search
-                        , onInput NewInput
-                        , minlength 3
-                        , maxlength 30
-                        , size 10
-                        , autofocus True
+                    , form [ onSubmit AskForSearch ]
+                        [ input
+                            [ type_ "search"
+                            , placeholder "search..."
+                            , value search
+                            , onInput NewInput
+                            , minlength 3
+                            , maxlength 30
+                            , size 10
+                            , autofocus True
+                            ]
+                            []
                         ]
-                        []
                     ]
                 , main_ [] <|
                     List.map (\feed -> viewFeed feed entries) feeds
@@ -321,4 +367,5 @@ subscriptions _ =
         [ receiveInitFeeds InitFeeds
         , receiveEntries NewEntries
         , receiveEntryDetails NewDetails
+        , receiveSearchResults NewSearchResults
         ]

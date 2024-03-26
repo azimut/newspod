@@ -66,6 +66,35 @@ export async function getEntries(dbarg, feedid) {
   return queue;
 }
 
+export async function search(dbarg, needle) {
+  let db = await dbarg;
+  let queue = [];
+  await db('exec', {
+    sql: `SELECT entries.feedid,
+                 search.entriesid,
+                 search.title,
+                 entries.url,
+                 entries.date
+          FROM search
+          JOIN entries ON search.entriesid=entries.id
+          WHERE search.content match $match`,
+    bind: {$match: needle},
+    callback: (msg) => {
+      if (msg.row) {
+        let [feedid,entryid,title,url,date] = msg.row;
+        queue.push({
+          id: entryid,
+          feedid: feedid,
+          title: title,
+          date: date,
+          url: url
+        });
+      }
+    }
+  });
+  return queue;
+}
+
 export async function getEntryDetails(dbarg, entryId) {
   let db = await dbarg;
   let result;

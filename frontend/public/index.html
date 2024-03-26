@@ -123,6 +123,9 @@
           app.ports.receiveEntryDetails.send,
         );
       });
+      app.ports.askForSearch.subscribe((searchTerm) => {
+        Muh.search(db, searchTerm).then(app.ports.receiveSearchResults.send);
+      });
     </script>
   </body>
 </html>
