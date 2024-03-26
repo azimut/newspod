@@ -1,5 +1,13 @@
 {
   "feeds": [
+    { "url": "https://feeds.simplecast.com/L9810DOa" },
+    { "url": "https://anchor.fm/s/43c9b024/podcast/rss" },
+    { "url": "https://elm-radio.com/feed.xml" },
+    { "url": "https://feeds.simplecast.com/8tQUlnkG" },
+    { "url": "https://pod.link/developer-voices.rss" },
+    { "url": "https://feeds.megaphone.fm/clickhere" },
+    { "url": "https://feeds.simplecast.com/gvtxUiIf" },
+    { "url": "https://leanpub.com/podcasts/frontmatter/podcast.xml" },
     {
       "url": "https://feeds.soundcloud.com/users/soundcloud:users:220484243/sounds.rss"
     },
