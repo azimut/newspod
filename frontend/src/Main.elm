@@ -166,10 +166,19 @@ fillDetails eDetails =
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
-update msg ({ entries, search } as model) =
+update msg ({ feeds, entries, search } as model) =
     case msg of
         AskForSearch ->
-            ( model, askForSearch search )
+            if String.isEmpty (String.trim search) then
+                ( { model
+                    | feeds = List.map (\feed -> { feed | isVisible = True, isSelected = False }) feeds
+                    , search = ""
+                  }
+                , Cmd.none
+                )
+
+            else
+                ( model, askForSearch search )
 
         AskForDetails feedId entryId ->
             -- TODO: check if already has details
@@ -211,7 +220,14 @@ newSearchResults model nEntries =
             List.foldl (\e acc -> Set.insert e.feedid acc) Set.empty nEntries
 
         feeds =
-            List.map (\feed -> { feed | isSelected = Set.member feed.id feedIds })
+            List.map
+                (\feed ->
+                    let
+                        isMember =
+                            Set.member feed.id feedIds
+                    in
+                    { feed | isSelected = isMember, isVisible = isMember }
+                )
                 model.feeds
 
         entries =
@@ -348,7 +364,24 @@ view { feeds, entries, search } =
                         ]
                     ]
                 , main_ [] <|
-                    List.map (\feed -> viewFeed feed entries) feeds
+                    let
+                        filteredFeeds =
+                            List.filterMap
+                                (\feed ->
+                                    if feed.isVisible then
+                                        Just (viewFeed feed entries)
+
+                                    else
+                                        Nothing
+                                )
+                                feeds
+                    in
+                    case filteredFeeds of
+                        [] ->
+                            [ text "no results :(" ]
+
+                        fs ->
+                            fs
                 , footer []
                     [ div []
                         [ a [ href "https://github.com/azimut/newspod" ]
