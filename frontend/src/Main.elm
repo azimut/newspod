@@ -336,11 +336,13 @@ viewEntry feedId { title, date, url, id, isShowingDetails, content } =
             [ a [ href url ]
                 [ time [] [ text date ] ]
             ]
-        , if isShowingDetails then
-            Markdown.toHtml [] content
+        , div [ class "episode-content" ]
+            [ if isShowingDetails then
+                Markdown.toHtml [] content
 
-          else
-            div [] []
+              else
+                div [] []
+            ]
         ]
 
 
