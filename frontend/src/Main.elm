@@ -136,13 +136,13 @@ newEntries ({ entries } as model) nes =
             { model | entries = Dict.insert entry.feedid (List.map newEntry nes) entries }
 
 
-initFeed : InitFeed -> Feed
-initFeed { id, title, nEntries } =
+toFeed : InitFeed -> Feed
+toFeed { id, title, nEntries } =
     { id = id, title = title, description = "", isSelected = False, isVisible = True, nEntries = nEntries }
 
 
 toggleEntryDetails : Int -> List Entry -> List Entry
-toggleEntryDetails id entries =
+toggleEntryDetails id =
     List.map
         (\entry ->
             if entry.id == id then
@@ -151,11 +151,10 @@ toggleEntryDetails id entries =
             else
                 entry
         )
-        entries
 
 
 fillDetails : EntryDetails -> List Entry -> List Entry
-fillDetails eDetails entries =
+fillDetails eDetails =
     List.map
         (\entry ->
             if entry.id == eDetails.id then
@@ -164,16 +163,6 @@ fillDetails eDetails entries =
             else
                 entry
         )
-        entries
-
-
-closeDetailsIfOpen : Entry -> Entry
-closeDetailsIfOpen entry =
-    if entry.isShowingDetails then
-        { entry | isShowingDetails = False }
-
-    else
-        entry
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
@@ -204,7 +193,7 @@ update msg ({ entries, search } as model) =
                 ( toggleSelectedFeed model feedId, askForEntries feedId )
 
         InitFeeds iFeeds ->
-            ( Model (List.map initFeed iFeeds) Dict.empty "" 0
+            ( Model (List.map toFeed iFeeds) Dict.empty "" 0
             , Cmd.none
             )
 
@@ -352,7 +341,7 @@ view { feeds, entries, search } =
                             , onInput NewInput
                             , minlength 3
                             , maxlength 30
-                            , size 10
+                            , size 12
                             , autofocus True
                             ]
                             []
