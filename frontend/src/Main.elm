@@ -27,6 +27,7 @@ type alias Model =
     , entries : Dict Int (List Entry)
     , search : String
     , nResults : Int
+    , state : State
     }
 
 
@@ -50,6 +51,11 @@ type alias Entry =
     , content : String
     , isShowingDetails : Bool
     }
+
+
+type State
+    = Searching
+    | Idle
 
 
 type Msg
@@ -110,7 +116,7 @@ port receiveInitFeeds : (List InitFeed -> msg) -> Sub msg
 
 init : flags -> ( Model, Cmd msg )
 init _ =
-    ( Model [] Dict.empty "" 0, Cmd.none )
+    ( Model [] Dict.empty "" 0 Idle, Cmd.none )
 
 
 newEntry : NewEntry -> Entry
@@ -178,7 +184,7 @@ update msg ({ feeds, entries, search } as model) =
                 )
 
             else
-                ( model, askForSearch search )
+                ( { model | state = Searching }, askForSearch search )
 
         AskForDetails feedId entryId ->
             -- TODO: check if already has details
@@ -202,7 +208,7 @@ update msg ({ feeds, entries, search } as model) =
                 ( toggleSelectedFeed model feedId, askForEntries feedId )
 
         InitFeeds iFeeds ->
-            ( Model (List.map toFeed iFeeds) Dict.empty "" 0
+            ( Model (List.map toFeed iFeeds) Dict.empty "" 0 Idle
             , Cmd.none
             )
 
@@ -246,7 +252,7 @@ newSearchResults model nEntries =
                 Dict.empty
                 (List.map newEntry nEntries)
     in
-    { model | feeds = feeds, entries = entries }
+    { model | feeds = feeds, entries = entries, state = Idle }
 
 
 toggleSelectedFeed : Model -> Int -> Model
@@ -338,7 +344,7 @@ viewEntry feedId { title, date, url, id, isShowingDetails, content } =
 
 
 view : Model -> Html Msg
-view { feeds, entries, search } =
+view { feeds, entries, search, state } =
     case feeds of
         [] ->
             div [ class "loader" ]
@@ -381,7 +387,14 @@ view { feeds, entries, search } =
                             [ text "no results :(" ]
 
                         fs ->
-                            fs
+                            case state of
+                                Idle ->
+                                    fs
+
+                                Searching ->
+                                    [ div [ class "loader" ]
+                                        [ Loaders.ballTriangle 150 "#fff" ]
+                                    ]
                 , footer []
                     [ div []
                         [ a [ href "https://github.com/azimut/newspod" ]
