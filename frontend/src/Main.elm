@@ -175,16 +175,7 @@ update : Msg -> Model -> ( Model, Cmd msg )
 update msg ({ feeds, entries, search } as model) =
     case msg of
         AskForSearch ->
-            if String.isEmpty (String.trim search) then
-                ( { model
-                    | feeds = List.map (\feed -> { feed | isVisible = True, isSelected = False }) feeds
-                    , search = ""
-                  }
-                , Cmd.none
-                )
-
-            else
-                ( { model | state = Searching }, askForSearch search )
+            ( { model | state = Searching }, askForSearch search )
 
         AskForDetails feedId entryId ->
             -- TODO: check if already has details
@@ -198,7 +189,16 @@ update msg ({ feeds, entries, search } as model) =
             )
 
         NewInput newSearch ->
-            ( { model | search = newSearch }, Cmd.none )
+            if String.isEmpty (String.trim newSearch) then
+                ( { model
+                    | feeds = List.map (\feed -> { feed | isVisible = True, isSelected = False }) feeds
+                    , search = ""
+                  }
+                , Cmd.none
+                )
+
+            else
+                ( { model | search = newSearch }, Cmd.none )
 
         AskForEntries feedId ->
             if Dict.member feedId entries then
