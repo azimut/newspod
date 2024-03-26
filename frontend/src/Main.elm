@@ -237,7 +237,6 @@ newSearchResults model nEntries =
                                 Just bar ->
                                     Just (entry :: bar)
                         )
-                 -- (Maybe.map ((::) entry))
                 )
                 Dict.empty
                 (List.map newEntry nEntries)

@@ -77,7 +77,8 @@ export async function search(dbarg, needle) {
                  entries.date
           FROM search
           JOIN entries ON search.entriesid=entries.id
-          WHERE search.content match $match`,
+          WHERE search.content match $match
+          ORDER BY entries.feedid,entries.date ASC`,
     bind: {$match: needle},
     callback: (msg) => {
       if (msg.row) {
