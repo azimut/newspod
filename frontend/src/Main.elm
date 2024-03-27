@@ -10,6 +10,9 @@ import Loaders
 import Markdown
 import Set
 import String exposing (fromInt)
+import Task
+import Time exposing (millisToPosix)
+import Time.Distance exposing (inWords)
 
 
 main : Program () Model Msg
@@ -28,6 +31,7 @@ type alias Model =
     , search : String
     , nResults : Int
     , state : State
+    , now : Time.Posix
     }
 
 
@@ -45,7 +49,7 @@ type alias Entry =
     { id : Int
     , feedid : Int
     , title : String
-    , date : String
+    , date : Int
     , url : String
     , description : String
     , content : String
@@ -68,6 +72,7 @@ type Msg
     | NewDetails EntryDetails
     | AskForSearch
     | NewSearchResults (List NewEntry)
+    | NewNow Time.Posix
 
 
 type alias InitFeed =
@@ -89,7 +94,7 @@ type alias NewEntry =
     { id : Int
     , feedid : Int
     , title : String
-    , date : String
+    , date : Int
     , url : String
     }
 
@@ -115,9 +120,11 @@ port receiveEntryDetails : (EntryDetails -> msg) -> Sub msg
 port receiveInitFeeds : (List InitFeed -> msg) -> Sub msg
 
 
-init : flags -> ( Model, Cmd msg )
+init : flags -> ( Model, Cmd Msg )
 init _ =
-    ( Model [] Dict.empty "" 0 Starting, Cmd.none )
+    ( Model [] Dict.empty "" 0 Starting (millisToPosix 0)
+    , Task.perform NewNow Time.now
+    )
 
 
 newEntry : NewEntry -> Entry
@@ -173,8 +180,11 @@ fillDetails eDetails =
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
-update msg ({ feeds, entries, search } as model) =
+update msg ({ feeds, entries, search, now } as model) =
     case msg of
+        NewNow new ->
+            ( { model | now = new }, Cmd.none )
+
         AskForSearch ->
             ( { model | state = Searching }, askForSearch search )
 
@@ -209,7 +219,7 @@ update msg ({ feeds, entries, search } as model) =
                 ( toggleSelectedFeed model feedId, askForEntries feedId )
 
         InitFeeds iFeeds ->
-            ( Model (List.map toFeed iFeeds) Dict.empty "" 0 Idle
+            ( Model (List.map toFeed iFeeds) Dict.empty "" 0 Idle now
             , Cmd.none
             )
 
@@ -295,8 +305,8 @@ open flag =
         class ""
 
 
-viewFeed : Feed -> Dict Int (List Entry) -> Html Msg
-viewFeed { title, id, nEntries, isSelected } entries =
+viewFeed : Feed -> Time.Posix -> Dict Int (List Entry) -> Html Msg
+viewFeed { title, id, nEntries, isSelected } now entries =
     article [ onClick (AskForEntries id) ]
         [ details [ open isSelected ] <|
             summary
@@ -307,13 +317,13 @@ viewFeed { title, id, nEntries, isSelected } entries =
                     class ""
                 ]
                 [ text (title ++ " [" ++ fromInt nEntries ++ "]") ]
-                :: viewFeedEntries id entries
+                :: viewFeedEntries id now entries
         ]
 
 
-viewFeedEntries : Int -> Dict Int (List Entry) -> List (Html Msg)
-viewFeedEntries feedId entries =
-    List.map (viewEntry feedId) <|
+viewFeedEntries : Int -> Time.Posix -> Dict Int (List Entry) -> List (Html Msg)
+viewFeedEntries feedId now entries =
+    List.map (viewEntry feedId now) <|
         Maybe.withDefault [] (Dict.get feedId entries)
 
 
@@ -322,8 +332,8 @@ onClickWithStopPropagation msg =
     stopPropagationOn "click" (JD.map (\m -> ( m, True )) (JD.succeed msg))
 
 
-viewEntry : Int -> Entry -> Html Msg
-viewEntry feedId { title, date, url, id, isShowingDetails, content } =
+viewEntry : Int -> Time.Posix -> Entry -> Html Msg
+viewEntry feedId now { title, date, url, id, isShowingDetails, content } =
     div
         [ class "episode"
 
@@ -334,7 +344,7 @@ viewEntry feedId { title, date, url, id, isShowingDetails, content } =
             [ text title ]
         , div [ class "episode-date" ]
             [ a [ href url ]
-                [ time [] [ text date ] ]
+                [ time [] [ text <| inWords (millisToPosix date) now ] ]
             ]
         , div [ class "episode-content" ]
             [ if isShowingDetails then
@@ -378,7 +388,7 @@ viewFooter =
 
 
 view : Model -> Html Msg
-view { feeds, entries, search, state } =
+view { feeds, entries, search, state, now } =
     case state of
         Starting ->
             div [ class "loader" ]
@@ -400,7 +410,7 @@ view { feeds, entries, search, state } =
                             List.filterMap
                                 (\feed ->
                                     if feed.isVisible then
-                                        Just (viewFeed feed entries)
+                                        Just (viewFeed feed now entries)
 
                                     else
                                         Nothing

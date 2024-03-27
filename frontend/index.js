@@ -46,7 +46,7 @@ export async function getEntries(dbarg, feedid) {
   let db = await dbarg;
   let queue = [];
   await db('exec', {
-    sql: `SELECT id, title, date, url
+    sql: `SELECT id, title, datemillis, url
           FROM entries
           WHERE feedid=$fid`,
     bind: {$fid: feedid},
@@ -74,7 +74,7 @@ export async function search(dbarg, needle) {
                  search.entriesid,
                  search.title,
                  entries.url,
-                 entries.date
+                 entries.datemillis
           FROM search
           JOIN entries ON search.entriesid=entries.id
           WHERE search.content match $match

@@ -78,7 +78,7 @@ func initDb() (*sql.DB, error) {
     create table entries (
         id          integer not null primary key,
         feedid      integer not null,
-        date        text,
+        datemillis  integer not null,
         title       text,
         description text,
         content     text,
@@ -127,7 +127,7 @@ func insertFeeds(db *sql.DB, feeds Feeds) error {
 	}
 	defer stmt_feeds.Close()
 	stmt_entry, err := tx.Prepare(
-		"insert into entries(feedid,date,title,description,content,url) values(?,?,?,?,?,?)",
+		"insert into entries(feedid,datemillis,title,description,content,url) values(?,?,?,?,?,?)",
 	)
 	if err != nil {
 		return err
@@ -141,7 +141,7 @@ func insertFeeds(db *sql.DB, feeds Feeds) error {
 		for _, entry := range feed.Entries {
 			_, err = stmt_entry.Exec(
 				feedid,
-				entry.MachineDate,
+				entry.Date.UnixMilli(),
 				entry.Title,
 				entry.Description,
 				entry.Content,
@@ -198,7 +198,7 @@ func (feed *Feed) fetch() error {
 		entry := Entry{
 			Date:        *item.PublishedParsed,
 			HumanDate:   humanize.Time(*item.PublishedParsed),
-			MachineDate: item.PublishedParsed.Format("2006-1-2 15:4"),
+			MachineDate: item.PublishedParsed.Format("2006-01-02 15:04:03"),
 			Title:       itemTitle(item.Title, *feed),
 			Url:         itemUrl(*item),
 			Description: item.Description,
