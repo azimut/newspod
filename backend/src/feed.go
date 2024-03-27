@@ -192,7 +192,7 @@ func (feed *Feed) fetch() error {
 		feed.Title = rawFeed.Title
 	}
 
-	converter := md.NewConverter("", true, nil)
+	html2md := md.NewConverter("", true, nil)
 
 	for _, item := range rawFeed.Items {
 		entry := Entry{
@@ -210,11 +210,17 @@ func (feed *Feed) fetch() error {
 		if item.Description != "" && item.Content == "" { // prefer content (2)
 			entry.Content = item.Description
 		}
-		entry.Description, err = converter.ConvertString(entry.Description)
+		if entry.Description == "" && item.ITunesExt != nil && item.ITunesExt.Subtitle != "" {
+			entry.Description = item.ITunesExt.Subtitle
+		}
+		if entry.Content == "" && item.ITunesExt != nil && item.ITunesExt.Summary != "" {
+			entry.Content = item.ITunesExt.Summary
+		}
+		entry.Description, err = html2md.ConvertString(entry.Description)
 		if err != nil {
 			return err
 		}
-		entry.Content, err = converter.ConvertString(entry.Content)
+		entry.Content, err = html2md.ConvertString(entry.Content)
 		if err != nil {
 			return err
 		}
