@@ -186,7 +186,11 @@ update msg ({ feeds, entries, search, now } as model) =
             ( { model | now = new }, Cmd.none )
 
         AskForSearch ->
-            ( { model | state = Searching }, askForSearch search )
+            if String.isEmpty (String.trim search) then
+                ( model, Cmd.none )
+
+            else
+                ( { model | state = Searching }, askForSearch search )
 
         AskForDetails feedId entryId ->
             -- TODO: check if already has details
