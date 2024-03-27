@@ -15,4 +15,4 @@ jobs:
           go-version: '1.19'
           cache-dependency-path: |
             backend/go.sum
-      - run: make
+      - run: make slim all
