@@ -60,11 +60,13 @@ type alias Entry =
 type State
     = Starting
     | Idle
-    | Searching
+    | WaitingForSearch
+    | ShowingResults
 
 
 type Msg
     = InitFeeds (List InitFeed)
+    | InitClock Time.Posix
     | AskForEntries Int
     | NewEntries (List NewEntry)
     | NewInput String
@@ -72,7 +74,6 @@ type Msg
     | NewDetails EntryDetails
     | AskForSearch
     | NewSearchResults (List NewEntry)
-    | NewNow Time.Posix
 
 
 type alias InitFeed =
@@ -129,7 +130,7 @@ port receiveInitFeeds : (List InitFeed -> msg) -> Sub msg
 init : flags -> ( Model, Cmd Msg )
 init _ =
     ( Model [] Dict.empty "" 0 Starting (millisToPosix 0)
-    , Task.perform NewNow Time.now
+    , Task.perform InitClock Time.now
     )
 
 
@@ -186,17 +187,50 @@ fillDetails eDetails =
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
-update msg ({ feeds, entries, search, now } as model) =
+update msg ({ feeds, entries, search, now, state } as model) =
     case msg of
-        NewNow new ->
-            ( { model | now = new }, Cmd.none )
+        InitFeeds iFeeds ->
+            ( Model (List.map toFeed iFeeds) Dict.empty "" 0 Idle now
+            , Cmd.none
+            )
+
+        InitClock n ->
+            ( { model | now = n }, Cmd.none )
+
+        NewInput newSearch ->
+            if String.isEmpty (String.trim newSearch) then
+                ( { model
+                    | feeds = List.map (\feed -> { feed | isVisible = True, isSelected = False }) feeds
+                    , entries = Dict.empty
+                    , state = Idle
+                    , search = ""
+                  }
+                , Cmd.none
+                )
+
+            else
+                ( { model | search = newSearch }, Cmd.none )
 
         AskForSearch ->
             if String.isEmpty (String.trim search) then
                 ( model, Cmd.none )
 
             else
-                ( { model | state = Searching }, askForSearch search )
+                ( { model | state = WaitingForSearch }, askForSearch search )
+
+        NewSearchResults es ->
+            ( newSearchResults model es, Cmd.none )
+
+        AskForEntries feedId ->
+            case state of
+                Idle ->
+                    ( toggleSelectedFeed model feedId, askForEntries feedId )
+
+                _ ->
+                    ( toggleSelectedFeed model feedId, Cmd.none )
+
+        NewEntries es ->
+            ( newEntries model es, Cmd.none )
 
         AskForDetails feedId entryId ->
             -- TODO: check if already has details
@@ -208,36 +242,6 @@ update msg ({ feeds, entries, search, now } as model) =
             ( { model | entries = Dict.update feedid (Maybe.map (fillDetails entryDetails)) entries }
             , Cmd.none
             )
-
-        NewInput newSearch ->
-            if String.isEmpty (String.trim newSearch) then
-                ( { model
-                    | feeds = List.map (\feed -> { feed | isVisible = True, isSelected = False }) feeds
-                    , search = ""
-                  }
-                , Cmd.none
-                )
-
-            else
-                ( { model | search = newSearch }, Cmd.none )
-
-        AskForEntries feedId ->
-            if Dict.member feedId entries then
-                ( toggleSelectedFeed model feedId, Cmd.none )
-
-            else
-                ( toggleSelectedFeed model feedId, askForEntries feedId )
-
-        InitFeeds iFeeds ->
-            ( Model (List.map toFeed iFeeds) Dict.empty "" 0 Idle now
-            , Cmd.none
-            )
-
-        NewEntries es ->
-            ( newEntries model es, Cmd.none )
-
-        NewSearchResults es ->
-            ( newSearchResults model es, Cmd.none )
 
 
 newSearchResults : Model -> List NewEntry -> Model
@@ -273,7 +277,7 @@ newSearchResults model nEntries =
                 Dict.empty
                 (List.map newEntry nEntries)
     in
-    { model | feeds = feeds, entries = entries, state = Idle }
+    { model | feeds = feeds, entries = entries, state = ShowingResults }
 
 
 toggleSelectedFeed : Model -> Int -> Model
@@ -404,14 +408,21 @@ view { feeds, entries, search, state, now } =
             div [ class "loader" ]
                 [ Loaders.ballTriangle 150 "#fff" ]
 
-        Searching ->
+        Idle ->
+            div []
+                [ viewHeader search
+                , main_ [] <| List.map (\feed -> viewFeed feed now entries) feeds
+                , viewFooter
+                ]
+
+        WaitingForSearch ->
             div []
                 [ viewHeader search
                 , div [ class "loader" ]
                     [ Loaders.ballTriangle 150 "#fff" ]
                 ]
 
-        Idle ->
+        ShowingResults ->
             div []
                 [ viewHeader search
                 , main_ [] <|
