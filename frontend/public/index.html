@@ -6,6 +6,8 @@
         font-size: calc(0.5em + 1vw);
         --darkness: hsl(24, 10%, 5%);
         --light: hsl(24, 100%, 98%);
+        --deep-blue: hsl(200, 50%, 30%);
+        --light-blue: hsl(200, 100%, 80%);
       }
       @media (min-width: 1200px) {
         :root {
@@ -104,11 +106,16 @@
         font-family: monospace, sans-serif;
         font-size: 1.2em;
       }
+      div.episode-content code {
+        font-size: 1.2em;
+        background-color: var(--light-blue);
+        color: var(--darkness);
+      }
       a:link {
-        color: hsl(200, 100%, 80%);
+        color: var(--light-blue);
       }
       a:visited {
-        color: hsl(200, 50%, 30%);
+        color: var(--deep-blue);
       }
       footer {
         text-align: center;
@@ -137,8 +144,8 @@
       app.ports.askForEntries.subscribe((feedid) => {
         Muh.getEntries(db, feedid).then(app.ports.receiveEntries.send);
       });
-      app.ports.askForEntryDetails.subscribe((entryId) => {
-        Muh.getEntryDetails(db, entryId).then(
+      app.ports.askForEntryDetails.subscribe(({ entryId, search }) => {
+        Muh.getEntryDetails(db, entryId, search).then(
           app.ports.receiveEntryDetails.send,
         );
       });

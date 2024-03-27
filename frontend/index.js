@@ -77,7 +77,7 @@ export async function search(dbarg, needle) {
                  entries.datemillis
           FROM search
           JOIN entries ON search.entriesid=entries.id
-          WHERE search.content match $match
+          WHERE search.content MATCH $match
           ORDER BY entries.feedid,entries.id DESC`,
     bind: {$match: needle},
     callback: (msg) => {
@@ -96,25 +96,46 @@ export async function search(dbarg, needle) {
   return queue;
 }
 
-export async function getEntryDetails(dbarg, entryId) {
+export async function getEntryDetails(dbarg, entryId, needle) {
   let db = await dbarg;
   let result;
-  await db('exec', {
-    sql: `SELECT feedid, description, content
-          FROM entries
-          WHERE id=$eid`,
-    bind: {$eid: entryId},
-    callback: (msg) => {
-      if (msg.row) {
-        let [feedid,description,content] = msg.row;
-        result = {
-          id: entryId,
-          feedid: feedid,
-          description: description,
-          content: content
-        };
+  if (needle && typeof needle === "string" && needle.length > 0) {
+    await db('exec', {
+      sql: `SELECT entries.feedid, entries.description, highlight(search,3,'\`\`\`','\`\`\`')
+            FROM entries
+            JOIN search ON entries.id=search.entriesid
+            WHERE entries.id=$eid AND search.content MATCH $needle`,
+      bind: {$eid: entryId, $needle: needle},
+      callback: (msg) => {
+        if (msg.row) {
+          let [feedid,description,content] = msg.row;
+          result = {
+            id: entryId,
+            feedid: feedid,
+            description: description,
+            content: content
+          };
+        }
       }
-    }
-  });
+    });
+  } else {
+    await db('exec', {
+      sql: `SELECT feedid, description, content
+            FROM entries
+            WHERE id=$eid`,
+      bind: {$eid: entryId},
+      callback: (msg) => {
+        if (msg.row) {
+          let [feedid,description,content] = msg.row;
+          result = {
+            id: entryId,
+            feedid: feedid,
+            description: description,
+            content: content
+          };
+        }
+      }
+    });
+  }
   return result;
 }

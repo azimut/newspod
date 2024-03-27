@@ -99,7 +99,13 @@ type alias NewEntry =
     }
 
 
-port askForEntryDetails : Int -> Cmd msg
+type alias QuestionEntryDetails =
+    { entryId : Int
+    , search : String
+    }
+
+
+port askForEntryDetails : QuestionEntryDetails -> Cmd msg
 
 
 port askForEntries : Int -> Cmd msg
@@ -195,7 +201,7 @@ update msg ({ feeds, entries, search, now } as model) =
         AskForDetails feedId entryId ->
             -- TODO: check if already has details
             ( { model | entries = Dict.update feedId (Maybe.map (toggleEntryDetails entryId)) entries }
-            , askForEntryDetails entryId
+            , askForEntryDetails (QuestionEntryDetails entryId search)
             )
 
         NewDetails ({ feedid } as entryDetails) ->
