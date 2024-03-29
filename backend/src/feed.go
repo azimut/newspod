@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"os"
+	"sort"
 	"strings"
 	"time"
 
@@ -16,10 +17,8 @@ import (
 
 const DB_NAME = "./feeds.db"
 
-type Feeds []Feed
-
 type Feed struct {
-	Entries      []Entry
+	Entries      Entries
 	RawTitle     string
 	Title        string   `json:"title"`
 	TrimPrefixes []string `json:"trim_prefixes"`
@@ -37,6 +36,8 @@ type Entry struct {
 	Description string
 	Content     string
 }
+
+type Feeds []Feed
 
 func (a Feeds) Less(i, j int) bool {
 	if len(a[i].Entries) == 0 {
@@ -58,6 +59,29 @@ func (a Feeds) Swap(i, j int) {
 	a[i], a[j] = a[j], a[i]
 }
 
+type Entries []Entry
+
+func (a Entries) Len() int {
+	return len(a)
+}
+
+func (a Entries) Less(i, j int) bool {
+	iDate := a[i].Date
+	jDate := a[j].Date
+	return iDate.After(jDate)
+}
+
+func (a Entries) Swap(i, j int) {
+	a[i], a[j] = a[j], a[i]
+}
+
+func (feeds Feeds) Sort() {
+	for i := 0; i < len(feeds); i++ {
+		sort.Sort(feeds[i].Entries)
+	}
+	sort.Sort(feeds)
+}
+
 func initDb() (*sql.DB, error) {
 	os.Remove(DB_NAME)
 
@@ -70,9 +94,9 @@ func initDb() (*sql.DB, error) {
     pragma journal_mode = delete;
     pragma page_size = 1024;
     create table feeds (
-        id           integer not null primary key,
-        title        text,
-        url          text,
+        id          integer not null primary key,
+        title       text,
+        url         text,
         description text
     );
     create table entries (

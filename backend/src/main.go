@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"sort"
 )
 
 func main() {
@@ -20,7 +19,7 @@ func main() {
 		}
 	}
 
-	sort.Sort(feeds)
+	feeds.Sort()
 
 	err = feeds.Save()
 	if err != nil {
