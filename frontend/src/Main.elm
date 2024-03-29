@@ -42,6 +42,7 @@ type alias Feed =
     , isSelected : Bool
     , isVisible : Bool
     , nEntries : Int
+    , nResults : Int
     }
 
 
@@ -147,19 +148,9 @@ newEntry { id, feedid, title, date, url } =
     }
 
 
-newEntries : Model -> List NewEntry -> Model
-newEntries ({ entries } as model) nes =
-    case nes of
-        [] ->
-            model
-
-        entry :: _ ->
-            { model | entries = Dict.insert entry.feedid (List.map newEntry nes) entries }
-
-
 toFeed : InitFeed -> Feed
 toFeed { id, title, nEntries } =
-    { id = id, title = title, description = "", isSelected = False, isVisible = True, nEntries = nEntries }
+    { id = id, title = title, description = "", isSelected = False, isVisible = True, nEntries = nEntries, nResults = 0 }
 
 
 toggleEntryDetails : Int -> List Entry -> List Entry
@@ -229,11 +220,19 @@ update msg ({ feeds, entries, search, now, state } as model) =
                 _ ->
                     ( toggleSelectedFeed model feedId, Cmd.none )
 
+        -- TODO: getting feedid from newEntries[0] is kind of hacky
         NewEntries es ->
-            ( newEntries model es, Cmd.none )
+            ( case es of
+                [] ->
+                    model
 
+                entry :: _ ->
+                    { model | entries = Dict.insert entry.feedid (List.map newEntry es) entries }
+            , Cmd.none
+            )
+
+        -- TODO: check if already has details
         AskForDetails feedId entryId ->
-            -- TODO: check if already has details
             ( { model | entries = Dict.update feedId (Maybe.map (toggleEntryDetails entryId)) entries }
             , askForEntryDetails (QuestionEntryDetails entryId search)
             )
@@ -248,7 +247,12 @@ newSearchResults : Model -> List NewEntry -> Model
 newSearchResults model nEntries =
     let
         feedIds =
-            List.foldl (\e acc -> Set.insert e.feedid acc) Set.empty nEntries
+            List.foldl (\e -> Set.insert e.feedid) Set.empty nEntries
+
+        feedsCounts =
+            List.foldl (\e -> Dict.update e.feedid (Maybe.withDefault 0 >> (+) 1 >> Just))
+                Dict.empty
+                nEntries
 
         feeds =
             List.map
@@ -257,7 +261,11 @@ newSearchResults model nEntries =
                         isMember =
                             Set.member feed.id feedIds
                     in
-                    { feed | isSelected = isMember, isVisible = isMember }
+                    { feed
+                        | isSelected = isMember
+                        , isVisible = isMember
+                        , nResults = Maybe.withDefault 0 <| Dict.get feed.id feedsCounts
+                    }
                 )
                 model.feeds
 
@@ -319,18 +327,28 @@ open flag =
         class ""
 
 
-viewFeed : Feed -> Time.Posix -> Dict Int (List Entry) -> Html Msg
-viewFeed { title, id, nEntries, isSelected } now entries =
+viewFeed : Feed -> State -> Time.Posix -> Dict Int (List Entry) -> Html Msg
+viewFeed ({ title, id, isSelected } as feed) state now entries =
+    let
+        count =
+            case state of
+                ShowingResults ->
+                    feed.nResults
+
+                _ ->
+                    feed.nEntries
+    in
     article [ onClick (AskForEntries id) ]
         [ details [ open isSelected ] <|
             summary
                 [ if isSelected then
-                    class "selected"
+                    class
+                        "selected"
 
                   else
                     class ""
                 ]
-                [ text (title ++ " [" ++ fromInt nEntries ++ "]") ]
+                [ text (title ++ " [" ++ fromInt count ++ "]") ]
                 :: viewFeedEntries id now entries
         ]
 
@@ -411,7 +429,7 @@ view { feeds, entries, search, state, now } =
         Idle ->
             div []
                 [ viewHeader search
-                , main_ [] <| List.map (\feed -> viewFeed feed now entries) feeds
+                , main_ [] <| List.map (\feed -> viewFeed feed state now entries) feeds
                 , viewFooter
                 ]
 
@@ -431,7 +449,7 @@ view { feeds, entries, search, state, now } =
                             List.filterMap
                                 (\feed ->
                                     if feed.isVisible then
-                                        Just (viewFeed feed now entries)
+                                        Just (viewFeed feed state now entries)
 
                                     else
                                         Nothing
