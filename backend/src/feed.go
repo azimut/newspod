@@ -111,7 +111,7 @@ func initDb() (*sql.DB, error) {
     );
     create index entriesindex on entries(feedid);
     create virtual table search using fts5(
-        entriesid,
+        entriesid unindexed,
         title,
         description,
         content
