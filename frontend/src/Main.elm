@@ -2,7 +2,7 @@ port module Main exposing (..)
 
 import Browser
 import Dict exposing (Dict)
-import Html exposing (Html, a, article, details, div, footer, form, header, input, main_, span, summary, text, time)
+import Html exposing (Html, a, article, details, div, footer, form, header, input, main_, p, span, summary, text, time)
 import Html.Attributes exposing (attribute, autofocus, class, href, maxlength, minlength, placeholder, size, type_, value)
 import Html.Events exposing (onClick, onInput, onSubmit, stopPropagationOn)
 import Json.Decode as JD
@@ -388,23 +388,39 @@ viewEntry feedId now { title, date, url, id, isShowingDetails, content } =
         ]
 
 
-viewHeader : String -> Html Msg
-viewHeader search =
+viewHeader : String -> Maybe Int -> Html Msg
+viewHeader search mNResults =
     header []
-        [ text "news"
-        , span [ class "pod" ] [ text "pod" ]
-        , form [ onSubmit AskForSearch ]
-            [ input
-                [ type_ "search"
-                , placeholder "search..."
-                , value search
-                , onInput NewInput
-                , minlength 3
-                , maxlength 30
-                , size 12
-                , autofocus True
+        [ div [ class "searchbar" ]
+            [ text "news"
+            , span [ class "pod" ] [ text "pod" ]
+            , form [ onSubmit AskForSearch ]
+                [ input
+                    [ type_ "search"
+                    , placeholder "search..."
+                    , value search
+                    , onInput NewInput
+                    , minlength 3
+                    , maxlength 30
+                    , size 12
+                    , autofocus True
+                    ]
+                    []
                 ]
-                []
+            ]
+        , div [ class "result-hint" ]
+            [ case mNResults of
+                Nothing ->
+                    text ""
+
+                Just 0 ->
+                    text "no results found :("
+
+                Just 1 ->
+                    text "1 result found"
+
+                Just n ->
+                    text (fromInt n ++ " results found")
             ]
         ]
 
@@ -428,40 +444,31 @@ view { feeds, entries, search, state, now } =
 
         Idle ->
             div []
-                [ viewHeader search
+                [ viewHeader search Nothing
                 , main_ [] <| List.map (\feed -> viewFeed feed state now entries) feeds
                 , viewFooter
                 ]
 
         WaitingForSearch ->
             div []
-                [ viewHeader search
+                [ viewHeader search Nothing
                 , div [ class "loader" ]
                     [ Loaders.ballTriangle 150 "#fff" ]
                 ]
 
         ShowingResults ->
             div []
-                [ viewHeader search
+                [ viewHeader search (Just <| List.foldl (\f acc -> f.nResults + acc) 0 feeds)
                 , main_ [] <|
-                    let
-                        filteredFeeds =
-                            List.filterMap
-                                (\feed ->
-                                    if feed.isVisible then
-                                        Just (viewFeed feed state now entries)
+                    List.filterMap
+                        (\feed ->
+                            if feed.isVisible then
+                                Just (viewFeed feed state now entries)
 
-                                    else
-                                        Nothing
-                                )
-                                feeds
-                    in
-                    case filteredFeeds of
-                        [] ->
-                            [ text "no results :(" ]
-
-                        fs ->
-                            fs
+                            else
+                                Nothing
+                        )
+                        feeds
                 , viewFooter
                 ]
 
