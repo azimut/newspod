@@ -41,7 +41,14 @@
       "url": "https://seradio.libsyn.com/rss",
       "trim_prefixes": ["SE Radio"]
     },
-    { "url": "https://www.functionalgeekery.com/feed/mp3/" },
+    {
+      "url": "https://www.functionalgeekery.com/feed/mp3/",
+      "content_end_mark": [
+        "### Announcements",
+        "### Conference Announcements",
+        "### Topics"
+      ]
+    },
     { "title": "SICP Podcast", "url": "https://www.sicpers.info/feed/podcast" },
     {
       "title": "YT | ColdFusion",

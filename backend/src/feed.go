@@ -18,13 +18,14 @@ import (
 const DB_NAME = "./feeds.db"
 
 type Feed struct {
-	Entries      Entries
-	RawTitle     string
-	Title        string   `json:"title"`
-	TrimPrefixes []string `json:"trim_prefixes"`
-	TrimSuffixes []string `json:"trim_suffixes"`
-	Description  string
-	Url          string `json:"url"`
+	Entries        Entries
+	RawTitle       string
+	Title          string   `json:"title"`
+	TrimPrefixes   []string `json:"trim_prefixes"`
+	TrimSuffixes   []string `json:"trim_suffixes"`
+	ContentEndMark []string `json:"content_end_mark"`
+	Description    string
+	Url            string `json:"url"`
 }
 
 type Entry struct {
@@ -251,6 +252,10 @@ func (feed *Feed) fetch() error {
 		)
 		if metric > 0.1 { // prefer content (3)
 			entry.Description = ""
+		}
+		for _, mark := range feed.ContentEndMark {
+			before, _, _ := strings.Cut(entry.Content, mark)
+			entry.Content = before
 		}
 		feed.Entries = append(feed.Entries, entry)
 	}
