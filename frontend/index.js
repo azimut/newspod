@@ -24,7 +24,8 @@ export async function getFeeds(dbarg) {
   let queue = [];
   await db('exec', {
     sql: `SELECT feeds.id, feeds.title, count(*)
-            FROM feeds JOIN entries ON feeds.id=entries.feedid
+            FROM feeds
+            JOIN entries ON feeds.id=entries.feedid
         GROUP BY entries.feedid
           HAVING count(*) > 0`,
     bind: {},
@@ -47,8 +48,8 @@ export async function getEntries(dbarg, feedid) {
   let queue = [];
   await db('exec', {
     sql: `SELECT id, title, datemillis, url
-          FROM entries
-          WHERE feedid=$fid`,
+            FROM entries
+           WHERE feedid=$fid`,
     bind: {$fid: feedid},
     callback: (msg) => {
       if (msg.row) {
@@ -75,10 +76,10 @@ export async function search(dbarg, needle) {
                  entries.title,
                  entries.url,
                  entries.datemillis
-          FROM search
-          JOIN entries ON search.entriesid=entries.id
-          WHERE search.content MATCH $match
-          ORDER BY entries.feedid,entries.id DESC`,
+            FROM search
+            JOIN entries ON search.entriesid=entries.id
+           WHERE search.content MATCH $match
+           ORDER BY entries.feedid,entries.id DESC`,
     bind: {$match: needle},
     callback: (msg) => {
       if (msg.row) {
@@ -102,9 +103,10 @@ export async function getEntryDetails(dbarg, entryId, needle) {
   if (needle && typeof needle === "string" && needle.length > 0) {
     await db('exec', {
       sql: `SELECT entries.feedid, highlight(search,1,'\`\`\`','\`\`\`')
-            FROM entries
-            JOIN search ON entries.id=search.entriesid
-            WHERE entries.id=$eid AND search.content MATCH $needle`,
+              FROM entries
+              JOIN search ON entries.id=search.entriesid
+             WHERE entries.id=$eid
+               AND search.content MATCH $needle`,
       bind: {$eid: entryId, $needle: needle},
       callback: (msg) => {
         if (msg.row) {
@@ -119,9 +121,10 @@ export async function getEntryDetails(dbarg, entryId, needle) {
     });
   } else {
     await db('exec', {
-      sql: `SELECT feedid, content
-            FROM entries
-            WHERE id=$eid`,
+      sql: `SELECT entries.feedid, entries_content.content
+              FROM entries
+              JOIN entries_content ON entries_content.entriesid=entries.id
+             WHERE entries.id=$eid`,
       bind: {$eid: entryId},
       callback: (msg) => {
         if (msg.row) {
