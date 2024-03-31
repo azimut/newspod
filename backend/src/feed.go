@@ -104,7 +104,6 @@ func initDb() (*sql.DB, error) {
         feedid      integer not null,
         datemillis  integer not null,
         title       text,
-        description text,
         content     text,
         url         text,
         foreign key(feedid) references feeds(id)
@@ -112,8 +111,6 @@ func initDb() (*sql.DB, error) {
     create index entriesindex on entries(feedid);
     create virtual table search using fts5(
         entriesid unindexed,
-        title,
-        description,
         content
     );
     `
@@ -128,7 +125,7 @@ func initDb() (*sql.DB, error) {
 func insertSearch(db *sql.DB) error {
 	sqlStmt := `
     insert into search
-    select id,title,description,content
+    select id,content
       from entries;
     insert into search(search) values('optimize');
     vacuum;
@@ -151,7 +148,7 @@ func insertFeeds(db *sql.DB, feeds Feeds) error {
 	}
 	defer stmt_feeds.Close()
 	stmt_entry, err := tx.Prepare(
-		"insert into entries(feedid,datemillis,title,description,content,url) values(?,?,?,?,?,?)",
+		"insert into entries(feedid,datemillis,title,content,url) values(?,?,?,?,?)",
 	)
 	if err != nil {
 		return err
@@ -167,7 +164,6 @@ func insertFeeds(db *sql.DB, feeds Feeds) error {
 				feedid,
 				entry.Date.UnixMilli(),
 				entry.Title,
-				entry.Description,
 				entry.Content,
 				entry.Url,
 			)

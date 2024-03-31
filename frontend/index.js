@@ -71,8 +71,8 @@ export async function search(dbarg, needle) {
   let queue = [];
   await db('exec', {
     sql: `SELECT entries.feedid,
-                 search.entriesid,
-                 search.title,
+                 entries.id,
+                 entries.title,
                  entries.url,
                  entries.datemillis
           FROM search
@@ -101,18 +101,17 @@ export async function getEntryDetails(dbarg, entryId, needle) {
   let result;
   if (needle && typeof needle === "string" && needle.length > 0) {
     await db('exec', {
-      sql: `SELECT entries.feedid, entries.description, highlight(search,3,'\`\`\`','\`\`\`')
+      sql: `SELECT entries.feedid, highlight(search,1,'\`\`\`','\`\`\`')
             FROM entries
             JOIN search ON entries.id=search.entriesid
             WHERE entries.id=$eid AND search.content MATCH $needle`,
       bind: {$eid: entryId, $needle: needle},
       callback: (msg) => {
         if (msg.row) {
-          let [feedid,description,content] = msg.row;
+          let [feedid,content] = msg.row;
           result = {
             id: entryId,
             feedid: feedid,
-            description: description,
             content: content
           };
         }
@@ -120,17 +119,16 @@ export async function getEntryDetails(dbarg, entryId, needle) {
     });
   } else {
     await db('exec', {
-      sql: `SELECT feedid, description, content
+      sql: `SELECT feedid, content
             FROM entries
             WHERE id=$eid`,
       bind: {$eid: entryId},
       callback: (msg) => {
         if (msg.row) {
-          let [feedid,description,content] = msg.row;
+          let [feedid,content] = msg.row;
           result = {
             id: entryId,
             feedid: feedid,
-            description: description,
             content: content
           };
         }

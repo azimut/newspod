@@ -2,7 +2,7 @@ port module Main exposing (..)
 
 import Browser
 import Dict exposing (Dict)
-import Html exposing (Html, a, article, details, div, footer, form, header, input, main_, p, span, summary, text, time)
+import Html exposing (Html, a, article, details, div, footer, form, header, input, main_, span, summary, text, time)
 import Html.Attributes exposing (attribute, autofocus, class, href, maxlength, minlength, placeholder, size, type_, value)
 import Html.Events exposing (onClick, onInput, onSubmit, stopPropagationOn)
 import Json.Decode as JD
@@ -52,7 +52,6 @@ type alias Entry =
     , title : String
     , date : Int
     , url : String
-    , description : String
     , content : String
     , isShowingDetails : Bool
     }
@@ -87,7 +86,6 @@ type alias InitFeed =
 type alias EntryDetails =
     { id : Int
     , feedid : Int
-    , description : String
     , content : String
     }
 
@@ -142,7 +140,6 @@ newEntry { id, feedid, title, date, url } =
     , title = title
     , date = date
     , url = url
-    , description = ""
     , content = ""
     , isShowingDetails = False
     }
@@ -170,7 +167,7 @@ fillDetails eDetails =
     List.map
         (\entry ->
             if entry.id == eDetails.id then
-                { entry | content = eDetails.content, description = eDetails.description }
+                { entry | content = eDetails.content }
 
             else
                 entry
