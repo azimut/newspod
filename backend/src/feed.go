@@ -108,7 +108,7 @@ func initDb() (*sql.DB, error) {
         url         text,
         foreign key(feedid) references feeds(id)
     );
-    create index entriesindex on entries(feedid, datemillis, title, url);
+    create index entriesindex on entries(feedid);
     create virtual table search using fts5(
         entriesid unindexed,
         content
