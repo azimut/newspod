@@ -2,6 +2,8 @@ package main
 
 import (
 	"database/sql"
+	"errors"
+	"fmt"
 	"os"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -9,9 +11,15 @@ import (
 
 func initDb() (*sql.DB, error) {
 
-	err := os.Remove(DB_NAME)
-	if err != nil {
-		return nil, err
+	_, err := os.Stat(DB_NAME)
+	if errors.Is(err, os.ErrNotExist) {
+		fmt.Printf("db (%s) does NOT exists, creating...", DB_NAME)
+	} else if err == nil {
+		fmt.Printf("db (%s) exists, deleting...", DB_NAME)
+		err = os.Remove(DB_NAME)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	db, err := sql.Open("sqlite3", DB_NAME)
