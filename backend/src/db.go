@@ -52,7 +52,6 @@ func initTables(db *sql.DB) error {
         feedid      integer not null,
         datemillis  integer not null,
         title       text,
-        content     text,
         url         text,
         foreign key(feedid) references feeds(id)
     );
