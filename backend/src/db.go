@@ -8,7 +8,11 @@ import (
 )
 
 func initDb() (*sql.DB, error) {
-	os.Remove(DB_NAME)
+
+	err := os.Remove(DB_NAME)
+	if err != nil {
+		return nil, err
+	}
 
 	db, err := sql.Open("sqlite3", DB_NAME)
 	if err != nil {
