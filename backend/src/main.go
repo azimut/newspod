@@ -1,9 +1,6 @@
 package main
 
-import (
-	"fmt"
-	"os"
-)
+import "fmt"
 
 func main() {
 
@@ -12,15 +9,24 @@ func main() {
 		panic(err)
 	}
 
+	fmt.Println("Starting RSS feeds fetch...")
 	for i := range feeds {
-		if err := feeds[i].Fetch(); err != nil {
-			fmt.Fprintf(
-				os.Stderr,
-				"processing of url (%s) failed (%v)\n",
+		err := feeds[i].Fetch()
+		if err == nil {
+			fmt.Printf(
+				"[%02d/%02d] success (%s)\n",
+				i+1,
+				len(feeds),
+				feeds[i].Url,
+			)
+		} else {
+			fmt.Printf(
+				"[%02d/%02d] failure (%s) with error (%v)\n",
+				i+1,
+				len(feeds),
 				feeds[i].Url,
 				err,
 			)
-			continue
 		}
 	}
 
