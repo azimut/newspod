@@ -19,6 +19,15 @@ func initDb() (*sql.DB, error) {
 		return nil, err
 	}
 
+	err = initTables(db)
+	if err != nil {
+		return nil, err
+	}
+
+	return db, nil
+}
+
+func initTables(db *sql.DB) error {
 	initStmt := `
     pragma journal_mode = delete;
     pragma page_size = 1024;
@@ -53,12 +62,12 @@ func initDb() (*sql.DB, error) {
         content
     );
     `
-	_, err = db.Exec(initStmt)
+	_, err := db.Exec(initStmt)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return db, nil
+	return nil
 }
 
 func insertFeedsAndEntries(db *sql.DB, feeds Feeds) error {
