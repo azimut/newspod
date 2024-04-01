@@ -13,8 +13,13 @@ func main() {
 	}
 
 	for i := range feeds {
-		if err := feeds[i].fetch(); err != nil {
-			fmt.Fprintf(os.Stderr, "processing of url (%s) failed (%v)\n", feeds[i].Url, err)
+		if err := feeds[i].Fetch(); err != nil {
+			fmt.Fprintf(
+				os.Stderr,
+				"processing of url (%s) failed (%v)\n",
+				feeds[i].Url,
+				err,
+			)
 			continue
 		}
 	}
