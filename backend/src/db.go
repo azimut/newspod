@@ -45,7 +45,7 @@ func initTables(db *sql.DB) error {
         title       text,
         url         text,
         description text
-    );
+    ) strict;
 
     create table entries (
         id          integer not null primary key,
@@ -54,14 +54,14 @@ func initTables(db *sql.DB) error {
         title       text,
         url         text,
         foreign key(feedid) references feeds(id)
-    );
+    ) strict;
     create index entriesindex on entries(feedid);
 
     create table entries_content (
         entriesid   integer not null,
         content     text,
         foreign key(entriesid) references entries(id)
-    );
+    ) strict;
     create index entriescindex on entries_content(entriesid);
 
     create virtual table search using fts5(
