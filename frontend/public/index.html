@@ -47,9 +47,6 @@
         padding: 0.3em 0 0.3em 0;
         font-size: 4em;
         text-align: center;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
       }
       header span.pod {
         color: hsl(24, 90%, 80%);
@@ -73,17 +70,27 @@
         border-radius: 0.1em;
         flex-grow: 0;
       }
-      .result-hint {
-        font-size: 0.45em;
-        font-family: monospace;
-        margin: 0.6em 0 0.6em 0;
-      }
 
       footer {
         text-align: center;
         padding: 1em 0em;
       }
 
+      main {
+        display: flex;
+        flex-direction: column;
+      }
+      div.some-results {
+        font-family: monospace;
+        margin: 0 auto;
+        padding: 0 0 1.5em 0;
+        font-size: 1.8em;
+      }
+      div.no-results {
+        margin: 0 auto;
+        font-family: monospace;
+        font-size: 2.45em;
+      }
       details {
         border: 1px solid #aaa;
         border-radius: 5px;

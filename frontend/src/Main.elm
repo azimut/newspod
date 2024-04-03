@@ -393,8 +393,8 @@ viewEntry feedId now { title, date, url, id, isShowingDetails, content } =
         ]
 
 
-viewHeader : String -> Maybe Int -> Html Msg
-viewHeader search mNResults =
+viewHeader : String -> Html Msg
+viewHeader search =
     header []
         [ div [ class "searchbar" ]
             [ text "news"
@@ -413,28 +413,7 @@ viewHeader search mNResults =
                     []
                 ]
             ]
-        , viewResultHint mNResults
         ]
-
-
-viewResultHint : Maybe Int -> Html Msg
-viewResultHint maybeResults =
-    case maybeResults of
-        Nothing ->
-            div [] []
-
-        Just n ->
-            div [ class "result-hint" ]
-                [ case n of
-                    0 ->
-                        text "no results found :("
-
-                    1 ->
-                        text "1 result found"
-
-                    _ ->
-                        text (fromInt n ++ " results found")
-                ]
 
 
 viewFooter : Html Msg
@@ -456,31 +435,49 @@ view { feeds, entries, search, state, now } =
 
         Idle ->
             div []
-                [ viewHeader search Nothing
+                [ viewHeader search
                 , main_ [] <| List.map (\feed -> viewFeed feed state now entries) feeds
                 , viewFooter
                 ]
 
         WaitingForSearch ->
             div []
-                [ viewHeader search Nothing
+                [ viewHeader search
                 , div [ class "loader" ]
                     [ Loaders.ballTriangle 150 "#fff" ]
                 ]
 
         ShowingResults ->
+            let
+                filteredFeeds =
+                    List.filter .isVisible feeds
+            in
             div []
-                [ viewHeader search (Just <| List.foldl (\f acc -> f.nResults + acc) 0 feeds)
-                , main_ [] <|
-                    List.filterMap
-                        (\feed ->
-                            if feed.isVisible then
-                                Just (viewFeed feed state now entries)
+                [ viewHeader search
+                , case filteredFeeds of
+                    [] ->
+                        main_ []
+                            [ div [ class "no-results" ] [ text "no results found :(" ] ]
 
-                            else
-                                Nothing
-                        )
-                        feeds
+                    _ ->
+                        let
+                            nResults =
+                                List.foldl (\f acc -> f.nResults + acc) 0 filteredFeeds
+
+                            message =
+                                case nResults of
+                                    1 ->
+                                        fromInt nResults ++ " result found"
+
+                                    _ ->
+                                        fromInt nResults ++ " results found"
+                        in
+                        main_ [] <|
+                            div [ class "some-results" ]
+                                [ text message ]
+                                :: List.map
+                                    (\feed -> viewFeed feed state now entries)
+                                    filteredFeeds
                 , viewFooter
                 ]
 
