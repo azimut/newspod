@@ -167,7 +167,14 @@ fillDetails eDetails =
     List.map
         (\entry ->
             if entry.id == eDetails.id then
-                { entry | content = eDetails.content }
+                { entry
+                    | content =
+                        if eDetails.content == "" then
+                            "No description."
+
+                        else
+                            eDetails.content
+                }
 
             else
                 entry
