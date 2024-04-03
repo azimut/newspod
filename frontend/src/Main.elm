@@ -352,14 +352,7 @@ viewFeed ({ title, id, isSelected } as feed) state now entries =
     in
     article [ onClick (AskForEntries id) ]
         [ details [ open isSelected ] <|
-            summary
-                [ if isSelected then
-                    class
-                        "selected"
-
-                  else
-                    class ""
-                ]
+            summary []
                 [ text (title ++ " [" ++ fromInt count ++ "]") ]
                 :: viewFeedEntries id now entries
         ]

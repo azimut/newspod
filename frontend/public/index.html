@@ -15,9 +15,17 @@
         }
       }
 
+      a:link {
+        color: var(--light-blue);
+      }
+      a:visited {
+        color: var(--deep-blue);
+      }
+
       body {
-        margin: 0;
         padding: 0;
+        max-width: 1080px;
+        margin: 0 auto;
         background-color: var(--darkness);
         color: var(--light);
       }
@@ -25,22 +33,6 @@
         body {
           background-color: var(--light);
           color: var(--darkness);
-        }
-      }
-
-      main {
-        max-width: 1080px;
-        margin: 0 auto;
-      }
-
-      .selected {
-        background-color: var(--light);
-        color: var(--darkness);
-      }
-      @media (prefers-color-scheme: light) {
-        .selected {
-          background-color: var(--darkness);
-          color: var(--light);
         }
       }
 
@@ -59,23 +51,19 @@
         flex-direction: column;
         justify-content: center;
       }
+      header span.pod {
+        color: hsl(24, 90%, 80%);
+      }
       div.searchbar {
         display: flex;
         flex-direction: row;
         justify-content: center;
-      }
-      header span.pod {
-        color: hsl(24, 90%, 80%);
       }
       form {
         margin: 0 0 0 0.5em;
         display: flex;
         flex-direction: column;
         justify-content: center;
-      }
-      .result-hint {
-        font-size: 0.3em;
-        font-family: monospace;
       }
       input[type="search"] {
         background-color: var(--light);
@@ -85,29 +73,50 @@
         border-radius: 0.1em;
         flex-grow: 0;
       }
+      .result-hint {
+        font-size: 0.3em;
+        font-family: monospace;
+      }
+
+      footer {
+        text-align: center;
+        padding: 1em 0em;
+      }
+
       details {
         border: 1px solid #aaa;
         border-radius: 5px;
         padding: 0.5em 0.5em 0;
       }
-      summary {
+      details summary {
         font-size: 3rem;
         font-weight: bold;
         margin: -0.5em -0.5em 0;
         padding: 0.5em;
         list-style: none;
       }
+      details[open] summary {
+        background-color: var(--light);
+        color: var(--darkness);
+      }
+      @media (prefers-color-scheme: light) {
+        details[open] summary {
+          background-color: var(--darkness);
+          color: var(--light);
+        }
+      }
+
       div.episode {
         padding: 1.2em 0.5em;
         overflow: auto;
+      }
+      div.episode:nth-child(even) {
+        background-color: hsl(24, 5%, 13%);
       }
       @media (prefers-color-scheme: light) {
         div.episode:nth-child(even) {
           background-color: lightgray;
         }
-      }
-      div.episode:nth-child(even) {
-        background-color: hsl(24, 5%, 13%);
       }
       div.episode-title {
         font-size: 2em;
@@ -126,16 +135,6 @@
         background-color: var(--light-blue);
         color: var(--darkness);
       }
-      a:link {
-        color: var(--light-blue);
-      }
-      a:visited {
-        color: var(--deep-blue);
-      }
-      footer {
-        text-align: center;
-        padding: 1em 0em;
-      }
     </style>
   </head>
   <body>
@@ -151,8 +150,13 @@
     </header>
     <main>
       <article>
+        <details open>
+          <summary>brief summary</summary>
+          this episode is about of stuff...
+        </details>
         <details>
-          <summary>asdjlajskd</summary>
+          <summary>other summary</summary>
+          this episode is about of stuff...
         </details>
       </article>
     </main>
