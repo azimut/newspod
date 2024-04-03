@@ -231,7 +231,15 @@ update msg ({ feeds, entries, search, now, state } as model) =
         -- TODO: check if already has details
         AskForDetails feedId entryId ->
             ( { model | entries = Dict.update feedId (Maybe.map (toggleEntryDetails entryId)) entries }
-            , askForEntryDetails (QuestionEntryDetails entryId search)
+            , askForEntryDetails
+                (QuestionEntryDetails entryId <|
+                    case state of
+                        ShowingResults ->
+                            search
+
+                        _ ->
+                            ""
+                )
             )
 
         NewDetails ({ feedid } as entryDetails) ->
