@@ -387,8 +387,8 @@ viewEntry feedId now { title, date, url, id, isShowingDetails, content } =
         [ div [ class "episode-title" ]
             [ text title ]
         , div [ class "episode-date" ]
-            [ a [ href url ]
-                [ time [] [ text <| inWords (millisToPosix date) now ] ]
+            [ time [] [ text <| inWords (millisToPosix date) now ]
+            , a [ href url ] [ text ".mp3" ]
             ]
         , div [ class "episode-content" ]
             [ if isShowingDetails then
