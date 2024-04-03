@@ -1,6 +1,6 @@
 # newspod
 
-From a list of RSS feeds. Generates an HTML page with direct links to audio fieles. Updated with Gitub Actions.
+From a list of RSS feeds. Generates a full text searchable HTML page with direct links to audio files, and a SQLite database to perform the searches. Update daily through *GitHub Actions*.
 
 ## Why?
 
