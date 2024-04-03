@@ -5,7 +5,6 @@ go 1.19
 require (
 	github.com/JohannesKaufmann/html-to-markdown v1.5.0
 	github.com/adrg/strutil v0.3.1
-	github.com/dustin/go-humanize v1.0.1
 	github.com/mattn/go-sqlite3 v1.14.22
 	github.com/mmcdole/gofeed v1.2.1
 )

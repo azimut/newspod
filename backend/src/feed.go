@@ -6,7 +6,6 @@ import (
 	md "github.com/JohannesKaufmann/html-to-markdown"
 	"github.com/adrg/strutil"
 	"github.com/adrg/strutil/metrics"
-	"github.com/dustin/go-humanize"
 	"github.com/mmcdole/gofeed"
 )
 
@@ -38,8 +37,6 @@ func (feed *Feed) Fetch() error {
 	for _, item := range rawFeed.Items {
 		entry := Entry{
 			Date:        *item.PublishedParsed,
-			HumanDate:   humanize.Time(*item.PublishedParsed),
-			MachineDate: item.PublishedParsed.Format("2006-01-02 15:04:03"),
 			Title:       itemTitle(item.Title, *feed),
 			Url:         itemUrl(*item),
 			Description: item.Description,

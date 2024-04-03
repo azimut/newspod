@@ -4,8 +4,6 @@ import "time"
 
 type Entry struct {
 	Date        time.Time
-	HumanDate   string
-	MachineDate string
 	Title       string
 	Url         string
 	Description string
