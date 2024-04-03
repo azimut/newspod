@@ -1,7 +1,9 @@
 package main
 
 import (
+	"context"
 	"strings"
+	"time"
 
 	md "github.com/JohannesKaufmann/html-to-markdown"
 	"github.com/adrg/strutil"
@@ -21,7 +23,11 @@ type Feed struct {
 }
 
 func (feed *Feed) Fetch() error {
-	rawFeed, err := gofeed.NewParser().ParseURL(feed.Url)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
+	defer cancel()
+
+	rawFeed, err := gofeed.NewParser().ParseURLWithContext(feed.Url, ctx)
 	if err != nil {
 		return err
 	}
