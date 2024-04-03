@@ -413,21 +413,28 @@ viewHeader search mNResults =
                     []
                 ]
             ]
-        , div [ class "result-hint" ]
-            [ case mNResults of
-                Nothing ->
-                    text ""
-
-                Just 0 ->
-                    text "no results found :("
-
-                Just 1 ->
-                    text "1 result found"
-
-                Just n ->
-                    text (fromInt n ++ " results found")
-            ]
+        , viewResultHint mNResults
         ]
+
+
+viewResultHint : Maybe Int -> Html Msg
+viewResultHint maybeResults =
+    case maybeResults of
+        Nothing ->
+            div [] []
+
+        Just n ->
+            div [ class "result-hint" ]
+                [ case n of
+                    0 ->
+                        text "no results found :("
+
+                    1 ->
+                        text "1 result found"
+
+                    _ ->
+                        text (fromInt n ++ " results found")
+                ]
 
 
 viewFooter : Html Msg
