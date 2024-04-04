@@ -38,12 +38,12 @@ func initDb() (*sql.DB, error) {
 func initTables(db *sql.DB) error {
 	initStmt := `
     pragma journal_mode = delete;
-    pragma page_size = 1024;
+    pragma page_size    = 1024;
 
     create table feeds (
         id          integer not null primary key,
         title       text,
-        url         text,
+        url         text not null,
         description text
     ) strict;
 
@@ -52,7 +52,7 @@ func initTables(db *sql.DB) error {
         feedid      integer not null,
         datemillis  integer not null,
         title       text,
-        url         text,
+        url         text    not null,
         foreign key(feedid) references feeds(id)
     ) strict;
     create index entriesindex on entries(feedid);
