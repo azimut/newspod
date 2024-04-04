@@ -82,14 +82,15 @@
       }
       div.some-results {
         font-family: monospace;
-        margin: 0 auto;
-        padding: 0 0 1.5em 0;
         font-size: 1.8em;
+        margin: 0 auto;
+        padding: 0 0 1.5em 0; /* need to push down due grow of open description */
+        text-wrap: nowrap; /* needed for chrome... */
       }
       div.no-results {
-        margin: 0 auto;
         font-family: monospace;
         font-size: 2.45em;
+        margin: 0 auto;
       }
       details {
         border: 1px solid #aaa;
@@ -118,7 +119,7 @@
 
       div.episode {
         padding: 1.2em 0.5em;
-        overflow: auto;
+        overflow: auto; /* needed for chrome, otherwise links would change the box layout */
       }
       div.episode:nth-child(even) {
         background-color: hsl(24, 5%, 13%);

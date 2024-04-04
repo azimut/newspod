@@ -475,8 +475,7 @@ view { feeds, entries, search, state, now } =
                                         fromInt nResults ++ " results found"
                         in
                         main_ [] <|
-                            div [ class "some-results" ]
-                                [ text message ]
+                            div [ class "some-results" ] [ text message ]
                                 :: List.map
                                     (\feed -> viewFeed feed state now entries)
                                     filteredFeeds
