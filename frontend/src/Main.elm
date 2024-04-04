@@ -60,7 +60,7 @@ type alias Entry =
 type State
     = Starting
     | Idle
-    | WaitingForSearch
+    | WaitingForResults
     | ShowingResults
 
 
@@ -133,8 +133,8 @@ init _ =
     )
 
 
-newEntry : NewEntry -> Entry
-newEntry { id, feedid, title, date, url } =
+toEntry : NewEntry -> Entry
+toEntry { id, feedid, title, date, url } =
     { id = id
     , feedid = feedid
     , title = title
@@ -151,10 +151,10 @@ toFeed { id, title, nEntries } =
 
 
 toggleEntryDetails : Int -> List Entry -> List Entry
-toggleEntryDetails id =
+toggleEntryDetails entryId =
     List.map
         (\entry ->
-            if entry.id == id then
+            if entry.id == entryId then
                 { entry | isShowingDetails = not entry.isShowingDetails }
 
             else
@@ -182,10 +182,13 @@ fillDetails eDetails =
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
-update msg ({ feeds, entries, search, now, state } as model) =
+update msg ({ feeds, entries, search, state } as model) =
     case msg of
         InitFeeds iFeeds ->
-            ( Model (List.map toFeed iFeeds) Dict.empty "" 0 Idle now
+            ( { model
+                | feeds = List.map toFeed iFeeds
+                , state = Idle
+              }
             , Cmd.none
             )
 
@@ -211,7 +214,7 @@ update msg ({ feeds, entries, search, now, state } as model) =
                 ( model, Cmd.none )
 
             else
-                ( { model | state = WaitingForSearch }, askForSearch search )
+                ( { model | state = WaitingForResults }, askForSearch search )
 
         NewSearchResults es ->
             ( newSearchResults model es, Cmd.none )
@@ -231,7 +234,7 @@ update msg ({ feeds, entries, search, now, state } as model) =
                     model
 
                 entry :: _ ->
-                    { model | entries = Dict.insert entry.feedid (List.map newEntry es) entries }
+                    { model | entries = Dict.insert entry.feedid (List.map toEntry es) entries }
             , Cmd.none
             )
 
@@ -295,7 +298,7 @@ newSearchResults model nEntries =
                         )
                 )
                 Dict.empty
-                (List.map newEntry nEntries)
+                (List.map toEntry nEntries)
     in
     { model | feeds = feeds, entries = entries, state = ShowingResults }
 
@@ -442,7 +445,7 @@ view { feeds, entries, search, state, now } =
                 , viewFooter
                 ]
 
-        WaitingForSearch ->
+        WaitingForResults ->
             div []
                 [ viewHeader search
                 , div [ class "loader" ]
