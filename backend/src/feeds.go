@@ -4,8 +4,6 @@ import (
 	"sort"
 )
 
-const DB_NAME = "./feeds.db"
-
 type Feeds []Feed
 
 func (a Feeds) Less(i, j int) bool {
@@ -33,17 +31,4 @@ func (feeds Feeds) Sort() {
 		sort.Sort(feeds[i].Entries)
 	}
 	sort.Sort(feeds)
-}
-
-func (feeds Feeds) Save() error {
-	db, err := initDb()
-	if err != nil {
-		return err
-	}
-	defer db.Close()
-	err = insertFeedsAndEntries(db, feeds)
-	if err != nil {
-		return err
-	}
-	return nil
 }

@@ -8,7 +8,7 @@ import (
 var testFile = "./testdata/1.json"
 
 func TestReadJsonFeeds(t *testing.T) {
-	feeds, err := readJsonFeeds(testFile)
+	feeds, err := LoadJson(testFile)
 	if err != nil {
 		t.Errorf("could not parse file `%s`, %v", testFile, err)
 	}

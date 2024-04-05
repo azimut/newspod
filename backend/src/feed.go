@@ -2,6 +2,9 @@ package main
 
 import (
 	"context"
+	"database/sql"
+	"fmt"
+	"net/http"
 	"strings"
 	"time"
 
@@ -12,14 +15,126 @@ import (
 )
 
 type Feed struct {
-	Entries        Entries
-	RawTitle       string
+	Url            string   `json:"url"`
 	Title          string   `json:"title"`
 	TrimPrefixes   []string `json:"trim_prefixes"`
 	TrimSuffixes   []string `json:"trim_suffixes"`
 	ContentEndMark []string `json:"content_end_mark"`
-	Description    string
-	Url            string `json:"url"`
+
+	RawId           int
+	RawEtag         string
+	RawLastModified string
+	RawLastFetch    time.Time
+
+	Entries     Entries
+	RawTitle    string
+	Description string
+}
+
+// persistEtag updates etag value on feeds_metadata table
+// assumes there is already an entry for feedid
+func persistEtag(db *sql.DB, id int, etag string) error {
+	query := `
+    UPDATE feeds_metadata
+       SET etag = ?
+     WHERE feedid = ?
+    `
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+
+	stmt_update, err := tx.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt_update.Close()
+
+	_, err = stmt_update.Exec(etag, id)
+	if err != nil {
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// persistEtag updates lastmodified value on feeds_metadata table
+// assumes there is already an entry for feedid
+func persistLastModified(db *sql.DB, id int, lastmodified string) error {
+	query := `
+    UPDATE feeds_metadata
+       SET lastmodified = ?
+     WHERE feedid = ?
+    `
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+
+	stmt_update, err := tx.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt_update.Close()
+
+	_, err = stmt_update.Exec(lastmodified, id)
+	if err != nil {
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (feed *Feed) UpdateMetadata(db *sql.DB) error {
+	res, err := http.Head(feed.Url)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("%+v\n", res.Header) // output for debug
+
+	etags, ok := res.Header["Etag"]
+	if ok && len(etags) > 0 {
+		fmt.Printf("found an etag (%s) for url (%s)\n", etags[0], feed.Url)
+		fmt.Println("old etag: ", feed.RawEtag)
+		if feed.RawEtag == etags[0] {
+			return fmt.Errorf("same etag (%s), skipping feed (%s)", feed.RawEtag, feed.Url)
+		} else {
+			err = persistEtag(db, feed.RawId, etags[0])
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	lastmodified, ok := res.Header["Last-Modified"]
+	if ok && len(lastmodified) > 0 {
+		fmt.Printf("found an last-modified (%s) for url (%s)\n", lastmodified[0], feed.Url)
+		fmt.Println("old last-modified: ", feed.RawLastModified)
+		if feed.RawLastModified == lastmodified[0] {
+			return fmt.Errorf(
+				"same last-modified (%s), skipping feed (%s)",
+				feed.RawLastModified,
+				feed.Url,
+			)
+		} else {
+			err = persistLastModified(db, feed.RawId, lastmodified[0])
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }
 
 func (feed *Feed) Fetch() error {

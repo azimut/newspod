@@ -5,35 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 )
-
-func initDb() (*sql.DB, error) {
-
-	_, err := os.Stat(DB_NAME)
-	if errors.Is(err, os.ErrNotExist) {
-		fmt.Printf("db (%s) does NOT exists, creating...", DB_NAME)
-	} else if err == nil {
-		fmt.Printf("db (%s) exists, deleting...", DB_NAME)
-		err = os.Remove(DB_NAME)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	db, err := sql.Open("sqlite3", DB_NAME)
-	if err != nil {
-		return nil, err
-	}
-
-	err = initTables(db)
-	if err != nil {
-		return nil, err
-	}
-
-	return db, nil
-}
 
 func initTables(db *sql.DB) error {
 	initStmt := `
@@ -43,9 +18,18 @@ func initTables(db *sql.DB) error {
     create table feeds (
         id          integer not null primary key,
         title       text,
-        url         text not null,
+        url         text    not null unique,
         description text
     ) strict;
+
+    create table feeds_metadata (
+      feedid       integer not null unique,
+      lastfetch    integer not null default 0,
+      lastmodified text    not null default "",
+      etag         text    not null default "",
+      foreign key(feedid) references feeds(id)
+    ) strict;
+    create index feedsmetaindex on feeds_metadata(feedid);
 
     create table entries (
         id          integer not null primary key,
@@ -87,6 +71,11 @@ func insertFeedsAndEntries(db *sql.DB, feeds Feeds) error {
 		return err
 	}
 	defer stmt_feeds.Close()
+	stmt_feeds_meta, err := tx.Prepare("insert into feeds_metadata(feedid) values(?)")
+	if err != nil {
+		return err
+	}
+	defer stmt_feeds_meta.Close()
 	stmt_entry, err := tx.Prepare(
 		"insert into entries(feedid,datemillis,title,url) values(?,?,?,?)",
 	)
@@ -103,6 +92,10 @@ func insertFeedsAndEntries(db *sql.DB, feeds Feeds) error {
 	defer stmt_entry_content.Close()
 	for feedid, feed := range feeds {
 		_, err = stmt_feeds.Exec(feedid, feed.Title, feed.Url, feed.Description)
+		if err != nil {
+			return err
+		}
+		_, err = stmt_feeds_meta.Exec(feedid)
 		if err != nil {
 			return err
 		}
@@ -159,4 +152,65 @@ func insertSearch(db *sql.DB) error {
 		return err
 	}
 	return nil
+}
+
+// LoadDb loads bare minum data from a sqlite db, if exits, into Feeds
+func LoadDb(db *sql.DB) (feeds Feeds, err error) {
+	rows, err := db.Query(`
+      SELECT feeds.id,
+             feeds.url,
+             feeds_metadata.lastfetch,
+             feeds_metadata.lastmodified,
+             feeds_metadata.etag
+        FROM feeds
+        JOIN feeds_metadata ON feeds.id=feeds_metadata.feedid
+    `)
+	if err != nil {
+		return nil, err
+	}
+
+	var id, lastfetch int
+	var url, lastmodified, etag string
+	for rows.Next() {
+		err = rows.Scan(&id, &url, &lastfetch, &lastmodified, &etag)
+		if err != nil {
+			return nil, err
+		}
+		feed := Feed{
+			Url:             url,
+			RawId:           id,
+			RawEtag:         etag,
+			RawLastFetch:    time.Unix(int64(lastfetch), 0),
+			RawLastModified: lastmodified,
+		}
+		feeds = append(feeds, feed)
+	}
+
+	return
+}
+
+func InitDB(dbname string) (db *sql.DB, err error) {
+	alreadyExits := true
+	_, err = os.Stat(dbname)
+	if errors.Is(err, os.ErrNotExist) {
+		fmt.Printf("db (%s) does not exits, creating\n", dbname)
+		alreadyExits = false
+	}
+
+	db, err = sql.Open("sqlite3", dbname)
+	if err != nil {
+		return nil, err
+	}
+
+	if !alreadyExits {
+		err = initTables(db)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return
+}
+
+func (feeds Feeds) Save(db *sql.DB) error {
+	return insertFeedsAndEntries(db, feeds)
 }
