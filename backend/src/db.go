@@ -36,7 +36,7 @@ func initTables(db *sql.DB) error {
         feedid      integer not null,
         datemillis  integer not null,
         title       text,
-        url         text    not null,
+        url         text    not null unique,
         foreign key(feedid) references feeds(id)
     ) strict;
     create index entriesindex on entries(feedid);
@@ -61,93 +61,35 @@ func initTables(db *sql.DB) error {
 	return nil
 }
 
-func insertFeedsAndEntries(db *sql.DB, feeds Feeds) error {
+// insertSearch populates `search` table.
+// Assumes there are already `entries_content` on the db.
+func insertSearch(db *sql.DB, lastentryid int) error {
 	tx, err := db.Begin()
 	if err != nil {
 		return err
 	}
-	stmt_feeds, err := tx.Prepare("insert into feeds(id,title,url,description) values(?,?,?,?)")
+	stmt, err := tx.Prepare(`
+    insert into search
+    select entriesid,content
+      from entries_content
+     where entriedid > ?;
+    `)
 	if err != nil {
 		return err
 	}
-	defer stmt_feeds.Close()
-	stmt_feeds_meta, err := tx.Prepare("insert into feeds_metadata(feedid) values(?)")
+	defer stmt.Close()
+	_, err = stmt.Exec(lastentryid)
 	if err != nil {
 		return err
-	}
-	defer stmt_feeds_meta.Close()
-	stmt_entry, err := tx.Prepare(
-		"insert into entries(feedid,datemillis,title,url) values(?,?,?,?)",
-	)
-	if err != nil {
-		return err
-	}
-	defer stmt_entry.Close()
-	stmt_entry_content, err := tx.Prepare(
-		"insert into entries_content(entriesid,content) values(?,?)",
-	)
-	if err != nil {
-		return err
-	}
-	defer stmt_entry_content.Close()
-	for feedid, feed := range feeds {
-		_, err = stmt_feeds.Exec(feedid, feed.Title, feed.Url, feed.Description)
-		if err != nil {
-			return err
-		}
-		_, err = stmt_feeds_meta.Exec(feedid)
-		if err != nil {
-			return err
-		}
-		for _, entry := range feed.Entries {
-			// entries
-			res, err := stmt_entry.Exec(
-				feedid,
-				entry.Date.UnixMilli(),
-				entry.Title,
-				entry.Url,
-			)
-			if err != nil {
-				return err
-			}
-			// entries_content
-			entryid, err := res.LastInsertId()
-			if err != nil {
-				return err
-			}
-			_, err = stmt_entry_content.Exec(
-				entryid,
-				entry.Content,
-			)
-			if err != nil {
-				return err
-			}
-		}
 	}
 	err = tx.Commit()
 	if err != nil {
 		return err
 	}
-
-	err = insertSearch(db)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// insertSearch populates `search` table.
-// Assumes there are already `entries_content` on the db.
-func insertSearch(db *sql.DB) error {
 	sqlStmt := `
-    insert into search
-    select entriesid,content
-      from entries_content;
     insert into search(search) values('optimize');
-    vacuum;
-    `
-	_, err := db.Exec(sqlStmt)
+    vacuum;`
+	_, err = db.Exec(sqlStmt)
 	if err != nil {
 		return err
 	}
@@ -212,5 +154,105 @@ func InitDB(dbname string) (db *sql.DB, err error) {
 }
 
 func (feeds Feeds) Save(db *sql.DB) error {
-	return insertFeedsAndEntries(db, feeds)
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	stmt_feeds, err := tx.Prepare("insert into feeds(title,url,description) values(?,?,?)")
+	if err != nil {
+		return err
+	}
+	defer stmt_feeds.Close()
+	stmt_feeds_meta_init, err := tx.Prepare("insert into feeds_metadata(feedid) values(?)")
+	if err != nil {
+		return err
+	}
+	defer stmt_feeds_meta_init.Close()
+	stmt_entry, err := tx.Prepare(
+		"insert into entries(feedid,datemillis,title,url) values(?,?,?,?)",
+	)
+	if err != nil {
+		return err
+	}
+	defer stmt_entry.Close()
+	stmt_entry_content, err := tx.Prepare(
+		"insert into entries_content(entriesid,content) values(?,?)",
+	)
+	if err != nil {
+		return err
+	}
+	defer stmt_entry_content.Close()
+	stmt_feeds_meta_update, err := tx.Prepare(`
+    UPDATE feeds_metadata
+       SET lastfetch = strftime('%s'), lastmodified = ?, etag = ?
+     WHERE feedid = ?
+    `)
+	if err != nil {
+		return err
+	}
+	defer stmt_feeds_meta_update.Close()
+
+	lastEntryId := 0
+	for _, feed := range feeds {
+		effectiveFeedId := feed.RawId
+		if feed.RawLastFetch.IsZero() { // first time seen
+			res, err := stmt_feeds.Exec(feed.Title, feed.Url, feed.Description)
+			if err != nil {
+				return err
+			}
+			tmp, err := res.LastInsertId()
+			if err != nil {
+				return err
+			}
+			effectiveFeedId = int(tmp)
+			_, err = stmt_feeds_meta_init.Exec(effectiveFeedId)
+			if err != nil {
+				return err
+			}
+		}
+
+		_, err = stmt_feeds_meta_update.Exec(feed.RawLastModified, feed.RawEtag, effectiveFeedId)
+		if err != nil {
+			return err
+		}
+
+		for _, entry := range feed.Entries {
+			// entries
+			res, err := stmt_entry.Exec(
+				effectiveFeedId,
+				entry.Date.UnixMilli(),
+				entry.Title,
+				entry.Url,
+			)
+			if err != nil {
+				continue // skip content add
+			}
+			// entries_content
+			lastEntryId, err := res.LastInsertId()
+			if err != nil {
+				return err
+			}
+			_, err = stmt_entry_content.Exec(
+				lastEntryId,
+				entry.Content,
+			)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+
+	if lastEntryId > 0 {
+		err = insertSearch(db, lastEntryId)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

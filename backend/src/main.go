@@ -24,19 +24,13 @@ func main() {
 	feeds := Feeds{}
 	for _, feed_json := range feeds_json {
 		fmt.Printf("processing json feed (%s)\n", feed_json.Url)
-		keep := true
 		for _, feed_db := range feeds_db {
 			if feed_db.Url == feed_json.Url {
-				if err = feed_db.UpdateMetadata(db); err != nil {
-					keep = false
-					fmt.Printf("dropping feed with error (%v)\n", err)
-				} else {
-					fmt.Printf("to be added feed (%s)\n", feed_db.Url)
-				}
+				feed_json.RawId = feed_db.RawId
+				feed_json.RawEtag = feed_db.RawEtag
+				feed_json.RawLastFetch = feed_db.RawLastFetch
+				feed_json.RawLastModified = feed_db.RawLastModified
 			}
-		}
-		if !keep {
-			continue
 		}
 		fmt.Printf("adding feed: %s\n", feed_json.Url)
 		feeds = append(feeds, feed_json)
