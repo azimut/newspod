@@ -39,8 +39,12 @@ func (feed *Feed) FetchMetadata() (err error) {
 
 	etags, ok := res.Header["Etag"]
 	if ok && len(etags) > 0 {
-		fmt.Printf("found an etag (%s) for url (%s)\n", etags[0], feed.Url)
-		fmt.Println("old etag: ", feed.RawEtag)
+		fmt.Printf(
+			"found an etag (%s) for url (%s), old value (%s)\n",
+			etags[0],
+			feed.Url,
+			feed.RawEtag,
+		)
 		if feed.RawEtag == etags[0] {
 			return fmt.Errorf("same etag (%s), skipping feed (%s)", feed.RawEtag, feed.Url)
 		}
@@ -49,8 +53,12 @@ func (feed *Feed) FetchMetadata() (err error) {
 
 	lastmodified, ok := res.Header["Last-Modified"]
 	if ok && len(lastmodified) > 0 {
-		fmt.Printf("found an last-modified (%s) for url (%s)\n", lastmodified[0], feed.Url)
-		fmt.Println("old last-modified: ", feed.RawLastModified)
+		fmt.Printf(
+			"found an last-modified (%s) for url (%s), old value (%s)\n",
+			lastmodified[0],
+			feed.Url,
+			feed.RawLastModified,
+		)
 		if feed.RawLastModified == lastmodified[0] {
 			return fmt.Errorf(
 				"same last-modified (%s), skipping feed (%s)",
@@ -68,7 +76,7 @@ func (feed *Feed) Fetch() error {
 
 	err := feed.FetchMetadata()
 	if err != nil {
-		fmt.Printf("dropping feed with error (%v)\n", err)
+		fmt.Printf("skipping feed fetch with reason (%v)\n", err)
 		return nil
 	}
 

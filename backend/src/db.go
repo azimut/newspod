@@ -61,41 +61,6 @@ func initTables(db *sql.DB) error {
 	return nil
 }
 
-// insertSearch populates `search` table.
-// Assumes there are already `entries_content` on the db.
-func insertSearch(db *sql.DB, lastentryid int) error {
-	tx, err := db.Begin()
-	if err != nil {
-		return err
-	}
-	stmt, err := tx.Prepare(`
-    insert into search
-    select entriesid,content
-      from entries_content
-     where entriedid > ?;
-    `)
-	if err != nil {
-		return err
-	}
-	defer stmt.Close()
-	_, err = stmt.Exec(lastentryid)
-	if err != nil {
-		return err
-	}
-	err = tx.Commit()
-	if err != nil {
-		return err
-	}
-	sqlStmt := `
-    insert into search(search) values('optimize');
-    vacuum;`
-	_, err = db.Exec(sqlStmt)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 // LoadDb loads bare minum data from a sqlite db, if exits, into Feeds
 func LoadDb(db *sql.DB) (feeds Feeds, err error) {
 	rows, err := db.Query(`
@@ -154,6 +119,7 @@ func InitDB(dbname string) (db *sql.DB, err error) {
 }
 
 func (feeds Feeds) Save(db *sql.DB) error {
+	fmt.Println("starting db save...")
 	tx, err := db.Begin()
 	if err != nil {
 		return err
@@ -182,6 +148,11 @@ func (feeds Feeds) Save(db *sql.DB) error {
 		return err
 	}
 	defer stmt_entry_content.Close()
+	stmt_entry_search, err := tx.Prepare("INSERT INTO search(entriesid,content) VALUES (?,?)")
+	if err != nil {
+		return err
+	}
+	defer stmt_entry_search.Close()
 	stmt_feeds_meta_update, err := tx.Prepare(`
     UPDATE feeds_metadata
        SET lastfetch = strftime('%s'), lastmodified = ?, etag = ?
@@ -192,7 +163,6 @@ func (feeds Feeds) Save(db *sql.DB) error {
 	}
 	defer stmt_feeds_meta_update.Close()
 
-	lastEntryId := 0
 	for _, feed := range feeds {
 		effectiveFeedId := feed.RawId
 		if feed.RawLastFetch.IsZero() { // first time seen
@@ -239,6 +209,13 @@ func (feeds Feeds) Save(db *sql.DB) error {
 			if err != nil {
 				return err
 			}
+			_, err = stmt_entry_search.Exec(
+				lastEntryId,
+				entry.Content,
+			)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
@@ -247,12 +224,13 @@ func (feeds Feeds) Save(db *sql.DB) error {
 		return err
 	}
 
-	if lastEntryId > 0 {
-		err = insertSearch(db, lastEntryId)
-		if err != nil {
-			return err
-		}
+	sqlStmt := `
+    insert into search(search) values('optimize');
+    vacuum;`
+	_, err = db.Exec(sqlStmt)
+	if err != nil {
+		return err
 	}
-
+	fmt.Println("...save done!")
 	return nil
 }
