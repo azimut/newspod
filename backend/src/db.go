@@ -225,8 +225,8 @@ func (feeds Feeds) Save(db *sql.DB) error {
 	}
 
 	sqlStmt := `
-    insert into search(search) values('optimize');
-    vacuum;`
+	insert into search(search) values('optimize');
+	vacuum;`
 	_, err = db.Exec(sqlStmt)
 	if err != nil {
 		return err

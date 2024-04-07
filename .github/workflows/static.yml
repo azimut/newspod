@@ -26,6 +26,10 @@ jobs:
           go-version: '1.19'
           cache-dependency-path: |
             backend/go.sum
+      - uses: actions/cache@v4
+        with:
+          path: feeds.db
+          key: feeds-static-site
       - run: make
       - uses: actions/configure-pages@v4
       - uses: actions/upload-pages-artifact@v3 # !!!
