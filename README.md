@@ -4,4 +4,8 @@ From a list of RSS feeds. Generates a static site where you can perform full tex
 
 ## Why?
 
-I want to have quick access to podcasts in my phone. But I cannot use an App.
+I want to have quick access to podcasts in my phone. But I cannot use/don't care about using an app.
+
+## Build your own!
+
+It should be possible to host your own podcast feed. Just fork and change `feeds.json` with the feeds that YOU want to keep track of. Of course you can also PR if you found a really an interesting podcast I should keep track of (preferably but not limited to tech related stuff).
