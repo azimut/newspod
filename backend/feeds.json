@@ -1,5 +1,43 @@
 {
   "feeds": [
+    { "url": "https://podcast.thinkingelixir.com/rss" },
+    { "url": "https://feed.podbean.com/sardonicast/feed.xml" },
+    {
+      "title": "Haskell Interlude",
+      "url": "https://feeds.buzzsprout.com/1817535.rss"
+    },
+    {
+      "title": "Happy Path Programming",
+      "url": "https://anchor.fm/s/2ed56aa0/podcast/rss"
+    },
+    {
+      "title": "Backend Banter",
+      "url": "https://anchor.fm/s/f39e007c/podcast/rss"
+    },
+    { "url": "https://feeds.mozilla-podcasts.org/irl" },
+    { "url": "https://omny.fm/shows/future-of-coding/playlists/podcast.rss" },
+    {
+      "title": "Super Data Science",
+      "url": "https://feeds.soundcloud.com/users/soundcloud:users:253585900/sounds.rss"
+    },
+    {
+      "title": "Meet the Hackers (Ekoparty)",
+      "url": "https://anchor.fm/s/6728bde4/podcast/rss"
+    },
+    { "url": "https://haskellweekly.news/podcast.rss" },
+    {
+      "title": "Tao del Hacking",
+      "url": "https://anchor.fm/s/6367c358/podcast/rss"
+    },
+    {
+      "title": "Critical Thinking - Bug Bounty",
+      "url": "https://media.rss.com/ctbbpodcast/feed.xml"
+    },
+    {
+      "title": "The Art of Network Engineering",
+      "url": "https://feeds.buzzsprout.com/2127872.rss"
+    },
+    { "url": "https://www.smashingsecurity.com/rss" },
     { "url": "https://feeds.simplecast.com/L9810DOa" },
     { "url": "https://anchor.fm/s/43c9b024/podcast/rss" },
     { "url": "https://elm-radio.com/feed.xml" },
