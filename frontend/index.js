@@ -78,7 +78,7 @@ export async function search(dbarg, needle) {
                  entries.datemillis
             FROM search
             JOIN entries ON search.entriesid=entries.id
-           WHERE search.content MATCH $match
+           WHERE search MATCH $match
            ORDER BY entries.feedid,entries.id DESC`,
     bind: {$match: needle},
     callback: (msg) => {
@@ -102,11 +102,11 @@ export async function getEntryDetails(dbarg, entryId, needle) {
   let result;
   if (needle && typeof needle === "string" && needle.length > 0) {
     await db('exec', {
-      sql: `SELECT entries.feedid, highlight(search,1,'\`\`\`','\`\`\`')
+      sql: `SELECT entries.feedid, highlight(search,2,'\`\`\`','\`\`\`')
               FROM entries
               JOIN search ON entries.id=search.entriesid
              WHERE entries.id=$eid
-               AND search.content MATCH $needle`,
+               AND search MATCH $needle`,
       bind: {$eid: entryId, $needle: needle},
       callback: (msg) => {
         if (msg.row) {
