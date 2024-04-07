@@ -21,7 +21,7 @@
       "url": "https://feeds.soundcloud.com/users/soundcloud:users:253585900/sounds.rss"
     },
     {
-      "title": "Meet the Hackers (Ekoparty)",
+      "title": "Meet the Hackers",
       "url": "https://anchor.fm/s/6728bde4/podcast/rss"
     },
     { "url": "https://haskellweekly.news/podcast.rss" },
@@ -30,7 +30,7 @@
       "url": "https://anchor.fm/s/6367c358/podcast/rss"
     },
     {
-      "title": "Critical Thinking - Bug Bounty",
+      "title": "Critical Thinking",
       "url": "https://media.rss.com/ctbbpodcast/feed.xml"
     },
     {
@@ -44,7 +44,10 @@
     { "url": "https://feeds.simplecast.com/8tQUlnkG" },
     { "url": "https://pod.link/developer-voices.rss" },
     { "url": "https://feeds.megaphone.fm/clickhere" },
-    { "url": "https://feeds.simplecast.com/gvtxUiIf" },
+    {
+      "title": "HanselMinutes",
+      "url": "https://feeds.simplecast.com/gvtxUiIf"
+    },
     { "url": "https://leanpub.com/podcasts/frontmatter/podcast.xml" },
     {
       "url": "https://feeds.soundcloud.com/users/soundcloud:users:220484243/sounds.rss"
