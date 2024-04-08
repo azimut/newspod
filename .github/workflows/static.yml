@@ -28,7 +28,7 @@ jobs:
             backend/go.sum
       - uses: actions/cache@v4
         with:
-          path: feeds.db
+          path: backend/feeds.db
           key: feeds-static-site
       - run: make
       - uses: actions/configure-pages@v4
