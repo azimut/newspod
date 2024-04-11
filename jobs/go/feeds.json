@@ -1,6 +1,10 @@
 {
   "feeds": [
     {
+      "title": "Streaming Audio",
+      "url": "https://feeds.buzzsprout.com/186154.rss"
+    },
+    {
       "url": "https://podcast.thinkingelixir.com/rss",
       "content_exclude": [
         {
