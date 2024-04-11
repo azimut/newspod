@@ -1,6 +1,14 @@
 {
   "feeds": [
-    { "url": "https://podcast.thinkingelixir.com/rss" },
+    {
+      "url": "https://podcast.thinkingelixir.com/rss",
+      "content_exclude": [
+        {
+          "from": "**Elixir Community News",
+          "to": "**"
+        }
+      ]
+    },
     { "url": "https://feed.podbean.com/sardonicast/feed.xml" },
     {
       "title": "Haskell Interlude",

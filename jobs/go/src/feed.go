@@ -13,12 +13,18 @@ import (
 	"github.com/mmcdole/gofeed"
 )
 
+type Address struct {
+	From string `json:"from"`
+	To   string `json:"to"`
+}
+
 type Feed struct {
-	Url            string   `json:"url"`
-	Title          string   `json:"title"`
-	TrimPrefixes   []string `json:"trim_prefixes"`
-	TrimSuffixes   []string `json:"trim_suffixes"`
-	ContentEndMark []string `json:"content_end_mark"`
+	Url            string    `json:"url"`
+	Title          string    `json:"title"`
+	TrimPrefixes   []string  `json:"trim_prefixes"`
+	TrimSuffixes   []string  `json:"trim_suffixes"`
+	ContentEndMark []string  `json:"content_end_mark"`
+	ContentExclude []Address `json:"content_exclude"`
 
 	RawId           int
 	RawEtag         string
@@ -139,6 +145,24 @@ func (feed *Feed) Fetch() error {
 		for _, mark := range feed.ContentEndMark {
 			before, _, _ := strings.Cut(entry.Content, mark)
 			entry.Content = before
+		}
+		for _, addr := range feed.ContentExclude {
+			from_line := -1
+			to_line := -1
+			new_content := make([]string, 0)
+			for nline, line := range strings.Split(entry.Content, "\n") {
+				if strings.HasPrefix(line, addr.From) && from_line == -1 {
+					from_line = nline
+				} else if strings.HasPrefix(line, addr.To) && to_line == -1 {
+					to_line = nline
+				}
+				if (from_line < 0 && to_line < 0) || (from_line >= 0 && to_line >= 0) {
+					new_content = append(new_content, line)
+				}
+			}
+			if from_line >= 0 && to_line >= 0 {
+				entry.Content = strings.Join(new_content, "\n")
+			}
 		}
 		feed.Entries = append(feed.Entries, entry)
 	}
