@@ -29,6 +29,7 @@ type alias Model =
     { feeds : List Feed
     , entries : Dict Int (List Entry)
     , search : String
+    , currentSearch : Maybe String
     , nResults : Int
     , state : State
     , now : Time.Posix
@@ -128,7 +129,7 @@ port receiveInitFeeds : (List InitFeed -> msg) -> Sub msg
 
 init : flags -> ( Model, Cmd Msg )
 init _ =
-    ( Model [] Dict.empty "" 0 Starting (millisToPosix 0)
+    ( Model [] Dict.empty "" Nothing 0 Starting (millisToPosix 0)
     , Task.perform InitClock Time.now
     )
 
@@ -201,6 +202,7 @@ update msg ({ feeds, entries, search, state } as model) =
                     | feeds = List.map (\feed -> { feed | isVisible = True, isSelected = False }) feeds
                     , entries = Dict.empty
                     , state = Idle
+                    , currentSearch = Nothing
                     , search = ""
                   }
                 , Cmd.none
@@ -214,7 +216,12 @@ update msg ({ feeds, entries, search, state } as model) =
                 ( model, Cmd.none )
 
             else
-                ( { model | state = WaitingForResults }, askForSearch search )
+                ( { model
+                    | state = WaitingForResults
+                    , currentSearch = Just search
+                  }
+                , askForSearch search
+                )
 
         NewSearchResults es ->
             ( newSearchResults model es, Cmd.none )
@@ -243,12 +250,7 @@ update msg ({ feeds, entries, search, state } as model) =
             ( { model | entries = Dict.update feedId (Maybe.map (toggleEntryDetails entryId)) entries }
             , askForEntryDetails
                 (QuestionEntryDetails entryId <|
-                    case state of
-                        ShowingResults ->
-                            search
-
-                        _ ->
-                            ""
+                    Maybe.withDefault "" model.currentSearch
                 )
             )
 
