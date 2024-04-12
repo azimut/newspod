@@ -1,5 +1,10 @@
 {
   "feeds": [
+    { "url": "https://feeds.resonaterecordings.com/software-unscripted" },
+    {
+      "title": "Algorithms + DS = Programs",
+      "url": "https://feeds.buzzsprout.com/1501960.rss"
+    },
     {
       "title": "Streaming Audio",
       "url": "https://feeds.buzzsprout.com/186154.rss"
