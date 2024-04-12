@@ -401,22 +401,20 @@ viewEntry feedId now { title, date, url, id, isShowingDetails, content } =
 viewHeader : String -> Html Msg
 viewHeader search =
     header []
-        [ div [ class "searchbar" ]
-            [ text "news"
-            , span [ class "pod" ] [ text "pod" ]
-            , form [ onSubmit AskForSearch ]
-                [ input
-                    [ type_ "search"
-                    , placeholder "search..."
-                    , value search
-                    , onInput NewInput
-                    , minlength 3
-                    , maxlength 30
-                    , size 12
-                    , autofocus True
-                    ]
-                    []
+        [ text "news"
+        , span [ class "pod" ] [ text "pod" ]
+        , form [ onSubmit AskForSearch ]
+            [ input
+                [ type_ "search"
+                , placeholder "search..."
+                , value search
+                , onInput NewInput
+                , minlength 3
+                , maxlength 30
+                , size 12
+                , autofocus True
                 ]
+                []
             ]
         ]
 
@@ -424,10 +422,8 @@ viewHeader search =
 viewFooter : Html Msg
 viewFooter =
     footer []
-        [ div []
-            [ a [ href "https://github.com/azimut/newspod" ]
-                [ text "source code" ]
-            ]
+        [ a [ href "https://github.com/azimut/newspod" ]
+            [ text "source code" ]
         ]
 
 
