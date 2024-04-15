@@ -261,15 +261,15 @@ update msg ({ feeds, entries, search, state } as model) =
 
 
 newSearchResults : Model -> List NewEntry -> Model
-newSearchResults model nEntries =
+newSearchResults model newEntries =
     let
         feedIds =
-            List.foldl (\e -> Set.insert e.feedid) Set.empty nEntries
+            List.foldl (\e -> Set.insert e.feedid) Set.empty newEntries
 
         feedsCounts =
             List.foldl (\e -> Dict.update e.feedid (Maybe.withDefault 0 >> (+) 1 >> Just))
                 Dict.empty
-                nEntries
+                newEntries
 
         feeds =
             List.map
@@ -287,20 +287,20 @@ newSearchResults model nEntries =
                 model.feeds
 
         entries =
-            List.foldl
-                (\entry ->
-                    Dict.update entry.feedid
-                        (\foo ->
-                            case foo of
-                                Nothing ->
-                                    Just [ entry ]
+            List.map toEntry newEntries
+                |> List.foldl
+                    (\entry ->
+                        Dict.update entry.feedid
+                            (\feedEntries ->
+                                case feedEntries of
+                                    Nothing ->
+                                        Just [ entry ]
 
-                                Just bar ->
-                                    Just (entry :: bar)
-                        )
-                )
-                Dict.empty
-                (List.map toEntry nEntries)
+                                    Just oldFeedEntries ->
+                                        Just (entry :: oldFeedEntries)
+                            )
+                    )
+                    Dict.empty
     in
     { model | feeds = feeds, entries = entries, state = ShowingResults }
 
