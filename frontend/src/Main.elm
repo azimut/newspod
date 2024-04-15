@@ -30,6 +30,7 @@ type alias Model =
     { feeds : List Feed
     , entries : OrderedDict Int (List Entry)
     , search : String
+    , totalEntries : Int
     , currentSearch : Maybe String
     , nResults : Int
     , state : State
@@ -76,6 +77,7 @@ type Msg
     | NewDetails EntryDetails
     | AskForSearch
     | NewSearchResults (List NewEntry)
+    | NewTotal Int
 
 
 type alias InitFeed =
@@ -116,6 +118,9 @@ port askForEntries : Int -> Cmd msg
 port askForSearch : String -> Cmd msg
 
 
+port receiveTotalEntries : (Int -> msg) -> Sub msg
+
+
 port receiveSearchResults : (List NewEntry -> msg) -> Sub msg
 
 
@@ -130,7 +135,7 @@ port receiveInitFeeds : (List InitFeed -> msg) -> Sub msg
 
 init : flags -> ( Model, Cmd Msg )
 init _ =
-    ( Model [] OrderedDict.empty "" Nothing 0 Starting (millisToPosix 0)
+    ( Model [] OrderedDict.empty "" 0 Nothing 0 Starting (millisToPosix 0)
     , Task.perform InitClock Time.now
     )
 
@@ -186,6 +191,9 @@ fillDetails eDetails =
 update : Msg -> Model -> ( Model, Cmd msg )
 update msg ({ feeds, entries, search, state } as model) =
     case msg of
+        NewTotal total ->
+            ( { model | totalEntries = total }, Cmd.none )
+
         InitFeeds iFeeds ->
             ( { model
                 | feeds = List.map toFeed iFeeds
@@ -432,7 +440,7 @@ viewFooter =
 
 
 view : Model -> Html Msg
-view { feeds, entries, search, state, now } =
+view { feeds, entries, search, state, now, totalEntries } =
     case state of
         Starting ->
             div [ class "loader" ]
@@ -441,7 +449,10 @@ view { feeds, entries, search, state, now } =
         Idle ->
             div []
                 [ viewHeader search
-                , main_ [] <| List.map (\feed -> viewFeed feed state now entries) feeds
+                , main_ [] <|
+                    div [ class "some-results" ]
+                        [ text (fromInt totalEntries ++ " entries on database") ]
+                        :: List.map (\feed -> viewFeed feed state now entries) feeds
                 , viewFooter
                 ]
 
@@ -512,4 +523,5 @@ subscriptions _ =
         , receiveEntries NewEntries
         , receiveEntryDetails NewDetails
         , receiveSearchResults NewSearchResults
+        , receiveTotalEntries NewTotal
         ]

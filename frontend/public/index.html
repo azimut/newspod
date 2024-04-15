@@ -178,6 +178,9 @@
       var app = Elm.Main.init({
         node: document.getElementById("app"),
       });
+      Muh.total_entries(db).then((total) => {
+        app.ports.receiveTotalEntries.send(total);
+      });
       Muh.getFeeds(db).then((fs) => {
         app.ports.receiveInitFeeds.send(fs);
       });

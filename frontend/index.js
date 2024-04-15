@@ -144,3 +144,19 @@ export async function getEntryDetails(dbarg, entryId, needle) {
   }
   return result;
 }
+
+export async function total_entries(dbarg) {
+  let db = await dbarg;
+  let result = 0;
+  await db('exec', {
+    sql: `SELECT COUNT(1) FROM entries`,
+    bind: {},
+    callback: (msg) => {
+      if (msg.row) {
+        let [total] = msg.row;
+        result = total;
+      }
+    }
+  });
+  return result;
+}
