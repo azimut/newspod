@@ -1,13 +1,14 @@
 port module Main exposing (..)
 
 import Browser
-import Dict exposing (Dict)
 import Html exposing (Html, a, article, details, div, footer, form, header, input, main_, span, summary, text, time)
 import Html.Attributes exposing (attribute, autofocus, class, href, maxlength, minlength, placeholder, size, type_, value)
 import Html.Events exposing (onClick, onInput, onSubmit, stopPropagationOn)
 import Json.Decode as JD
+import List.Extra
 import Loaders
 import Markdown
+import OrderedDict exposing (OrderedDict)
 import Set
 import String exposing (fromInt)
 import Task
@@ -27,7 +28,7 @@ main =
 
 type alias Model =
     { feeds : List Feed
-    , entries : Dict Int (List Entry)
+    , entries : OrderedDict Int (List Entry)
     , search : String
     , currentSearch : Maybe String
     , nResults : Int
@@ -129,7 +130,7 @@ port receiveInitFeeds : (List InitFeed -> msg) -> Sub msg
 
 init : flags -> ( Model, Cmd Msg )
 init _ =
-    ( Model [] Dict.empty "" Nothing 0 Starting (millisToPosix 0)
+    ( Model [] OrderedDict.empty "" Nothing 0 Starting (millisToPosix 0)
     , Task.perform InitClock Time.now
     )
 
@@ -200,7 +201,7 @@ update msg ({ feeds, entries, search, state } as model) =
             if String.isEmpty (String.trim newSearch) then
                 ( { model
                     | feeds = List.map (\feed -> { feed | isVisible = True, isSelected = False }) feeds
-                    , entries = Dict.empty
+                    , entries = OrderedDict.empty
                     , state = Idle
                     , currentSearch = Nothing
                     , search = ""
@@ -241,13 +242,13 @@ update msg ({ feeds, entries, search, state } as model) =
                     model
 
                 entry :: _ ->
-                    { model | entries = Dict.insert entry.feedid (List.map toEntry es) entries }
+                    { model | entries = OrderedDict.insert entry.feedid (List.map toEntry es) entries }
             , Cmd.none
             )
 
         -- TODO: check if already has details
         AskForDetails feedId entryId ->
-            ( { model | entries = Dict.update feedId (Maybe.map (toggleEntryDetails entryId)) entries }
+            ( { model | entries = OrderedDict.update feedId (Maybe.map (toggleEntryDetails entryId)) entries }
             , askForEntryDetails
                 (QuestionEntryDetails entryId <|
                     Maybe.withDefault "" model.currentSearch
@@ -255,7 +256,7 @@ update msg ({ feeds, entries, search, state } as model) =
             )
 
         NewDetails ({ feedid } as entryDetails) ->
-            ( { model | entries = Dict.update feedid (Maybe.map (fillDetails entryDetails)) entries }
+            ( { model | entries = OrderedDict.update feedid (Maybe.map (fillDetails entryDetails)) entries }
             , Cmd.none
             )
 
@@ -267,8 +268,8 @@ newSearchResults model newEntries =
             List.foldl (\e -> Set.insert e.feedid) Set.empty newEntries
 
         feedsCounts =
-            List.foldl (\e -> Dict.update e.feedid (Maybe.withDefault 0 >> (+) 1 >> Just))
-                Dict.empty
+            List.foldl (\e -> OrderedDict.update e.feedid (Maybe.withDefault 0 >> (+) 1 >> Just))
+                OrderedDict.empty
                 newEntries
 
         feeds =
@@ -281,7 +282,7 @@ newSearchResults model newEntries =
                     { feed
                         | isSelected = isMember
                         , isVisible = isMember
-                        , nResults = Maybe.withDefault 0 <| Dict.get feed.id feedsCounts
+                        , nResults = Maybe.withDefault 0 <| OrderedDict.get feed.id feedsCounts
                     }
                 )
                 model.feeds
@@ -290,7 +291,7 @@ newSearchResults model newEntries =
             List.map toEntry newEntries
                 |> List.foldl
                     (\entry ->
-                        Dict.update entry.feedid
+                        OrderedDict.update entry.feedid
                             (\feedEntries ->
                                 case feedEntries of
                                     Nothing ->
@@ -300,7 +301,8 @@ newSearchResults model newEntries =
                                         Just (entry :: oldFeedEntries)
                             )
                     )
-                    Dict.empty
+                    OrderedDict.empty
+                |> OrderedDict.map (\_ es -> List.reverse es)
     in
     { model | feeds = feeds, entries = entries, state = ShowingResults }
 
@@ -319,7 +321,7 @@ toggleSelectedFeed ({ feeds, entries } as model) feedid =
                 )
                 feeds
         , entries =
-            Dict.update feedid
+            OrderedDict.update feedid
                 (Maybe.map
                     (List.map
                         (\entry ->
@@ -344,7 +346,7 @@ open flag =
         class ""
 
 
-viewFeed : Feed -> State -> Time.Posix -> Dict Int (List Entry) -> Html Msg
+viewFeed : Feed -> State -> Time.Posix -> OrderedDict Int (List Entry) -> Html Msg
 viewFeed ({ title, id, isSelected } as feed) state now entries =
     let
         count =
@@ -365,10 +367,10 @@ viewFeed ({ title, id, isSelected } as feed) state now entries =
         ]
 
 
-viewFeedEntries : Int -> Time.Posix -> Dict Int (List Entry) -> List (Html Msg)
+viewFeedEntries : Int -> Time.Posix -> OrderedDict Int (List Entry) -> List (Html Msg)
 viewFeedEntries feedId now entries =
     List.map (viewEntry feedId now) <|
-        Maybe.withDefault [] (Dict.get feedId entries)
+        Maybe.withDefault [] (OrderedDict.get feedId entries)
 
 
 onClickWithStopPropagation : msg -> Html.Attribute msg
@@ -476,12 +478,31 @@ view { feeds, entries, search, state, now } =
                                         fromInt nResults ++ " results found"
                         in
                         main_ [] <|
+                            let
+                                feedIds =
+                                    OrderedDict.keys entries |> List.reverse
+                            in
                             div [ class "some-results" ] [ text message ]
                                 :: List.map
                                     (\feed -> viewFeed feed state now entries)
-                                    filteredFeeds
+                                    (sortFeeds feeds feedIds [])
                 , viewFooter
                 ]
+
+
+sortFeeds : List Feed -> List Int -> List Feed -> List Feed
+sortFeeds feeds ids acc =
+    case ids of
+        [] ->
+            acc
+
+        id :: rest ->
+            case List.Extra.find (\feed -> feed.id == id) feeds of
+                Nothing ->
+                    sortFeeds feeds rest acc
+
+                Just foundFeed ->
+                    sortFeeds feeds rest (foundFeed :: acc)
 
 
 subscriptions : model -> Sub Msg
