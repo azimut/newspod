@@ -25,9 +25,13 @@ export async function getFeeds(dbarg) {
   await db('exec', {
     sql: `SELECT feeds.id, feeds.title, count(*)
             FROM feeds
-            JOIN entries ON feeds.id=entries.feedid
+            JOIN entries
+                ON feeds.id=entries.feedid
+            JOIN feeds_metadata
+                ON feeds.id=feeds_metadata.feedid
         GROUP BY entries.feedid
-          HAVING count(*) > 0`,
+          HAVING count(*) > 0
+        ORDER BY feeds_metadata.lastentry DESC`,
     bind: {},
     callback: (msg) => {
       if (msg.row) {

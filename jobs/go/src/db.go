@@ -23,7 +23,8 @@ func initTables(db *sql.DB) error {
     ) strict;
 
     create table feeds_metadata (
-      feedid       integer not null unique,
+      feedid       integer not null,
+      lastentry    integer not null default 0,
       lastfetch    integer not null default 0,
       lastmodified text    not null default "",
       etag         text    not null default "",
@@ -165,6 +166,15 @@ func (feeds Feeds) Save(db *sql.DB) error {
 		return err
 	}
 	defer stmt_feeds_meta_update.Close()
+	stmt_feeds_meta_lastentry, err := tx.Prepare(`
+    UPDATE feeds_metadata
+       SET lastentry = ?
+     WHERE feedid = ? AND lastentry < ?
+    `)
+	if err != nil {
+		return err
+	}
+	defer stmt_feeds_meta_lastentry.Close()
 
 	for _, feed := range feeds {
 		effectiveFeedId := feed.RawId
@@ -216,6 +226,14 @@ func (feeds Feeds) Save(db *sql.DB) error {
 				lastEntryId,
 				entry.Title,
 				entry.Content,
+			)
+			if err != nil {
+				return err
+			}
+			_, err = stmt_feeds_meta_lastentry.Exec(
+				entry.Date.UnixMilli(),
+				effectiveFeedId,
+				entry.Date.UnixMilli(),
 			)
 			if err != nil {
 				return err
