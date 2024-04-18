@@ -53,7 +53,8 @@ export async function getEntries(dbarg, feedid) {
   await db('exec', {
     sql: `SELECT id, title, datemillis, url
             FROM entries
-           WHERE feedid=$fid`,
+           WHERE feedid=$fid
+        ORDER BY datemillis DESC`,
     bind: {$fid: feedid},
     callback: (msg) => {
       if (msg.row) {
