@@ -193,7 +193,12 @@
         );
       });
       app.ports.askForSearch.subscribe((searchTerm) => {
-        Muh.search(db, searchTerm).then(app.ports.receiveSearchResults.send);
+        Muh.search(db, searchTerm)
+          .then(app.ports.receiveSearchResults.send)
+          .catch((e) => {
+            app.ports.receiveError.send(e.result.message);
+            console.error(e);
+          });
       });
     </script>
   </body>

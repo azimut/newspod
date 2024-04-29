@@ -65,6 +65,7 @@ type State
     | Idle
     | WaitingForResults
     | ShowingResults
+    | Error
 
 
 type Msg
@@ -78,6 +79,7 @@ type Msg
     | AskForSearch
     | NewSearchResults (List NewEntry)
     | NewTotal Int
+    | NewError String
 
 
 type alias InitFeed =
@@ -131,6 +133,9 @@ port receiveEntryDetails : (EntryDetails -> msg) -> Sub msg
 
 
 port receiveInitFeeds : (List InitFeed -> msg) -> Sub msg
+
+
+port receiveError : (String -> msg) -> Sub msg
 
 
 init : flags -> ( Model, Cmd Msg )
@@ -267,6 +272,9 @@ update msg ({ feeds, entries, search, state } as model) =
             ( { model | entries = OrderedDict.update feedid (Maybe.map (fillDetails entryDetails)) entries }
             , Cmd.none
             )
+
+        NewError _ ->
+            ( { model | state = Error }, Cmd.none )
 
 
 newSearchResults : Model -> List NewEntry -> Model
@@ -442,6 +450,14 @@ viewFooter =
 view : Model -> Html Msg
 view { feeds, entries, search, state, now, totalEntries } =
     case state of
+        Error ->
+            div []
+                [ viewHeader search
+                , main_ []
+                    [ div [ class "some-results" ] [ text "ERROR x(" ]
+                    ]
+                ]
+
         Starting ->
             div [ class "loader" ]
                 [ Loaders.ballTriangle 150 "#fff" ]
@@ -524,4 +540,5 @@ subscriptions _ =
         , receiveEntryDetails NewDetails
         , receiveSearchResults NewSearchResults
         , receiveTotalEntries NewTotal
+        , receiveError NewError
         ]
