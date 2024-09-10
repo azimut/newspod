@@ -1,5 +1,11 @@
 {
   "feeds": [
+    { "url": "https://www.idlethumbs.net/feeds/designer-notes" },
+    { "url": "http://makingembeddedsystems.libsyn.com/rss" },
+    { "url": "https://adventofcomputing.libsyn.com/rss" },
+    { "url": "https://handmade.network/podcast/podcast.xml" },
+    { "url": "https://feeds.transistor.fm/the-technium-podcast" },
+    { "url": "http://reverseengineering.libsyn.com/rss" },
     { "url": "http://hackaday.libsyn.com/rss" },
     { "url": "https://arraycast.com/episodes?format=rss" },
     { "url": "https://freecodecamp.libsyn.com/rss" },
