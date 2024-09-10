@@ -1,5 +1,85 @@
 {
   "feeds": [
+    {
+      "title": "The Assembly Line",
+      "url": "https://podcasts.apple.com/us/podcast/the-assembly-line-an-nes-homebrew-podcast/id1247222547"
+    },
+    {
+      "title": "Transistor Radio",
+      "url": "https://anchor.fm/s/7b86e554/podcast/rss"
+    },
+    {
+      "title": "State of Cybercrime",
+      "url": "https://feeds.simplecast.com/2Ntuu3AF"
+    },
+    {
+      "title": "Kiwi Talkz",
+      "url": "https://media.rss.com/kiwi-talkz/feed.xml"
+    },
+    {
+      "title": "Hardcore History",
+      "url": "https://feeds.feedburner.com/dancarlin/history?format=xml"
+    },
+    {
+      "title": "Rustacean Station",
+      "url": "https://rustacean-station.org/podcast.rss"
+    },
+    {
+      "title": "On the Metal",
+      "url": "https://feeds.transistor.fm/on-the-metal-0294649e-ec23-4eab-975a-9eb13fd94e06"
+    },
+    {
+      "title": "Sourcegraph",
+      "url": "https://feeds.buzzsprout.com/1097978.rss"
+    },
+    {
+      "title": "Game Dev Advice",
+      "url": "https://podcasts.google.com/subscribe-by-rss-feed?sa=X&ved=2ahUKEwiikJqZ_d6GAxVgNbkGHeqXDGYQr70GegQIABAC"
+    },
+    {
+      "title": "Clojurestream",
+      "url": "http://feeds.soundcloud.com/users/soundcloud:users:627190089/sounds.rss"
+    },
+    {
+      "title": "Unconfuse Me with Bill Gates",
+      "url": "https://feed.unconfuseme.com/"
+    },
+    {
+      "title": "The Andrew Price Podcast",
+      "url": "https://anchor.fm/s/3a964378/podcast/rss"
+    },
+    {
+      "title": "Braid, Anniversary Edition Podcast",
+      "url": "https://media.rss.com/braidcast/feed.xml"
+    },
+    {
+      "title": "indiedevs talk shop",
+      "url": "https://anchor.fm/s/f472c280/podcast/rss"
+    },
+    {
+      "title": "Thoughtworks Technology",
+      "url": "https://thoughtworks.libsyn.com/rss"
+    },
+    {
+      "title": "Dwarkesh Podcast",
+      "url": "https://link.chtbl.com/dwarkesh?id=dwarkesh&platform=rss"
+    },
+    {
+      "title": "The Stray Pointers Podcast",
+      "url": "http://feeds.libsyn.com/481983/rss"
+    },
+    {
+      "title": "Exascale Computing Project",
+      "url": "http://feeds.soundcloud.com/users/soundcloud:users:355810622/sounds.rss"
+    },
+    {
+      "title": "Whiskey Web and Whatnot",
+      "url": "https://anchor.fm/s/e329dea0/podcast/rss"
+    },
+    {
+      "title": "The Frontend Masters",
+      "url": "https://anchor.fm/s/ea8edf9c/podcast/rss"
+    },
     { "url": "https://www.idlethumbs.net/feeds/designer-notes" },
     { "url": "http://makingembeddedsystems.libsyn.com/rss" },
     { "url": "https://adventofcomputing.libsyn.com/rss" },
