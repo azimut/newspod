@@ -1,5 +1,14 @@
 {
   "feeds": [
+    { "url": "http://hackaday.libsyn.com/rss" },
+    { "url": "https://arraycast.com/episodes?format=rss" },
+    { "url": "https://freecodecamp.libsyn.com/rss" },
+    { "url": "https://linuxunplugged.com/rss" },
+    { "url": "https://theamphour.com/feed/podcast/" },
+    { "url": "https://topenddevs.com/podcasts/ruby-rogues/rss" },
+    { "url": "https://wetoker.com/feed/el-bestiario-de-internet/" },
+    { "url": "https://www.numberphile.com/podcast?format=rss" },
+    { "url": "https://www.therubyonrailspodcast.com/rss" },
     { "url": "https://feeds.resonaterecordings.com/software-unscripted" },
     {
       "title": "Algorithms + DS = Programs",
