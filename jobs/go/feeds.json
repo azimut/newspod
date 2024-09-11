@@ -1,6 +1,10 @@
 {
   "feeds": [
     {
+      "name": "Oxide and Friends",
+      "url": "https://feeds.transistor.fm/oxide-and-friends"
+    },
+    {
       "title": "The Assembly Line",
       "url": "https://podcasts.apple.com/us/podcast/the-assembly-line-an-nes-homebrew-podcast/id1247222547"
     },
