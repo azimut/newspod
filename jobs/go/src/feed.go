@@ -24,6 +24,7 @@ type Feed struct {
 	TrimPrefixes     []string  `json:"trim_prefixes"`
 	TrimSuffixes     []string  `json:"trim_suffixes"`
 	EpisodeBlackList []string  `json:"episode_blacklist"`
+	EpisodeWhiteList []string  `json:"episode_whitelist"`
 	ContentEndMark   []string  `json:"content_end_mark"`
 	ContentExclude   []Address `json:"content_exclude"`
 
@@ -109,22 +110,33 @@ func (feed *Feed) Fetch() error {
 		if item.PublishedParsed.Before(feed.RawLastFetch) {
 			continue
 		}
-		entry := Entry{
-			Date:        *item.PublishedParsed,
-			Title:       itemTitle(item.Title, *feed),
-			Url:         itemUrl(*item),
-			Description: item.Description,
-			Content:     item.Content,
-		}
+
 		keepItem = true
+		if len(feed.EpisodeWhiteList) > 0 {
+			keepItem = false
+		}
+		for _, word := range feed.EpisodeWhiteList {
+			if strings.Contains(item.Title, word) {
+				keepItem = true
+				break
+			}
+		}
 		for _, word := range feed.EpisodeBlackList {
-			if strings.Contains(entry.Title, word) {
+			if strings.Contains(item.Title, word) {
 				keepItem = false
 				break
 			}
 		}
 		if !keepItem {
 			continue
+		}
+
+		entry := Entry{
+			Date:        *item.PublishedParsed,
+			Title:       itemTitle(item.Title, *feed),
+			Url:         itemUrl(*item),
+			Description: item.Description,
+			Content:     item.Content,
 		}
 		if item.Content == item.Description { // prefer content
 			entry.Description = ""
