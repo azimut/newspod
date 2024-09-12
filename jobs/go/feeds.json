@@ -5,10 +5,6 @@
       "url": "https://feeds.transistor.fm/oxide-and-friends"
     },
     {
-      "title": "The Assembly Line",
-      "url": "https://podcasts.apple.com/us/podcast/the-assembly-line-an-nes-homebrew-podcast/id1247222547"
-    },
-    {
       "title": "Transistor Radio",
       "url": "https://anchor.fm/s/7b86e554/podcast/rss"
     },
@@ -38,7 +34,7 @@
     },
     {
       "title": "Game Dev Advice",
-      "url": "https://podcasts.google.com/subscribe-by-rss-feed?sa=X&ved=2ahUKEwiikJqZ_d6GAxVgNbkGHeqXDGYQr70GegQIABAC"
+      "url": "https://feeds.megaphone.fm/ADL7012656759"
     },
     {
       "title": "Clojurestream",
@@ -66,7 +62,7 @@
     },
     {
       "title": "Dwarkesh Podcast",
-      "url": "https://link.chtbl.com/dwarkesh?id=dwarkesh&platform=rss"
+      "url": "https://api.substack.com/feed/podcast/69345.rss"
     },
     {
       "title": "The Stray Pointers Podcast",
@@ -99,7 +95,10 @@
     { "url": "https://wetoker.com/feed/el-bestiario-de-internet/" },
     { "url": "https://www.numberphile.com/podcast?format=rss" },
     { "url": "https://www.therubyonrailspodcast.com/rss" },
-    { "url": "https://feeds.resonaterecordings.com/software-unscripted" },
+    {
+      "title": "Software Unscripted",
+      "url": "https://pod.link/1602572955.rss"
+    },
     {
       "title": "Algorithms + DS = Programs",
       "url": "https://feeds.buzzsprout.com/1501960.rss"
