@@ -1,6 +1,7 @@
 port module Main exposing (..)
 
 import Browser
+import Filesize
 import Html exposing (Html, a, article, details, div, footer, form, header, input, main_, span, summary, text, time)
 import Html.Attributes exposing (attribute, autofocus, class, href, maxlength, minlength, placeholder, size, type_, value)
 import Html.Events exposing (onClick, onInput, onSubmit, stopPropagationOn)
@@ -41,6 +42,7 @@ type alias Model =
 type alias DbStats =
     { nPodcasts : Int
     , nEntries : Int
+    , dbSize : Int
     }
 
 
@@ -202,8 +204,8 @@ fillDetails eDetails =
 update : Msg -> Model -> ( Model, Cmd msg )
 update msg ({ feeds, entries, search, state } as model) =
     case msg of
-        NewDbStats { nEntries, nPodcasts } ->
-            ( { model | dbStats = DbStats nPodcasts nEntries }, Cmd.none )
+        NewDbStats { nEntries, nPodcasts, dbSize } ->
+            ( { model | dbStats = DbStats nPodcasts nEntries dbSize }, Cmd.none )
 
         InitFeeds iFeeds ->
             ( { model
@@ -470,14 +472,14 @@ view { feeds, entries, search, state, now, dbStats } =
 
         Idle ->
             let
-                { nPodcasts, nEntries } =
+                { nPodcasts, nEntries, dbSize } =
                     dbStats
             in
             div []
                 [ viewHeader search
                 , main_ [] <|
                     div [ class "some-results" ]
-                        [ text (fromInt nPodcasts ++ " podcasts, " ++ fromInt nEntries ++ " entries") ]
+                        [ text (fromInt nPodcasts ++ " podcasts, " ++ fromInt nEntries ++ " entries, " ++ Filesize.format dbSize) ]
                         :: List.map (\feed -> viewFeed feed state now entries) feeds
                 , viewFooter
                 ]

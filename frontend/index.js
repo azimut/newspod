@@ -152,14 +152,16 @@ export async function db_stats(dbarg) {
   await db('exec', {
     sql: `SELECT *
             FROM (SELECT COUNT(1) FROM feeds)
-            JOIN (SELECT COUNT(1) FROM entries)`,
+            JOIN (SELECT COUNT(1) FROM entries)
+            JOIN (SELECT page_size*page_count FROM pragma_page_count(), pragma_page_size())`,
     bind: {},
     callback: (msg) => {
       if (msg.row) {
-        let [nfeeds, nentries] = msg.row;
+        let [nfeeds, nentries, size] = msg.row;
         result = {
           nPodcasts: nfeeds,
           nEntries: nentries,
+          dbSize: size,
         };
       }
     }
