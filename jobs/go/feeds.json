@@ -1,5 +1,11 @@
 {
   "feeds": [
+    { "url": "https://feeds.megaphone.fm/slatelexiconvalley" },
+    { "url": "https://feeds.blubrry.com/feeds/voices_from_darpa.xml" },
+    {
+      "name": "DevRock",
+      "url": "http://feeds.soundcloud.com/users/soundcloud:users:5797383/sounds.rss"
+    },
     {
       "name": "Oxide and Friends",
       "url": "https://feeds.transistor.fm/oxide-and-friends"
