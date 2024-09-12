@@ -1,5 +1,11 @@
 {
   "feeds": [
+    { "url": "https://bdebob.com/category/epsecretos/feed/" },
+    { "url": "https://bdebob.com/category/bdebobpodcast/feed/" },
+    {
+      "name": "Art + Music + Technology",
+      "url": "http://feeds.libsyn.com/48604/rss"
+    },
     {
       "name": "The OWASP Podcast",
       "url": "http://feeds.soundcloud.com/users/soundcloud:users:63303345/sounds.rss"
