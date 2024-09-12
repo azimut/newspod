@@ -1,5 +1,10 @@
 {
   "feeds": [
+    {
+      "name": "Tech Over Tea",
+      "url": "https://anchor.fm/s/149fd51c/podcast/rss",
+      "episode_blacklist": ["Solo", "Solo Episode"]
+    },
     { "url": "https://bdebob.com/category/epsecretos/feed/" },
     { "url": "https://bdebob.com/category/bdebobpodcast/feed/" },
     {

@@ -19,12 +19,13 @@ type Address struct {
 }
 
 type Feed struct {
-	Url            string    `json:"url"`
-	Title          string    `json:"title"`
-	TrimPrefixes   []string  `json:"trim_prefixes"`
-	TrimSuffixes   []string  `json:"trim_suffixes"`
-	ContentEndMark []string  `json:"content_end_mark"`
-	ContentExclude []Address `json:"content_exclude"`
+	Url              string    `json:"url"`
+	Title            string    `json:"title"`
+	TrimPrefixes     []string  `json:"trim_prefixes"`
+	TrimSuffixes     []string  `json:"trim_suffixes"`
+	EpisodeBlackList []string  `json:"episode_blacklist"`
+	ContentEndMark   []string  `json:"content_end_mark"`
+	ContentExclude   []Address `json:"content_exclude"`
 
 	RawId           int
 	RawEtag         string
@@ -102,6 +103,7 @@ func (feed *Feed) Fetch() error {
 
 	html2md := md.NewConverter("", true, nil)
 
+	var keepItem bool
 	for _, item := range rawFeed.Items {
 		// Process only NEW entries, after last fetch (avoid INSERT attempts)
 		if item.PublishedParsed.Before(feed.RawLastFetch) {
@@ -113,6 +115,16 @@ func (feed *Feed) Fetch() error {
 			Url:         itemUrl(*item),
 			Description: item.Description,
 			Content:     item.Content,
+		}
+		keepItem = true
+		for _, word := range feed.EpisodeBlackList {
+			if strings.Contains(entry.Title, word) {
+				keepItem = false
+				break
+			}
+		}
+		if !keepItem {
+			continue
 		}
 		if item.Content == item.Description { // prefer content
 			entry.Description = ""
