@@ -148,7 +148,7 @@ port receiveError : (String -> msg) -> Sub msg
 
 init : flags -> ( Model, Cmd Msg )
 init _ =
-    ( Model [] OrderedDict.empty "" (DbStats 0 0) Nothing 0 Starting (millisToPosix 0)
+    ( Model [] OrderedDict.empty "" (DbStats 0 0 0) Nothing 0 Starting (millisToPosix 0)
     , Task.perform InitClock Time.now
     )
 
