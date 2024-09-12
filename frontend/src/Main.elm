@@ -30,11 +30,17 @@ type alias Model =
     { feeds : List Feed
     , entries : OrderedDict Int (List Entry)
     , search : String
-    , totalEntries : Int
+    , dbStats : DbStats
     , currentSearch : Maybe String
     , nResults : Int
     , state : State
     , now : Time.Posix
+    }
+
+
+type alias DbStats =
+    { nPodcasts : Int
+    , nEntries : Int
     }
 
 
@@ -78,7 +84,7 @@ type Msg
     | NewDetails EntryDetails
     | AskForSearch
     | NewSearchResults (List NewEntry)
-    | NewTotal Int
+    | NewDbStats DbStats
     | NewError String
 
 
@@ -120,7 +126,7 @@ port askForEntries : Int -> Cmd msg
 port askForSearch : String -> Cmd msg
 
 
-port receiveTotalEntries : (Int -> msg) -> Sub msg
+port receiveDbStats : (DbStats -> msg) -> Sub msg
 
 
 port receiveSearchResults : (List NewEntry -> msg) -> Sub msg
@@ -140,7 +146,7 @@ port receiveError : (String -> msg) -> Sub msg
 
 init : flags -> ( Model, Cmd Msg )
 init _ =
-    ( Model [] OrderedDict.empty "" 0 Nothing 0 Starting (millisToPosix 0)
+    ( Model [] OrderedDict.empty "" (DbStats 0 0) Nothing 0 Starting (millisToPosix 0)
     , Task.perform InitClock Time.now
     )
 
@@ -196,8 +202,8 @@ fillDetails eDetails =
 update : Msg -> Model -> ( Model, Cmd msg )
 update msg ({ feeds, entries, search, state } as model) =
     case msg of
-        NewTotal total ->
-            ( { model | totalEntries = total }, Cmd.none )
+        NewDbStats { nEntries, nPodcasts } ->
+            ( { model | dbStats = DbStats nPodcasts nEntries }, Cmd.none )
 
         InitFeeds iFeeds ->
             ( { model
@@ -448,7 +454,7 @@ viewFooter =
 
 
 view : Model -> Html Msg
-view { feeds, entries, search, state, now, totalEntries } =
+view { feeds, entries, search, state, now, dbStats } =
     case state of
         Error ->
             div []
@@ -463,11 +469,15 @@ view { feeds, entries, search, state, now, totalEntries } =
                 [ Loaders.ballTriangle 150 "#fff" ]
 
         Idle ->
+            let
+                { nPodcasts, nEntries } =
+                    dbStats
+            in
             div []
                 [ viewHeader search
                 , main_ [] <|
                     div [ class "some-results" ]
-                        [ text (fromInt totalEntries ++ " entries on database") ]
+                        [ text (fromInt nPodcasts ++ " podcasts, " ++ fromInt nEntries ++ " entries") ]
                         :: List.map (\feed -> viewFeed feed state now entries) feeds
                 , viewFooter
                 ]
@@ -539,6 +549,6 @@ subscriptions _ =
         , receiveEntries NewEntries
         , receiveEntryDetails NewDetails
         , receiveSearchResults NewSearchResults
-        , receiveTotalEntries NewTotal
+        , receiveDbStats NewDbStats
         , receiveError NewError
         ]

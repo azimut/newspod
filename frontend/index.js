@@ -146,16 +146,21 @@ export async function getEntryDetails(dbarg, entryId, needle) {
   return result;
 }
 
-export async function total_entries(dbarg) {
+export async function db_stats(dbarg) {
   let db = await dbarg;
   let result = 0;
   await db('exec', {
-    sql: `SELECT COUNT(1) FROM entries`,
+    sql: `SELECT *
+            FROM (SELECT COUNT(1) FROM feeds)
+            JOIN (SELECT COUNT(1) FROM entries)`,
     bind: {},
     callback: (msg) => {
       if (msg.row) {
-        let [total] = msg.row;
-        result = total;
+        let [nfeeds, nentries] = msg.row;
+        result = {
+          nPodcasts: nfeeds,
+          nEntries: nentries,
+        };
       }
     }
   });
