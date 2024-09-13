@@ -1,5 +1,9 @@
 {
   "feeds": [
+    { "url": "http://devopscafe.libsyn.com/rss" },
+    { "url": "https://topenddevs.com/podcasts/adventures-in-devops/rss" },
+    { "url": "https://www.arresteddevops.com/episode/index.xml" },
+    { "url": "https://feed.podbean.com/bridgespodcast/feed.xml" },
     {
       "title": "Sean Carroll's Mindscape",
       "url": "https://rss.art19.com/sean-carrolls-mindscape",
@@ -99,7 +103,7 @@
       "url": "https://anchor.fm/s/3a964378/podcast/rss"
     },
     {
-      "title": "Braid, Anniversary Edition Podcast",
+      "title": "Braid Podcast",
       "url": "https://media.rss.com/braidcast/feed.xml"
     },
     {
