@@ -1,18 +1,28 @@
 {
   "feeds": [
     {
+      "title": "Sean Carroll's Mindscape",
       "url": "https://rss.art19.com/sean-carrolls-mindscape",
       "episode_blacklist": ["AMA"]
     },
     {
       "title": "The Stephen Wolfram Podcast",
       "url": "http://feeds.soundcloud.com/users/soundcloud:users:337408846/sounds.rss",
-      "episode_blacklist": ["Q&amp;A", "Business, Innovation"]
+      "episode_blacklist": ["Q&A", "Business, Innovation"]
     },
-    { "url": "https://changelog.com/founderstalk/feed" },
+    {
+      "title": "Founders Talk",
+      "url": "https://changelog.com/founderstalk/feed"
+    },
     { "url": "https://changelog.com/gotime/feed" },
-    { "url": "https://changelog.com/practicalai/feed" },
-    { "url": "https://changelog.com/shipit/feed" },
+    {
+      "title": "Practical AI",
+      "url": "https://changelog.com/practicalai/feed"
+    },
+    {
+      "title": "Ship It!",
+      "url": "https://changelog.com/shipit/feed"
+    },
     {
       "title": "The Changelog",
       "url": "https://changelog.com/podcast/feed",
@@ -123,7 +133,10 @@
     { "url": "https://www.idlethumbs.net/feeds/designer-notes" },
     { "url": "http://makingembeddedsystems.libsyn.com/rss" },
     { "url": "https://adventofcomputing.libsyn.com/rss" },
-    { "url": "https://handmade.network/podcast/podcast.xml" },
+    {
+      "title": "The Handmade Network",
+      "url": "https://handmade.network/podcast/podcast.xml"
+    },
     { "url": "https://feeds.transistor.fm/the-technium-podcast" },
     { "url": "http://reverseengineering.libsyn.com/rss" },
     { "url": "http://hackaday.libsyn.com/rss" },
