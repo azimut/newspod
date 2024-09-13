@@ -81,10 +81,11 @@ export async function search(dbarg, needle) {
                  entries.title,
                  entries.url,
                  entries.datemillis
-            FROM search
-            JOIN entries ON search.entriesid=entries.id
+            FROM entries
+            JOIN search
+              ON search.rowid=entries.id
            WHERE search MATCH $match
-           ORDER BY entries.datemillis DESC`,
+        ORDER BY entries.datemillis DESC`,
     bind: {$match: needle},
     callback: (msg) => {
       if (msg.row) {
@@ -107,9 +108,9 @@ export async function getEntryDetails(dbarg, entryId, needle) {
   let result;
   if (needle && typeof needle === "string" && needle.length > 0) {
     await db('exec', {
-      sql: `SELECT entries.feedid, highlight(search,2,'\`\`\`','\`\`\`')
+      sql: `SELECT entries.feedid, highlight(search,1,'\`\`\`','\`\`\`')
               FROM entries
-              JOIN search ON entries.id=search.entriesid
+              JOIN search ON entries.id=search.rowid
              WHERE entries.id=$eid
                AND search MATCH $needle`,
       bind: {$eid: entryId, $needle: needle},

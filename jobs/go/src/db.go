@@ -50,7 +50,6 @@ func initTables(db *sql.DB) error {
     create index entriescindex on entries_content(entriesid);
 
     create virtual table search using fts5(
-        entriesid unindexed,
         title,
         content
     );
@@ -151,7 +150,7 @@ func (feeds Feeds) Save(db *sql.DB) error {
 	}
 	defer stmt_entry_content.Close()
 	stmt_entry_search, err := tx.Prepare(
-		"INSERT INTO search(entriesid,title,content) VALUES (?,?,?)",
+		"INSERT INTO search(rowid,title,content) VALUES (?,?,?)",
 	)
 	if err != nil {
 		return err
