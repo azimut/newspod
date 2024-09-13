@@ -162,6 +162,7 @@
     },
     {
       "url": "https://podcast.thinkingelixir.com/rss",
+      "episode_blacklist": ["Thinking Elixir News"],
       "content_exclude": [
         {
           "from": "**Elixir Community News",
