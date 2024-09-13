@@ -44,15 +44,29 @@ func initTables(db *sql.DB) error {
 
     create table entries_content (
         entriesid   integer not null,
-        content     text,
+        title       text,
+        description text,
         foreign key(entriesid) references entries(id)
     ) strict;
     create index entriescindex on entries_content(entriesid);
 
     create virtual table search using fts5(
         title,
-        content
+        description,
+        content='entries_content',
+        content_rowid='entriesid'
     );
+
+    CREATE TRIGGER entries_content_ai AFTER INSERT ON entries_content BEGIN
+      INSERT INTO search(rowid, title, description) VALUES (new.entriesid, new.title, new.description);
+    END;
+    CREATE TRIGGER entries_content_ad AFTER DELETE ON entries_content BEGIN
+      INSERT INTO search(search, rowid, title, description) VALUES('delete', old.entriesid, old.title, old.description);
+    END;
+    CREATE TRIGGER entries_content_au AFTER UPDATE ON entries_content BEGIN
+      INSERT INTO search(search, rowid, title, description) VALUES('delete', old.entriesid, old.title, old.description);
+      INSERT INTO search(rowid, title, description) VALUES (new.entriesid, new.title, new.description);
+    END;
     `
 	_, err := db.Exec(initStmt)
 	if err != nil {
@@ -143,19 +157,12 @@ func (feeds Feeds) Save(db *sql.DB) error {
 	}
 	defer stmt_entry.Close()
 	stmt_entry_content, err := tx.Prepare(
-		"insert into entries_content(entriesid,content) values(?,?)",
+		"insert into entries_content(entriesid,title,description) values(?,?,?)",
 	)
 	if err != nil {
 		return err
 	}
 	defer stmt_entry_content.Close()
-	stmt_entry_search, err := tx.Prepare(
-		"INSERT INTO search(rowid,title,content) VALUES (?,?,?)",
-	)
-	if err != nil {
-		return err
-	}
-	defer stmt_entry_search.Close()
 	stmt_feeds_meta_update, err := tx.Prepare(`
     UPDATE feeds_metadata
        SET lastfetch = strftime('%s'), lastmodified = ?, etag = ?
@@ -215,13 +222,6 @@ func (feeds Feeds) Save(db *sql.DB) error {
 				return err
 			}
 			_, err = stmt_entry_content.Exec(
-				lastEntryId,
-				entry.Content,
-			)
-			if err != nil {
-				return err
-			}
-			_, err = stmt_entry_search.Exec(
 				lastEntryId,
 				entry.Title,
 				entry.Content,

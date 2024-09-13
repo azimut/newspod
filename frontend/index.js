@@ -127,7 +127,7 @@ export async function getEntryDetails(dbarg, entryId, needle) {
     });
   } else {
     await db('exec', {
-      sql: `SELECT entries.feedid, entries_content.content
+      sql: `SELECT entries.feedid, entries_content.description
               FROM entries
               JOIN entries_content ON entries_content.entriesid=entries.id
              WHERE entries.id=$eid`,
