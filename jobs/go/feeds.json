@@ -1,6 +1,10 @@
 {
   "feeds": [
     {
+      "url": "https://rss.art19.com/sean-carrolls-mindscape",
+      "episode_blacklist": ["AMA"]
+    },
+    {
       "title": "The Stephen Wolfram Podcast",
       "url": "http://feeds.soundcloud.com/users/soundcloud:users:337408846/sounds.rss",
       "episode_blacklist": ["Q&amp;A", "Business, Innovation"]
