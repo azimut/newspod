@@ -1,5 +1,10 @@
 {
   "feeds": [
+    {
+      "title": "The Stephen Wolfram Podcast",
+      "url": "http://feeds.soundcloud.com/users/soundcloud:users:337408846/sounds.rss",
+      "episode_blacklist": ["Q&amp;A", "Business, Innovation"]
+    },
     { "url": "https://changelog.com/founderstalk/feed" },
     { "url": "https://changelog.com/gotime/feed" },
     { "url": "https://changelog.com/practicalai/feed" },
