@@ -49,7 +49,6 @@ type alias DbStats =
 type alias Feed =
     { id : Int
     , title : String
-    , description : String
     , isSelected : Bool
     , isVisible : Bool
     , nEntries : Int
@@ -167,7 +166,7 @@ toEntry { id, feedid, title, date, url } =
 
 toFeed : InitFeed -> Feed
 toFeed { id, title, nEntries } =
-    { id = id, title = title, description = "", isSelected = False, isVisible = True, nEntries = nEntries, nResults = 0 }
+    { id = id, title = title, isSelected = False, isVisible = True, nEntries = nEntries, nResults = 0 }
 
 
 toggleEntryDetails : Int -> List Entry -> List Entry
