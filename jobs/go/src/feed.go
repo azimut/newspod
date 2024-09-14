@@ -36,6 +36,10 @@ type Feed struct {
 	Entries     Entries
 	RawTitle    string
 	Description string
+	Image       string
+	Language    string
+	Author      string
+	Home        string
 }
 
 func (feed *Feed) FetchMetadata() (err error) {
@@ -96,10 +100,17 @@ func (feed *Feed) Fetch() error {
 		return err
 	}
 
-	feed.Description = rawFeed.Description
 	feed.RawTitle = rawFeed.Title
 	if strings.TrimSpace(feed.Title) == "" {
 		feed.Title = rawFeed.Title
+	}
+
+	feed.Description = rawFeed.Description
+	feed.Language = rawFeed.Language
+	feed.Image = rawFeed.Image.URL
+	feed.Home = rawFeed.Link
+	if len(rawFeed.Authors) > 0 {
+		feed.Author = rawFeed.Authors[0].Name
 	}
 
 	html2md := md.NewConverter("", true, nil)

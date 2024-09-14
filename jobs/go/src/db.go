@@ -16,11 +16,21 @@ func initTables(db *sql.DB) error {
     pragma page_size    = 1024;
 
     create table feeds (
-        id          integer not null primary key,
-        title       text,
-        url         text    not null unique,
-        description text
+      id     integer not null primary key,
+      title  text,
+      url    text    not null unique
     ) strict;
+
+    create table feeds_details (
+      feedid      integer not null,
+      home        text,
+      description text,
+      language    text,
+      image       text,
+      author      text,
+      foreign key(feedid) references feeds(id)
+    ) strict;
+    create index feedsdetailsindex on feeds_details(feedid);
 
     create table feeds_metadata (
       feedid       integer not null,
@@ -139,11 +149,18 @@ func (feeds Feeds) Save(db *sql.DB) error {
 	if err != nil {
 		return err
 	}
-	stmt_feeds, err := tx.Prepare("insert into feeds(title,url,description) values(?,?,?)")
+	stmt_feeds, err := tx.Prepare("insert into feeds(title,url) values(?,?)")
 	if err != nil {
 		return err
 	}
 	defer stmt_feeds.Close()
+	stmt_feeds_details, err := tx.Prepare(
+		"insert into feeds_details(feedid,home,description,language,image,author) values(?,?,?,?,?,?)",
+	)
+	if err != nil {
+		return err
+	}
+	defer stmt_feeds_details.Close()
 	stmt_feeds_meta_init, err := tx.Prepare("insert into feeds_metadata(feedid) values(?)")
 	if err != nil {
 		return err
@@ -185,7 +202,7 @@ func (feeds Feeds) Save(db *sql.DB) error {
 	for _, feed := range feeds {
 		effectiveFeedId := feed.RawId
 		if feed.RawLastFetch.IsZero() { // first time seen
-			res, err := stmt_feeds.Exec(feed.Title, feed.Url, feed.Description)
+			res, err := stmt_feeds.Exec(feed.Title, feed.Url)
 			if err != nil {
 				return err
 			}
@@ -195,6 +212,17 @@ func (feeds Feeds) Save(db *sql.DB) error {
 			}
 			effectiveFeedId = int(tmp)
 			_, err = stmt_feeds_meta_init.Exec(effectiveFeedId)
+			if err != nil {
+				return err
+			}
+			_, err = stmt_feeds_details.Exec(
+				effectiveFeedId,
+				feed.Home,
+				feed.Description,
+				feed.Language,
+				feed.Image,
+				feed.Author,
+			)
 			if err != nil {
 				return err
 			}
