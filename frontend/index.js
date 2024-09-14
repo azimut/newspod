@@ -103,6 +103,39 @@ export async function search(dbarg, needle) {
   return queue;
 }
 
+
+export async function getFeedDetails(dbarg, feedid) {
+  let db = await dbarg;
+  let result = {};
+  await db('exec', {
+    sql: `SELECT fd.home,
+                 fd.description,
+                 fd.language,
+                 fd.image,
+                 fd.author,
+                 feeds.url
+            FROM feeds_details fd
+            JOIN feeds ON feeds.id = fd.feedid
+           WHERE feeds.id = $id`,
+    bind: {$id: feedid},
+    callback: (msg) => {
+      if (msg.row) {
+        let [home,description,language,image,author,url] = msg.row;
+        result = {
+          id: feedid,
+          home: home,
+          description: description,
+          language: language,
+          image: image,
+          author: author,
+          url: url
+        }
+      }
+    }
+  });
+  return result;
+}
+
 export async function getEntryDetails(dbarg, entryId, needle) {
   let db = await dbarg;
   let result;

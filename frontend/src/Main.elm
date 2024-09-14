@@ -2,8 +2,8 @@ port module Main exposing (..)
 
 import Browser
 import Filesize
-import Html exposing (Html, a, article, details, div, footer, form, header, input, main_, span, summary, text, time)
-import Html.Attributes exposing (attribute, autofocus, class, href, maxlength, minlength, placeholder, size, type_, value)
+import Html exposing (Html, a, article, details, div, footer, form, header, img, input, main_, span, summary, text, time)
+import Html.Attributes exposing (attribute, autofocus, class, href, maxlength, minlength, placeholder, size, src, type_, value)
 import Html.Events exposing (onClick, onInput, onSubmit, stopPropagationOn)
 import Json.Decode as JD
 import List.Extra
@@ -49,10 +49,22 @@ type alias DbStats =
 type alias Feed =
     { id : Int
     , title : String
+    , details : Maybe FeedDetails
     , isSelected : Bool
     , isVisible : Bool
     , nEntries : Int
     , nResults : Int
+    }
+
+
+type alias FeedDetails =
+    { id : Int
+    , home : String
+    , description : String
+    , language : String
+    , image : String
+    , author : String
+    , url : String
     }
 
 
@@ -87,6 +99,7 @@ type Msg
     | NewSearchResults (List NewEntry)
     | NewDbStats DbStats
     | NewError String
+    | NewFeedDetails FeedDetails
 
 
 type alias InitFeed =
@@ -118,6 +131,9 @@ type alias QuestionEntryDetails =
     }
 
 
+port askForFeedDetails : Int -> Cmd msg
+
+
 port askForEntryDetails : QuestionEntryDetails -> Cmd msg
 
 
@@ -125,6 +141,9 @@ port askForEntries : Int -> Cmd msg
 
 
 port askForSearch : String -> Cmd msg
+
+
+port receiveFeedDetails : (FeedDetails -> msg) -> Sub msg
 
 
 port receiveDbStats : (DbStats -> msg) -> Sub msg
@@ -166,7 +185,7 @@ toEntry { id, feedid, title, date, url } =
 
 toFeed : InitFeed -> Feed
 toFeed { id, title, nEntries } =
-    { id = id, title = title, isSelected = False, isVisible = True, nEntries = nEntries, nResults = 0 }
+    { id = id, title = title, details = Nothing, isSelected = False, isVisible = True, nEntries = nEntries, nResults = 0 }
 
 
 toggleEntryDetails : Int -> List Entry -> List Entry
@@ -250,7 +269,7 @@ update msg ({ feeds, entries, search, state } as model) =
         AskForEntries feedId ->
             case state of
                 Idle ->
-                    ( toggleSelectedFeed model feedId, askForEntries feedId )
+                    ( toggleSelectedFeed model feedId, Cmd.batch [ askForFeedDetails feedId, askForEntries feedId ] )
 
                 _ ->
                     ( toggleSelectedFeed model feedId, Cmd.none )
@@ -282,6 +301,22 @@ update msg ({ feeds, entries, search, state } as model) =
 
         NewError _ ->
             ( { model | state = Error }, Cmd.none )
+
+        NewFeedDetails ({ id } as feedDetails) ->
+            ( { model
+                | feeds =
+                    List.map
+                        (\feed ->
+                            if feed.id == id && feed.details == Nothing then
+                                { feed | details = Just feedDetails }
+
+                            else
+                                feed
+                        )
+                        feeds
+              }
+            , Cmd.none
+            )
 
 
 newSearchResults : Model -> List NewEntry -> Model
@@ -379,6 +414,14 @@ viewFeed ({ title, id, isSelected } as feed) state now entries =
 
                 _ ->
                     feed.nEntries
+
+        content =
+            case state of
+                Idle ->
+                    viewFeedDetails feed :: viewFeedEntries id now entries
+
+                _ ->
+                    viewFeedEntries id now entries
     in
     article [ onClick (AskForEntries id) ]
         [ details [ open isSelected ] <|
@@ -386,7 +429,31 @@ viewFeed ({ title, id, isSelected } as feed) state now entries =
                 [ span [] [ text title ]
                 , span [] [ text (" [" ++ fromInt count ++ "]") ]
                 ]
-                :: viewFeedEntries id now entries
+                :: content
+        ]
+
+
+viewFeedDetails : Feed -> Html Msg
+viewFeedDetails { details } =
+    div
+        [ class "episode"
+        ]
+        [ div [ class "feed-details" ] <|
+            case details of
+                Nothing ->
+                    [ text "..." ]
+
+                Just feedDetails ->
+                    [ img [ src feedDetails.image ] []
+                    , div [ class "feed-bio" ]
+                        [ div [] []
+                        , text feedDetails.description
+                        , div [ class "feed-links" ]
+                            [ a [ href feedDetails.home ] [ text "Site" ]
+                            , a [ href feedDetails.url ] [ text "RSS" ]
+                            ]
+                        ]
+                    ]
         ]
 
 
@@ -552,4 +619,5 @@ subscriptions _ =
         , receiveSearchResults NewSearchResults
         , receiveDbStats NewDbStats
         , receiveError NewError
+        , receiveFeedDetails NewFeedDetails
         ]

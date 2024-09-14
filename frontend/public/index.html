@@ -115,6 +115,32 @@
         }
       }
 
+      .feed-details {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+      }
+      .feed-details img {
+        max-width: 30%;
+        object-fit: contain;
+      }
+      .feed-bio {
+        font-size: 1.4em;
+        padding: 0 10;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .feed-links {
+        display: flex;
+        justify-content: space-around;
+      }
+      @media (min-width: 1200px) {
+        .feed-details {
+          padding: 2em 5em;
+        }
+      }
+
       div.episode {
         padding: 1.2em 0.5em;
         overflow: auto; /* needed for chrome, otherwise links would change the box layout */
@@ -183,6 +209,9 @@
       });
       Muh.getFeeds(db).then((fs) => {
         app.ports.receiveInitFeeds.send(fs);
+      });
+      app.ports.askForFeedDetails.subscribe((feedid) => {
+        Muh.getFeedDetails(db, feedid).then(app.ports.receiveFeedDetails.send);
       });
       app.ports.askForEntries.subscribe((feedid) => {
         Muh.getEntries(db, feedid).then(app.ports.receiveEntries.send);

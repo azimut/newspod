@@ -107,7 +107,9 @@ func (feed *Feed) Fetch() error {
 
 	feed.Description = rawFeed.Description
 	feed.Language = rawFeed.Language
-	feed.Image = rawFeed.Image.URL
+	if rawFeed.Image != nil {
+		feed.Image = rawFeed.Image.URL
+	}
 	feed.Home = rawFeed.Link
 	if len(rawFeed.Authors) > 0 {
 		feed.Author = rawFeed.Authors[0].Name
