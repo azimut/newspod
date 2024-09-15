@@ -447,7 +447,7 @@ viewFeedDetails { details } =
                     [ img [ src feedDetails.image ] []
                     , div [ class "feed-bio" ]
                         [ div [] []
-                        , text feedDetails.description
+                        , Markdown.toHtml [] feedDetails.description
                         , div [ class "feed-links" ]
                             [ a [ href feedDetails.home ] [ text "Site" ]
                             , a [ href feedDetails.url ] [ text "RSS" ]

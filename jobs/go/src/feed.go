@@ -100,12 +100,17 @@ func (feed *Feed) Fetch() error {
 		return err
 	}
 
+	html2md := md.NewConverter("", true, nil)
+
 	feed.RawTitle = rawFeed.Title
 	if strings.TrimSpace(feed.Title) == "" {
 		feed.Title = rawFeed.Title
 	}
 
-	feed.Description = rawFeed.Description
+	feed.Description, err = html2md.ConvertString(rawFeed.Description)
+	if err != nil {
+		return err
+	}
 	feed.Language = rawFeed.Language
 	if rawFeed.Image != nil {
 		feed.Image = rawFeed.Image.URL
@@ -114,8 +119,6 @@ func (feed *Feed) Fetch() error {
 	if len(rawFeed.Authors) > 0 {
 		feed.Author = rawFeed.Authors[0].Name
 	}
-
-	html2md := md.NewConverter("", true, nil)
 
 	var keepItem bool
 	for _, item := range rawFeed.Items {
