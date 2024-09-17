@@ -434,14 +434,18 @@ viewFeed ({ title, id, isSelected } as feed) state now entries =
 
 
 viewFeedDetails : Feed -> Html Msg
-viewFeedDetails { details } =
+viewFeedDetails { details, isSelected } =
     div
         [ class "episode"
         ]
         [ div [ class "feed-details" ] <|
             case details of
                 Nothing ->
-                    [ text "..." ]
+                    if isSelected then
+                        [ Loaders.ballTriangle 60 "#fff" ]
+
+                    else
+                        [ text "..." ]
 
                 Just feedDetails ->
                     [ img [ src feedDetails.image ] []
