@@ -551,7 +551,10 @@ view { feeds, entries, search, state, now, dbStats } =
                 [ viewHeader search
                 , main_ [] <|
                     div [ class "some-results" ]
-                        [ text (fromInt nPodcasts ++ " podcasts, " ++ fromInt nEntries ++ " entries, " ++ Filesize.format dbSize) ]
+                        [ div [] [ text (fromInt nPodcasts ++ " podcasts,") ]
+                        , div [] [ text (fromInt nEntries ++ " episodes,") ]
+                        , div [] [ text (Filesize.format dbSize) ]
+                        ]
                         :: List.map (\feed -> viewFeed feed state now entries) feeds
                 , viewFooter
                 ]
