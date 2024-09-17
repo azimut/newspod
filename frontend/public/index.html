@@ -46,21 +46,31 @@
         left: 50%;
         transform: translate(-50%, -50%);
       }
-
+      /* ----------------- */
       header {
         display: flex;
-        flex-direction: row;
+        margin: auto;
+        flex-direction: column;
         font-size: 4em;
         justify-content: center;
         padding: 0.3em 0 0.3em 0;
-        text-align: center;
+      }
+      header > * {
+        margin: 0.1em auto;
+      }
+      @media (min-width: 1200px) {
+        header {
+          flex-direction: row;
+        }
+        header > * {
+          margin: 0 0.2em;
+        }
       }
       header span.pod {
         color: hsl(24, 90%, 80%);
       }
       form {
-        margin: 0 0 0 0.5em;
-        display: flex;
+        display: flex; /* Vertical align */
         flex-direction: column;
         justify-content: center;
       }
@@ -72,7 +82,7 @@
         border-radius: 0.1em;
         flex-grow: 0;
       }
-
+      /* ----------------- */
       footer {
         text-align: center;
         padding: 1em 0em;
