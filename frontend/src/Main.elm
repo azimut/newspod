@@ -555,8 +555,8 @@ view { feeds, entries, search, state, now, dbStats } =
         WaitingForResults ->
             div []
                 [ viewHeader search
-                , div [ class "loader" ]
-                    [ Loaders.ballTriangle 150 "#fff" ]
+                , div [ class "loader-search" ]
+                    [ Loaders.ballTriangle 60 "#fff" ]
                 ]
 
         ShowingResults ->
