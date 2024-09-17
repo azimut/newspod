@@ -131,12 +131,22 @@
 
       .feed-details {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         justify-content: center;
+        align-items: center; /* for the "..." */
+        padding: 0 0.4em;
       }
       .feed-details img {
-        max-width: 30%;
         object-fit: contain;
+        width: 100%; /* needed with align-items above */
+      }
+      @media (min-width: 1200px) {
+        .feed-details {
+          flex-direction: row;
+        }
+        .feed-details img {
+          max-width: 30%;
+        }
       }
       .feed-bio {
         font-size: 1.4em;

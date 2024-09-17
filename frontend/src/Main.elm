@@ -495,8 +495,10 @@ viewEntry feedId now { title, date, url, id, isShowingDetails, content } =
 viewHeader : String -> Html Msg
 viewHeader search =
     header []
-        [ text "news"
-        , span [ class "pod" ] [ text "pod" ]
+        [ div []
+            [ text "news"
+            , span [ class "pod" ] [ text "pod" ]
+            ]
         , form [ onSubmit AskForSearch ]
             [ input
                 [ type_ "search"
