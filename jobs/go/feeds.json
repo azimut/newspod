@@ -1,5 +1,21 @@
 {
   "feeds": [
+    {
+      "title": "Software Developers Journey",
+      "url": "https://feeds.buzzsprout.com/190346.rss"
+    },
+    {
+      "title": "Stack Overflow",
+      "url": "https://feeds.simplecast.com/XA_851k3"
+    },
+    {
+      "title": "SRE Prodcast",
+      "url": "https://feeds.libsyn.com/407036"
+    },
+    {
+      "title": "Asianometry",
+      "url": "https://anchor.fm/s/5d71354c/podcast/rss"
+    },
     { "url": "http://devopscafe.libsyn.com/rss" },
     { "url": "https://topenddevs.com/podcasts/adventures-in-devops/rss" },
     { "url": "https://www.arresteddevops.com/episode/index.xml" },
@@ -18,7 +34,7 @@
       "title": "Founders Talk",
       "url": "https://changelog.com/founderstalk/feed"
     },
-    { "url": "https://changelog.com/gotime/feed" },
+    { "title": "Go Time", "url": "https://changelog.com/gotime/feed" },
     {
       "title": "Practical AI",
       "url": "https://changelog.com/practicalai/feed"
