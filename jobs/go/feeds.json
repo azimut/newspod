@@ -1,5 +1,16 @@
 {
   "feeds": [
+    { "url": "https://thespaceaboveus.libsyn.com/rss" },
+    {
+      "title": "Inference",
+      "url": "https://anchor.fm/s/50673b6c/podcast/rss"
+    },
+    {
+      "title": "Functional Futures",
+      "url": "https://anchor.fm/s/7b1db340/podcast/rss"
+    },
+    { "url": "http://www.soldersmoke.com/soldersmoke.rss" },
+    { "url": "https://kodsnack.se/international/index.xml" },
     {
       "title": "Software Developers Journey",
       "url": "https://feeds.buzzsprout.com/190346.rss"
