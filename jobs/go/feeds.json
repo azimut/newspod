@@ -1,5 +1,10 @@
 {
   "feeds": [
+    {
+      "title": "Google DeepMind",
+      "url": "https://feeds.simplecast.com/JT6pbPkg"
+    },
+    { "url": "https://feeds.fireside.fm/themanifest/rss" },
     { "url": "https://thespaceaboveus.libsyn.com/rss" },
     {
       "title": "Inference",
