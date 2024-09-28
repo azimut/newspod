@@ -543,93 +543,117 @@ viewFooter =
 
 
 viewStats : Model -> Html Msg
-viewStats { dbStats, feeds } =
+viewStats { dbStats } =
     case dbStats of
         Nothing ->
-            div [ class "some-results" ]
-                [ Loaders.ballTriangle 150 "#fff" ]
+            text ""
 
         Just { nPodcasts, nEntries, dbSize } ->
-            case feeds of
-                [] ->
-                    div [ class "some-results" ]
-                        [ Loaders.ballTriangle 150 "#fff" ]
-
-                _ ->
-                    div [ class "some-results" ]
-                        [ div [] [ text (fromInt nPodcasts ++ " podcasts,") ]
-                        , div [] [ text (fromInt nEntries ++ " episodes,") ]
-                        , div [] [ text (Filesize.format dbSize) ]
-                        ]
+            div [ class "some-results" ]
+                [ div [] [ text (fromInt nPodcasts ++ " podcasts,") ]
+                , div [] [ text (fromInt nEntries ++ " episodes,") ]
+                , div [] [ text (Filesize.format dbSize) ]
+                ]
 
 
-view : Model -> Html Msg
-view ({ feeds, entries, state, now } as model) =
+viewMain : Model -> Html Msg
+viewMain ({ state, dbStats } as model) =
     case state of
         Error ->
-            div []
-                [ viewHeader model
-                , main_ []
-                    [ div [ class "some-results" ] [ text "ERROR x(" ]
-                    ]
-                ]
+            main_ [] [ div [ class "some-results" ] [ text "ERROR x(" ] ]
 
         Starting ->
-            div []
-                [ viewHeader model
-                , main_ [] [ viewStats model ]
-                ]
+            case dbStats of
+                Nothing ->
+                    main_ [] [ div [ class "some-results" ] [ Loaders.ballTriangle 150 "#fff" ] ]
+
+                Just _ ->
+                    main_ []
+                        [ viewStats model
+                        , if List.isEmpty model.feeds then
+                            Loaders.ballTriangle 150 "#fff"
+
+                          else
+                            text ""
+                        ]
 
         Idle ->
-            div []
-                [ viewHeader model
-                , main_ [] <|
-                    viewStats model
-                        :: List.map (\feed -> viewFeed feed state now entries) feeds
-                , viewFooter
-                ]
+            main_ [] <|
+                viewStats model
+                    :: List.map (\feed -> viewFeed feed state model.now model.entries) model.feeds
 
         WaitingForResults ->
-            div []
-                [ viewHeader model
-                , div [ class "loader-search" ]
+            main_ []
+                [ div [ class "loader-search" ]
                     [ Loaders.ballTriangle 60 "#fff" ]
                 ]
 
         ShowingResults ->
             let
                 filteredFeeds =
-                    List.filter .isVisible feeds
+                    List.filter .isVisible model.feeds
             in
+            case filteredFeeds of
+                [] ->
+                    main_ []
+                        [ div [ class "no-results" ] [ text "no results found :(" ] ]
+
+                _ ->
+                    let
+                        nResults =
+                            List.foldl (\f acc -> f.nResults + acc) 0 filteredFeeds
+
+                        message =
+                            case nResults of
+                                1 ->
+                                    fromInt nResults ++ " result found"
+
+                                _ ->
+                                    fromInt nResults ++ " results found"
+                    in
+                    main_ [] <|
+                        let
+                            feedIds =
+                                OrderedDict.keys model.entries |> List.reverse
+                        in
+                        div [ class "some-results" ] [ text message ]
+                            :: List.map
+                                (\feed -> viewFeed feed state model.now model.entries)
+                                (sortFeeds model.feeds feedIds [])
+
+
+view : Model -> Html Msg
+view model =
+    case model.state of
+        Error ->
             div []
                 [ viewHeader model
-                , case filteredFeeds of
-                    [] ->
-                        main_ []
-                            [ div [ class "no-results" ] [ text "no results found :(" ] ]
+                , viewMain model
+                ]
 
-                    _ ->
-                        let
-                            nResults =
-                                List.foldl (\f acc -> f.nResults + acc) 0 filteredFeeds
+        Starting ->
+            div []
+                [ viewHeader model
+                , viewMain model
+                ]
 
-                            message =
-                                case nResults of
-                                    1 ->
-                                        fromInt nResults ++ " result found"
+        Idle ->
+            div []
+                [ viewHeader model
+                , viewMain model
+                , viewFooter
+                ]
 
-                                    _ ->
-                                        fromInt nResults ++ " results found"
-                        in
-                        main_ [] <|
-                            let
-                                feedIds =
-                                    OrderedDict.keys entries |> List.reverse
-                            in
-                            div [ class "some-results" ] [ text message ]
-                                :: List.map
-                                    (\feed -> viewFeed feed state now entries)
-                                    (sortFeeds feeds feedIds [])
+        WaitingForResults ->
+            div []
+                [ viewHeader model
+                , viewMain model
+                ]
+
+        ShowingResults ->
+            div []
+                [ viewHeader model
+                , viewMain model
                 , viewFooter
                 ]
 
