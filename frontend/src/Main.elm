@@ -558,17 +558,17 @@ viewStats { dbStats } =
 
 viewMain : Model -> Html Msg
 viewMain ({ state, dbStats } as model) =
-    case state of
-        Error ->
-            main_ [] [ div [ class "some-results" ] [ text "ERROR x(" ] ]
+    main_ [] <|
+        case state of
+            Error ->
+                [ div [ class "some-results" ] [ text "ERROR x(" ] ]
 
-        Starting ->
-            case dbStats of
-                Nothing ->
-                    main_ [] [ div [ class "some-results" ] [ Loaders.ballTriangle 150 "#fff" ] ]
+            Starting ->
+                case dbStats of
+                    Nothing ->
+                        [ div [ class "some-results" ] [ Loaders.ballTriangle 150 "#fff" ] ]
 
-                Just _ ->
-                    main_ []
+                    Just _ ->
                         [ viewStats model
                         , if List.isEmpty model.feeds then
                             Loaders.ballTriangle 150 "#fff"
@@ -577,42 +577,37 @@ viewMain ({ state, dbStats } as model) =
                             text ""
                         ]
 
-        Idle ->
-            main_ [] <|
+            Idle ->
                 viewStats model
                     :: List.map (\feed -> viewFeed feed state model.now model.entries) model.feeds
 
-        WaitingForResults ->
-            main_ []
+            WaitingForResults ->
                 [ div [ class "loader-search" ]
                     [ Loaders.ballTriangle 60 "#fff" ]
                 ]
 
-        ShowingResults ->
-            let
-                filteredFeeds =
-                    List.filter .isVisible model.feeds
-            in
-            case filteredFeeds of
-                [] ->
-                    main_ []
+            ShowingResults ->
+                let
+                    filteredFeeds =
+                        List.filter .isVisible model.feeds
+                in
+                case filteredFeeds of
+                    [] ->
                         [ div [ class "no-results" ] [ text "no results found :(" ] ]
 
-                _ ->
-                    let
-                        nResults =
-                            List.foldl (\f acc -> f.nResults + acc) 0 filteredFeeds
-
-                        message =
-                            case nResults of
-                                1 ->
-                                    fromInt nResults ++ " result found"
-
-                                _ ->
-                                    fromInt nResults ++ " results found"
-                    in
-                    main_ [] <|
+                    _ ->
                         let
+                            nResults =
+                                List.foldl (\f acc -> f.nResults + acc) 0 filteredFeeds
+
+                            message =
+                                case nResults of
+                                    1 ->
+                                        fromInt nResults ++ " result found"
+
+                                    _ ->
+                                        fromInt nResults ++ " results found"
+
                             feedIds =
                                 OrderedDict.keys model.entries |> List.reverse
                         in

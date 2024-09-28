@@ -229,10 +229,10 @@
     <script src="temp/bundle.js"></script>
     <script src="elm.js"></script>
     <script>
-      let db = Muh.initConnection();
       var app = Elm.Main.init({
         node: document.getElementById("app"),
       });
+      let db = Muh.initConnection();
       Muh.db_stats(db).then((dbStats) => {
         app.ports.receiveDbStats.send(dbStats);
       });
