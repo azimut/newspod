@@ -3,7 +3,7 @@ port module Main exposing (..)
 import Browser
 import Filesize
 import Html exposing (Html, a, article, button, details, div, footer, form, header, img, input, main_, span, summary, text, time)
-import Html.Attributes exposing (attribute, autocomplete, autofocus, class, href, id, maxlength, minlength, name, placeholder, size, src, style, type_, value)
+import Html.Attributes exposing (attribute, autocomplete, autofocus, class, disabled, href, id, maxlength, minlength, name, placeholder, size, src, style, type_, value)
 import Html.Events exposing (onClick, onInput, onSubmit, stopPropagationOn)
 import Json.Decode as JD
 import List.Extra
@@ -31,7 +31,7 @@ type alias Model =
     { feeds : List Feed
     , entries : OrderedDict Int (List Entry)
     , search : String
-    , dbStats : DbStats
+    , dbStats : Maybe DbStats
     , currentSearch : Maybe String
     , nResults : Int
     , state : State
@@ -166,7 +166,7 @@ port receiveError : (String -> msg) -> Sub msg
 
 init : flags -> ( Model, Cmd Msg )
 init _ =
-    ( Model [] OrderedDict.empty "" (DbStats 0 0 0) Nothing 0 Starting (millisToPosix 0)
+    ( Model [] OrderedDict.empty "" Nothing Nothing 0 Starting (millisToPosix 0)
     , Task.perform InitClock Time.now
     )
 
@@ -223,7 +223,7 @@ update : Msg -> Model -> ( Model, Cmd msg )
 update msg ({ feeds, entries, search, state } as model) =
     case msg of
         NewDbStats { nEntries, nPodcasts, dbSize } ->
-            ( { model | dbStats = DbStats nPodcasts nEntries dbSize }, Cmd.none )
+            ( { model | dbStats = Just <| DbStats nPodcasts nEntries dbSize }, Cmd.none )
 
         InitFeeds iFeeds ->
             ( { model
@@ -496,8 +496,12 @@ viewEntry feedId now { title, date, url, id, isShowingDetails, content } =
         ]
 
 
-viewHeader : String -> Html Msg
-viewHeader search =
+viewHeader : Model -> Html Msg
+viewHeader { search, state } =
+    let
+        isDisabled =
+            state == Starting || state == WaitingForResults
+    in
     header []
         [ div []
             [ text "news"
@@ -506,7 +510,14 @@ viewHeader search =
         , form [ onSubmit AskForSearch ]
             [ input
                 [ type_ "search"
-                , placeholder "search..."
+                , disabled isDisabled
+                , placeholder
+                    (if isDisabled then
+                        ""
+
+                     else
+                        "search..."
+                    )
                 , id "newsearch"
                 , name "newsearch"
                 , value search
@@ -531,41 +542,56 @@ viewFooter =
         ]
 
 
+viewStats : Model -> Html Msg
+viewStats { dbStats, feeds } =
+    case dbStats of
+        Nothing ->
+            div [ class "some-results" ]
+                [ Loaders.ballTriangle 150 "#fff" ]
+
+        Just { nPodcasts, nEntries, dbSize } ->
+            case feeds of
+                [] ->
+                    div [ class "some-results" ]
+                        [ Loaders.ballTriangle 150 "#fff" ]
+
+                _ ->
+                    div [ class "some-results" ]
+                        [ div [] [ text (fromInt nPodcasts ++ " podcasts,") ]
+                        , div [] [ text (fromInt nEntries ++ " episodes,") ]
+                        , div [] [ text (Filesize.format dbSize) ]
+                        ]
+
+
 view : Model -> Html Msg
-view { feeds, entries, search, state, now, dbStats } =
+view ({ feeds, entries, state, now } as model) =
     case state of
         Error ->
             div []
-                [ viewHeader search
+                [ viewHeader model
                 , main_ []
                     [ div [ class "some-results" ] [ text "ERROR x(" ]
                     ]
                 ]
 
         Starting ->
-            div [ class "loader" ]
-                [ Loaders.ballTriangle 150 "#fff" ]
+            div []
+                [ viewHeader model
+                , main_ [] [ viewStats model ]
+                ]
 
         Idle ->
-            let
-                { nPodcasts, nEntries, dbSize } =
-                    dbStats
-            in
             div []
-                [ viewHeader search
+                [ viewHeader model
                 , main_ [] <|
-                    div [ class "some-results" ]
-                        [ div [] [ text (fromInt nPodcasts ++ " podcasts,") ]
-                        , div [] [ text (fromInt nEntries ++ " episodes,") ]
-                        , div [] [ text (Filesize.format dbSize) ]
-                        ]
+                    viewStats model
                         :: List.map (\feed -> viewFeed feed state now entries) feeds
                 , viewFooter
                 ]
 
         WaitingForResults ->
             div []
-                [ viewHeader search
+                [ viewHeader model
                 , div [ class "loader-search" ]
                     [ Loaders.ballTriangle 60 "#fff" ]
                 ]
@@ -576,7 +602,7 @@ view { feeds, entries, search, state, now, dbStats } =
                     List.filter .isVisible feeds
             in
             div []
-                [ viewHeader search
+                [ viewHeader model
                 , case filteredFeeds of
                     [] ->
                         main_ []
