@@ -3,7 +3,7 @@ port module Main exposing (..)
 import Browser
 import Filesize
 import Html exposing (Html, a, article, details, div, footer, form, header, img, input, main_, span, summary, text, time)
-import Html.Attributes exposing (attribute, autofocus, class, href, maxlength, minlength, placeholder, size, src, type_, value)
+import Html.Attributes exposing (attribute, autocomplete, autofocus, class, href, id, maxlength, minlength, placeholder, size, src, type_, value)
 import Html.Events exposing (onClick, onInput, onSubmit, stopPropagationOn)
 import Json.Decode as JD
 import List.Extra
@@ -507,12 +507,14 @@ viewHeader search =
             [ input
                 [ type_ "search"
                 , placeholder "search..."
+                , id "newsearch"
                 , value search
                 , onInput NewInput
                 , minlength 3
                 , maxlength 30
                 , size 12
                 , autofocus True
+                , autocomplete True
                 ]
                 []
             ]
