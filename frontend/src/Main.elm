@@ -566,7 +566,10 @@ viewMain ({ state, dbStats } as model) =
             Starting ->
                 case dbStats of
                     Nothing ->
-                        [ div [ class "some-results" ] [ Loaders.ballTriangle 150 "#fff" ] ]
+                        [ div [ class "some-results" ]
+                            [ div [ style "visibility" "hidden" ] [ text "..." ] ]
+                        , Loaders.ballTriangle 150 "#fff"
+                        ]
 
                     Just _ ->
                         [ viewStats model
