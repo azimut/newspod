@@ -500,7 +500,7 @@ viewHeader : Model -> Html Msg
 viewHeader { search, state } =
     let
         isDisabled =
-            state == Starting || state == WaitingForResults
+            state == Starting
     in
     header []
         [ div []
