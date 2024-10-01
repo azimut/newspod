@@ -20,7 +20,6 @@ func initTables(db *sql.DB) error {
       title  text,
       url    text    not null unique
     ) strict;
-    create index feedstitle on feeds(title);
 
     create table feeds_details (
       feedid      integer not null,
