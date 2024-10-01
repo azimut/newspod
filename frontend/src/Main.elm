@@ -572,7 +572,7 @@ viewStats { dbStats } =
 
         Just { nPodcasts, nEntries, dbSize } ->
             div [ class "some-results" ]
-                [ div [] [ text (fromInt nPodcasts ++ " podcasts,") ]
+                [ div [ class "npodcasts" ] [ text (fromInt nPodcasts ++ " podcasts,") ]
                 , div [] [ text (fromInt nEntries ++ " episodes,") ]
                 , div [] [ text (Filesize.format dbSize) ]
                 ]
