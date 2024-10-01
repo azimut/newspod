@@ -74,9 +74,15 @@ type alias Entry =
     , title : String
     , date : Int
     , url : String
-    , content : String
+    , content : EntryContent
     , isShowingDetails : Bool
     }
+
+
+type EntryContent
+    = EntryBlank
+    | EntryWaiting
+    | EntryReceived String
 
 
 type State
@@ -178,7 +184,7 @@ toEntry { id, feedid, title, date, url } =
     , title = title
     , date = date
     , url = url
-    , content = ""
+    , content = EntryBlank
     , isShowingDetails = False
     }
 
@@ -193,7 +199,15 @@ toggleEntryDetails entryId =
     List.map
         (\entry ->
             if entry.id == entryId then
-                { entry | isShowingDetails = not entry.isShowingDetails }
+                { entry
+                    | isShowingDetails = not entry.isShowingDetails
+                    , content =
+                        if entry.isShowingDetails then
+                            EntryBlank
+
+                        else
+                            EntryWaiting
+                }
 
             else
                 entry
@@ -208,10 +222,10 @@ fillDetails eDetails =
                 { entry
                     | content =
                         if eDetails.content == "" then
-                            "No description."
+                            EntryReceived "No description."
 
                         else
-                            eDetails.content
+                            EntryReceived eDetails.content
                 }
 
             else
@@ -473,22 +487,30 @@ onClickWithStopPropagation msg =
 
 
 viewEntry : Int -> Time.Posix -> Entry -> Html Msg
-viewEntry feedId now { title, date, url, id, isShowingDetails, content } =
+viewEntry feedId now entry =
     div
         [ class "episode"
 
         -- TODO: do not ask when closing...
-        , onClickWithStopPropagation (AskForDetails feedId id)
+        , onClickWithStopPropagation (AskForDetails feedId entry.id)
         ]
         [ div [ class "episode-title" ]
-            [ text title ]
+            [ text entry.title ]
         , div [ class "episode-date" ]
-            [ time [] [ text <| inWords (millisToPosix date) now ]
-            , a [ href url ] [ text "Download" ]
+            [ time [] [ text <| inWords (millisToPosix entry.date) now ]
+            , a [ href entry.url ] [ text "Download" ]
             ]
         , div [ class "episode-content" ]
-            [ if isShowingDetails then
-                Markdown.toHtml [] content
+            [ if entry.isShowingDetails then
+                case entry.content of
+                    EntryBlank ->
+                        text ""
+
+                    EntryReceived c ->
+                        Markdown.toHtml [] c
+
+                    EntryWaiting ->
+                        Loaders.ballTriangle 60 "#fff"
 
               else
                 div [] []
