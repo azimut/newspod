@@ -1,6 +1,33 @@
 {
   "feeds": [
     {
+      "title": "NSA (No Such Podcast)",
+      "url": "http://feeds.libsyn.com/35155/rss"
+    },
+    {
+      "title": "Malicious Life",
+      "url": "https://feeds.redcircle.com/597cfd00-b29a-49c6-9622-03c8decfc35f"
+    },
+    { "url": "https://www.codingblocks.net/feed/podcast/" },
+    {
+      "title": "Security Now",
+      "url": "https://feeds.twit.tv/sn.xml"
+    },
+    { "url": "https://newrustacean.com/feed.xml" },
+    {
+      "title": "GOTO Tech Podcasts",
+      "url": "https://feeds.buzzsprout.com/1714721.rss"
+    },
+    {
+      "title": "Front End Happy Hour",
+      "url": "https://feeds.simplecast.com/54nAGcIl"
+    },
+    { "url": "https://feed.podbean.com/exercism/feed.xml" },
+    {
+      "title": "Latent Space",
+      "url": "https://api.substack.com/feed/podcast/1084089.rss"
+    },
+    {
       "title": "Google DeepMind",
       "url": "https://feeds.simplecast.com/JT6pbPkg"
     },
@@ -179,7 +206,10 @@
     { "url": "https://arraycast.com/episodes?format=rss" },
     { "url": "https://freecodecamp.libsyn.com/rss" },
     { "url": "https://linuxunplugged.com/rss" },
-    { "url": "https://theamphour.com/feed/podcast/" },
+    {
+      "title": "The AMP Hour",
+      "url": "http://feeds.libsyn.com/35155/rss"
+    },
     { "url": "https://topenddevs.com/podcasts/ruby-rogues/rss" },
     { "url": "https://wetoker.com/feed/el-bestiario-de-internet/" },
     { "url": "https://www.numberphile.com/podcast?format=rss" },
