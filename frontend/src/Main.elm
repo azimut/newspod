@@ -467,7 +467,7 @@ viewFeedDetails { details, isSelected } =
                         [ div [] []
                         , Markdown.toHtml [] feedDetails.description
                         , div [ class "feed-links" ]
-                            [ a [ href feedDetails.home ] [ text "Site" ]
+                            [ a [ href feedDetails.home ] [ text "Home" ]
                             , a [ href feedDetails.url ] [ text "RSS" ]
                             ]
                         ]
@@ -608,7 +608,7 @@ viewMain ({ state, dbStats } as model) =
 
             WaitingForResults ->
                 [ div [ class "loader-search" ]
-                    [ Loaders.ballTriangle 60 "#fff" ]
+                    [ Loaders.ballTriangle 150 "#fff" ]
                 ]
 
             ShowingResults ->
