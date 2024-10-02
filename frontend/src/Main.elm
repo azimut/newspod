@@ -2,7 +2,7 @@ port module Main exposing (..)
 
 import Browser
 import Filesize
-import Html exposing (Html, a, article, button, details, div, footer, form, header, img, input, main_, span, summary, text, time)
+import Html exposing (Html, a, article, button, details, div, footer, form, h1, header, img, input, main_, span, summary, text, time)
 import Html.Attributes exposing (attribute, autocomplete, autofocus, class, disabled, href, id, maxlength, minlength, name, placeholder, size, src, style, type_, value)
 import Html.Events exposing (onClick, onInput, onSubmit, stopPropagationOn)
 import Json.Decode as JD
@@ -525,7 +525,7 @@ viewHeader { search, state } =
             state == Starting
     in
     header []
-        [ div []
+        [ h1 []
             [ text "news"
             , span [ class "pod" ] [ text "pod" ]
             ]
