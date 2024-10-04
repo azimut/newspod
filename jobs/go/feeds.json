@@ -1,6 +1,10 @@
 {
   "feeds": [
     {
+      "title": "devtools.fm",
+      "url": "https://anchor.fm/s/dd6922b4/podcast/rss"
+    },
+    {
       "title": "NSA (No Such Podcast)",
       "url": "http://feeds.libsyn.com/542957/rss"
     },
