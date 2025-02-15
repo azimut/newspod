@@ -27,6 +27,7 @@ type Feed struct {
 	EpisodeWhiteList []string  `json:"episode_whitelist"`
 	ContentEndMark   []string  `json:"content_end_mark"`
 	ContentExclude   []Address `json:"content_exclude"`
+	Tags             []string  `json:"tags"`
 
 	RawId           int
 	RawEtag         string
