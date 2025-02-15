@@ -48,7 +48,10 @@
     },
     {
       "title": "The security repo podcast",
-      "url": "https://anchor.fm/s/a4864e54/podcast/rss"
+      "url": "https://anchor.fm/s/a4864e54/podcast/rss",
+      "tags": [
+        "security"
+      ]
     },
     {
       "title": "Crypto Critics' Corner",
@@ -74,7 +77,10 @@
     },
     {
       "title": "Security Now",
-      "url": "https://feeds.twit.tv/sn.xml"
+      "url": "https://feeds.twit.tv/sn.xml",
+      "tags": [
+        "security"
+      ]
     },
     {
       "url": "https://newrustacean.com/feed.xml"
@@ -89,7 +95,10 @@
     },
     {
       "title": "NYT The Daily",
-      "url": "https://feeds.simplecast.com/54nAGcIl"
+      "url": "https://feeds.simplecast.com/54nAGcIl",
+      "tags": [
+        "politics"
+      ]
     },
     {
       "url": "https://feed.podbean.com/exercism/feed.xml"
@@ -211,7 +220,10 @@
     },
     {
       "title": "The OWASP Podcast",
-      "url": "http://feeds.soundcloud.com/users/soundcloud:users:63303345/sounds.rss"
+      "url": "http://feeds.soundcloud.com/users/soundcloud:users:63303345/sounds.rss",
+      "tags": [
+        "security"
+      ]
     },
     {
       "url": "https://feeds.megaphone.fm/slatelexiconvalley"
@@ -245,7 +257,10 @@
     },
     {
       "title": "Rustacean Station",
-      "url": "https://rustacean-station.org/podcast.rss"
+      "url": "https://rustacean-station.org/podcast.rss",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "title": "On the Metal",
@@ -320,7 +335,10 @@
       "url": "https://feeds.transistor.fm/the-technium-podcast"
     },
     {
-      "url": "http://reverseengineering.libsyn.com/rss"
+      "url": "http://reverseengineering.libsyn.com/rss",
+      "tags": [
+        "security"
+      ]
     },
     {
       "url": "http://hackaday.libsyn.com/rss"
@@ -402,14 +420,20 @@
     },
     {
       "title": "Meet the Hackers",
-      "url": "https://anchor.fm/s/6728bde4/podcast/rss"
+      "url": "https://anchor.fm/s/6728bde4/podcast/rss",
+      "tags": [
+        "security"
+      ]
     },
     {
       "url": "https://haskellweekly.news/podcast.rss"
     },
     {
       "title": "Tao del Hacking",
-      "url": "https://anchor.fm/s/6367c358/podcast/rss"
+      "url": "https://anchor.fm/s/6367c358/podcast/rss",
+      "tags": [
+        "security"
+      ]
     },
     {
       "title": "Critical Thinking",
@@ -420,22 +444,36 @@
       "url": "https://feeds.buzzsprout.com/2127872.rss"
     },
     {
-      "url": "https://www.smashingsecurity.com/rss"
+      "url": "https://www.smashingsecurity.com/rss",
+      "tags": [
+        "security"
+      ]
     },
     {
       "url": "https://feeds.simplecast.com/L9810DOa"
     },
     {
+      "title": "ZINE: The Radio Show",
       "url": "https://anchor.fm/s/43c9b024/podcast/rss"
     },
     {
-      "url": "https://elm-radio.com/feed.xml"
+      "url": "https://elm-radio.com/feed.xml",
+      "tags": [
+        "programming"
+      ]
     },
     {
-      "url": "https://feeds.simplecast.com/8tQUlnkG"
+      "title": "Elm Town",
+      "url": "https://feeds.simplecast.com/8tQUlnkG",
+      "tags": [
+        "programming"
+      ]
     },
     {
-      "url": "https://pod.link/developer-voices.rss"
+      "url": "https://pod.link/developer-voices.rss",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "url": "https://feeds.megaphone.fm/clickhere"
@@ -451,6 +489,7 @@
       "url": "https://feeds.soundcloud.com/users/soundcloud:users:220484243/sounds.rss"
     },
     {
+      "title": "Trail of Bits",
       "url": "https://feeds.simplecast.com/oM_1xVen"
     },
     {
@@ -462,15 +501,19 @@
       "url": "https://anchor.fm/s/1e4a0eac/podcast/rss"
     },
     {
+      "title": "Filosofia a la gorra",
       "url": "https://anchor.fm/s/2b386e88/podcast/rss"
     },
     {
+      "title": "This Week in Startups",
       "url": "https://anchor.fm/s/7c624c84/podcast/rss"
     },
     {
+      "title": "Day [0]",
       "url": "https://anchor.fm/s/a121a24/podcast/rss"
     },
     {
+      "title": "Tooling Talks",
       "url": "https://feeds.buzzsprout.com/1830936.rss"
     },
     {
@@ -480,7 +523,10 @@
       "url": "https://feeds.fireside.fm/wtfsharp/rss"
     },
     {
-      "url": "https://feeds.megaphone.fm/darknetdiaries"
+      "url": "https://feeds.megaphone.fm/darknetdiaries",
+      "tags": [
+        "security"
+      ]
     },
     {
       "title": "CLI Heroes",
@@ -491,13 +537,19 @@
     },
     {
       "title": "CoRecursive",
-      "url": "https://link.chtbl.com/corecursive?platform=rss"
+      "url": "https://link.chtbl.com/corecursive?platform=rss",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "title": "SE Radio",
       "url": "https://seradio.libsyn.com/rss",
       "trim_prefixes": [
         "SE Radio"
+      ],
+      "tags": [
+        "programming"
       ]
     },
     {
@@ -506,19 +558,31 @@
         "### Announcements",
         "### Conference Announcements",
         "### Topics"
+      ],
+      "tags": [
+        "programming"
       ]
     },
     {
       "title": "SICP Podcast",
-      "url": "https://www.sicpers.info/feed/podcast"
+      "url": "https://www.sicpers.info/feed/podcast",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "title": "YT | ColdFusion",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC4QZ_LsYcvcq7qOsOhpAX4A"
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC4QZ_LsYcvcq7qOsOhpAX4A",
+      "tags": [
+        "tech"
+      ]
     },
     {
       "title": "YT | Freddy Vega (Platzi)",
-      "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=PLwbyjg7-bjocjc5yp3Hkt3PAc1zCKi9OL"
+      "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=PLwbyjg7-bjocjc5yp3Hkt3PAc1zCKi9OL",
+      "tags": [
+        "tech"
+      ]
     }
   ]
 }
