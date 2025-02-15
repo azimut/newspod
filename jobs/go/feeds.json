@@ -1,6 +1,41 @@
 {
   "feeds": [
-    { "url": "http://www.magicreadalong.com/episode?format=rss" },
+    {
+      "title": "Odd Lots",
+      "url": "https://omnycontent.com/d/playlist/e73c998e-6e60-432f-8610-ae210140c5b1/8A94442E-5A74-4FA2-8B8D-AE27003A8D6B/982F5071-765C-403D-969D-AE27003A8D83/podcast.rss"
+    },
+    {
+      "url": "https://feeds.transistor.fm/acquired"
+    },
+    {
+      "url": "https://allinchamathjason.libsyn.com/rss"
+    },
+    {
+      "title": "404 Media",
+      "url": "https://feeds.megaphone.fm/TBIEA2761282490"
+    },
+    {
+      "url": "https://generativeartistry.com/index.xml"
+    },
+    {
+      "title": "Codeadores",
+      "url": "https://anchor.fm/s/fc062eb0/podcast/rss"
+    },
+    {
+      "title": "The Top Shelf (primeagen)",
+      "url": "https://anchor.fm/s/fb29b160/podcast/rss"
+    },
+    {
+      "title": "The security repo podcast",
+      "url": "https://anchor.fm/s/a4864e54/podcast/rss"
+    },
+    {
+      "title": "Crypto Critics' Corner",
+      "url": "https://anchor.fm/s/4fa795b4/podcast/rss"
+    },
+    {
+      "url": "http://www.magicreadalong.com/episode?format=rss"
+    },
     {
       "title": "devtools.fm",
       "url": "https://anchor.fm/s/dd6922b4/podcast/rss"
@@ -13,12 +48,16 @@
       "title": "Malicious Life",
       "url": "https://feeds.redcircle.com/597cfd00-b29a-49c6-9622-03c8decfc35f"
     },
-    { "url": "https://www.codingblocks.net/feed/podcast/" },
+    {
+      "url": "https://www.codingblocks.net/feed/podcast/"
+    },
     {
       "title": "Security Now",
       "url": "https://feeds.twit.tv/sn.xml"
     },
-    { "url": "https://newrustacean.com/feed.xml" },
+    {
+      "url": "https://newrustacean.com/feed.xml"
+    },
     {
       "title": "GOTO Tech Podcasts",
       "url": "https://feeds.buzzsprout.com/1714721.rss"
@@ -31,7 +70,9 @@
       "title": "NYT The Daily",
       "url": "https://feeds.simplecast.com/54nAGcIl"
     },
-    { "url": "https://feed.podbean.com/exercism/feed.xml" },
+    {
+      "url": "https://feed.podbean.com/exercism/feed.xml"
+    },
     {
       "title": "Latent Space",
       "url": "https://api.substack.com/feed/podcast/1084089.rss"
@@ -40,8 +81,12 @@
       "title": "Google DeepMind",
       "url": "https://feeds.simplecast.com/JT6pbPkg"
     },
-    { "url": "https://feeds.fireside.fm/themanifest/rss" },
-    { "url": "https://thespaceaboveus.libsyn.com/rss" },
+    {
+      "url": "https://feeds.fireside.fm/themanifest/rss"
+    },
+    {
+      "url": "https://thespaceaboveus.libsyn.com/rss"
+    },
     {
       "title": "Inference",
       "url": "https://anchor.fm/s/50673b6c/podcast/rss"
@@ -50,8 +95,12 @@
       "title": "Functional Futures",
       "url": "https://anchor.fm/s/7b1db340/podcast/rss"
     },
-    { "url": "http://www.soldersmoke.com/soldersmoke.rss" },
-    { "url": "https://kodsnack.se/international/index.xml" },
+    {
+      "url": "http://www.soldersmoke.com/soldersmoke.rss"
+    },
+    {
+      "url": "https://kodsnack.se/international/index.xml"
+    },
     {
       "title": "Software Developers Journey",
       "url": "https://feeds.buzzsprout.com/190346.rss"
@@ -68,25 +117,41 @@
       "title": "Asianometry",
       "url": "https://anchor.fm/s/5d71354c/podcast/rss"
     },
-    { "url": "http://devopscafe.libsyn.com/rss" },
-    { "url": "https://topenddevs.com/podcasts/adventures-in-devops/rss" },
-    { "url": "https://www.arresteddevops.com/episode/index.xml" },
-    { "url": "https://feed.podbean.com/bridgespodcast/feed.xml" },
+    {
+      "url": "http://devopscafe.libsyn.com/rss"
+    },
+    {
+      "url": "https://topenddevs.com/podcasts/adventures-in-devops/rss"
+    },
+    {
+      "url": "https://www.arresteddevops.com/episode/index.xml"
+    },
+    {
+      "url": "https://feed.podbean.com/bridgespodcast/feed.xml"
+    },
     {
       "title": "Sean Carroll's Mindscape",
       "url": "https://rss.art19.com/sean-carrolls-mindscape",
-      "episode_blacklist": ["AMA"]
+      "episode_blacklist": [
+        "AMA"
+      ]
     },
     {
       "title": "The Stephen Wolfram Podcast",
       "url": "http://feeds.soundcloud.com/users/soundcloud:users:337408846/sounds.rss",
-      "episode_blacklist": ["Q&A", "Business, Innovation"]
+      "episode_blacklist": [
+        "Q&A",
+        "Business, Innovation"
+      ]
     },
     {
       "title": "Founders Talk",
       "url": "https://changelog.com/founderstalk/feed"
     },
-    { "title": "Go Time", "url": "https://changelog.com/gotime/feed" },
+    {
+      "title": "Go Time",
+      "url": "https://changelog.com/gotime/feed"
+    },
     {
       "title": "Practical AI",
       "url": "https://changelog.com/practicalai/feed"
@@ -98,16 +163,27 @@
     {
       "title": "The Changelog",
       "url": "https://changelog.com/podcast/feed",
-      "episode_whitelist": ["(Interview)"],
-      "trim_suffixes": [" (Interview)"]
+      "episode_whitelist": [
+        "(Interview)"
+      ],
+      "trim_suffixes": [
+        " (Interview)"
+      ]
     },
     {
       "title": "Tech Over Tea",
       "url": "https://anchor.fm/s/149fd51c/podcast/rss",
-      "episode_blacklist": ["Solo", "Solo Episode"]
+      "episode_blacklist": [
+        "Solo",
+        "Solo Episode"
+      ]
     },
-    { "url": "https://bdebob.com/category/epsecretos/feed/" },
-    { "url": "https://bdebob.com/category/bdebobpodcast/feed/" },
+    {
+      "url": "https://bdebob.com/category/epsecretos/feed/"
+    },
+    {
+      "url": "https://bdebob.com/category/bdebobpodcast/feed/"
+    },
     {
       "title": "Art + Music + Technology",
       "url": "http://feeds.libsyn.com/48604/rss"
@@ -116,8 +192,12 @@
       "title": "The OWASP Podcast",
       "url": "http://feeds.soundcloud.com/users/soundcloud:users:63303345/sounds.rss"
     },
-    { "url": "https://feeds.megaphone.fm/slatelexiconvalley" },
-    { "url": "https://feeds.blubrry.com/feeds/voices_from_darpa.xml" },
+    {
+      "url": "https://feeds.megaphone.fm/slatelexiconvalley"
+    },
+    {
+      "url": "https://feeds.blubrry.com/feeds/voices_from_darpa.xml"
+    },
     {
       "title": "DevRock",
       "url": "http://feeds.soundcloud.com/users/soundcloud:users:5797383/sounds.rss"
@@ -202,27 +282,54 @@
       "title": "The Frontend Masters",
       "url": "https://anchor.fm/s/ea8edf9c/podcast/rss"
     },
-    { "url": "https://www.idlethumbs.net/feeds/designer-notes" },
-    { "url": "http://makingembeddedsystems.libsyn.com/rss" },
-    { "url": "https://adventofcomputing.libsyn.com/rss" },
+    {
+      "url": "https://www.idlethumbs.net/feeds/designer-notes"
+    },
+    {
+      "url": "http://makingembeddedsystems.libsyn.com/rss"
+    },
+    {
+      "url": "https://adventofcomputing.libsyn.com/rss"
+    },
     {
       "title": "The Handmade Network",
       "url": "https://handmade.network/podcast/podcast.xml"
     },
-    { "url": "https://feeds.transistor.fm/the-technium-podcast" },
-    { "url": "http://reverseengineering.libsyn.com/rss" },
-    { "url": "http://hackaday.libsyn.com/rss" },
-    { "url": "https://arraycast.com/episodes?format=rss" },
-    { "url": "https://freecodecamp.libsyn.com/rss" },
-    { "url": "https://linuxunplugged.com/rss" },
+    {
+      "url": "https://feeds.transistor.fm/the-technium-podcast"
+    },
+    {
+      "url": "http://reverseengineering.libsyn.com/rss"
+    },
+    {
+      "url": "http://hackaday.libsyn.com/rss"
+    },
+    {
+      "url": "https://arraycast.com/episodes?format=rss"
+    },
+    {
+      "title": "freeCodeCamp",
+      "url": "https://freecodecamp.libsyn.com/rss"
+    },
+    {
+      "url": "https://linuxunplugged.com/rss"
+    },
     {
       "title": "The AMP Hour",
       "url": "http://feeds.libsyn.com/35155/rss"
     },
-    { "url": "https://topenddevs.com/podcasts/ruby-rogues/rss" },
-    { "url": "https://wetoker.com/feed/el-bestiario-de-internet/" },
-    { "url": "https://www.numberphile.com/podcast?format=rss" },
-    { "url": "https://www.therubyonrailspodcast.com/rss" },
+    {
+      "url": "https://topenddevs.com/podcasts/ruby-rogues/rss"
+    },
+    {
+      "url": "https://wetoker.com/feed/el-bestiario-de-internet/"
+    },
+    {
+      "url": "https://www.numberphile.com/podcast?format=rss"
+    },
+    {
+      "url": "https://www.therubyonrailspodcast.com/rss"
+    },
     {
       "title": "Software Unscripted",
       "url": "https://pod.link/1602572955.rss"
@@ -237,7 +344,9 @@
     },
     {
       "url": "https://podcast.thinkingelixir.com/rss",
-      "episode_blacklist": ["Thinking Elixir News"],
+      "episode_blacklist": [
+        "Thinking Elixir News"
+      ],
       "content_exclude": [
         {
           "from": "**Elixir Community News",
@@ -245,7 +354,9 @@
         }
       ]
     },
-    { "url": "https://feed.podbean.com/sardonicast/feed.xml" },
+    {
+      "url": "https://feed.podbean.com/sardonicast/feed.xml"
+    },
     {
       "title": "Haskell Interlude",
       "url": "https://feeds.buzzsprout.com/1817535.rss"
@@ -258,8 +369,12 @@
       "title": "Backend Banter",
       "url": "https://anchor.fm/s/f39e007c/podcast/rss"
     },
-    { "url": "https://feeds.mozilla-podcasts.org/irl" },
-    { "url": "https://omny.fm/shows/future-of-coding/playlists/podcast.rss" },
+    {
+      "url": "https://feeds.mozilla-podcasts.org/irl"
+    },
+    {
+      "url": "https://omny.fm/shows/future-of-coding/playlists/podcast.rss"
+    },
     {
       "title": "Super Data Science",
       "url": "https://feeds.soundcloud.com/users/soundcloud:users:253585900/sounds.rss"
@@ -268,7 +383,9 @@
       "title": "Meet the Hackers",
       "url": "https://anchor.fm/s/6728bde4/podcast/rss"
     },
-    { "url": "https://haskellweekly.news/podcast.rss" },
+    {
+      "url": "https://haskellweekly.news/podcast.rss"
+    },
     {
       "title": "Tao del Hacking",
       "url": "https://anchor.fm/s/6367c358/podcast/rss"
@@ -281,22 +398,40 @@
       "title": "The Art of Network Engineering",
       "url": "https://feeds.buzzsprout.com/2127872.rss"
     },
-    { "url": "https://www.smashingsecurity.com/rss" },
-    { "url": "https://feeds.simplecast.com/L9810DOa" },
-    { "url": "https://anchor.fm/s/43c9b024/podcast/rss" },
-    { "url": "https://elm-radio.com/feed.xml" },
-    { "url": "https://feeds.simplecast.com/8tQUlnkG" },
-    { "url": "https://pod.link/developer-voices.rss" },
-    { "url": "https://feeds.megaphone.fm/clickhere" },
+    {
+      "url": "https://www.smashingsecurity.com/rss"
+    },
+    {
+      "url": "https://feeds.simplecast.com/L9810DOa"
+    },
+    {
+      "url": "https://anchor.fm/s/43c9b024/podcast/rss"
+    },
+    {
+      "url": "https://elm-radio.com/feed.xml"
+    },
+    {
+      "url": "https://feeds.simplecast.com/8tQUlnkG"
+    },
+    {
+      "url": "https://pod.link/developer-voices.rss"
+    },
+    {
+      "url": "https://feeds.megaphone.fm/clickhere"
+    },
     {
       "title": "HanselMinutes",
       "url": "https://feeds.simplecast.com/gvtxUiIf"
     },
-    { "url": "https://leanpub.com/podcasts/frontmatter/podcast.xml" },
+    {
+      "url": "https://leanpub.com/podcasts/frontmatter/podcast.xml"
+    },
     {
       "url": "https://feeds.soundcloud.com/users/soundcloud:users:220484243/sounds.rss"
     },
-    { "url": "https://feeds.simplecast.com/oM_1xVen" },
+    {
+      "url": "https://feeds.simplecast.com/oM_1xVen"
+    },
     {
       "title": "Eric Normand",
       "url": "https://feeds.transistor.fm/thoughts-on-functional-programming-podcast-by-eric-normand"
@@ -305,18 +440,34 @@
       "title": "ML Street Talk",
       "url": "https://anchor.fm/s/1e4a0eac/podcast/rss"
     },
-    { "url": "https://anchor.fm/s/2b386e88/podcast/rss" },
-    { "url": "https://anchor.fm/s/7c624c84/podcast/rss" },
-    { "url": "https://anchor.fm/s/a121a24/podcast/rss" },
-    { "url": "https://feeds.buzzsprout.com/1830936.rss" },
-    { "url": "https://feeds.fireside.fm/compositional/rss" },
-    { "url": "https://feeds.fireside.fm/wtfsharp/rss" },
-    { "url": "https://feeds.megaphone.fm/darknetdiaries" },
+    {
+      "url": "https://anchor.fm/s/2b386e88/podcast/rss"
+    },
+    {
+      "url": "https://anchor.fm/s/7c624c84/podcast/rss"
+    },
+    {
+      "url": "https://anchor.fm/s/a121a24/podcast/rss"
+    },
+    {
+      "url": "https://feeds.buzzsprout.com/1830936.rss"
+    },
+    {
+      "url": "https://feeds.fireside.fm/compositional/rss"
+    },
+    {
+      "url": "https://feeds.fireside.fm/wtfsharp/rss"
+    },
+    {
+      "url": "https://feeds.megaphone.fm/darknetdiaries"
+    },
     {
       "title": "CLI Heroes",
       "url": "https://feeds.simplecast.com/vUHP7wpf"
     },
-    { "url": "https://lexfridman.com/feed/podcast/" },
+    {
+      "url": "https://lexfridman.com/feed/podcast/"
+    },
     {
       "title": "CoRecursive",
       "url": "https://link.chtbl.com/corecursive?platform=rss"
@@ -324,7 +475,9 @@
     {
       "title": "SE Radio",
       "url": "https://seradio.libsyn.com/rss",
-      "trim_prefixes": ["SE Radio"]
+      "trim_prefixes": [
+        "SE Radio"
+      ]
     },
     {
       "url": "https://www.functionalgeekery.com/feed/mp3/",
@@ -334,7 +487,10 @@
         "### Topics"
       ]
     },
-    { "title": "SICP Podcast", "url": "https://www.sicpers.info/feed/podcast" },
+    {
+      "title": "SICP Podcast",
+      "url": "https://www.sicpers.info/feed/podcast"
+    },
     {
       "title": "YT | ColdFusion",
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC4QZ_LsYcvcq7qOsOhpAX4A"
