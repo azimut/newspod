@@ -1,6 +1,40 @@
 {
   "feeds": [
     {
+      "title": "Well There‘s Your Problem",
+      "url": "https://feed.podbean.com/wtyppod/feed.xml",
+      "tags": [
+        "science"
+      ]
+    },
+    {
+      "title": "Coffee Break: Señal y Ruido",
+      "url": "https://www.ivoox.com/coffee-break-senal-ruido_fg_f1172891_filtro_1.xml",
+      "tags": [
+        "science"
+      ]
+    },
+    {
+      "title": "Book Overflow",
+      "url": "https://anchor.fm/s/f5bbb69c/podcast/rss",
+      "tags": [
+        "programming"
+      ]
+    },
+    {
+      "title": "Within Reason",
+      "url": "https://cosmicskeptic.libsyn.com/rss",
+      "tags": [
+        "philosophy"
+      ]
+    },
+    {
+      "url": "https://softwareengineeringdaily.com/feed/podcast/",
+      "tags": [
+        "programming"
+      ]
+    },
+    {
       "title": "Programando Otra Historia",
       "url": "https://anchor.fm/s/e88cd258/podcast/rss",
       "tags": [
@@ -39,7 +73,8 @@
       "title": "Codeadores",
       "url": "https://anchor.fm/s/fc062eb0/podcast/rss",
       "tags": [
-        "programming"
+        "programming",
+        "español"
       ]
     },
     {
@@ -145,7 +180,10 @@
     },
     {
       "title": "Asianometry",
-      "url": "https://anchor.fm/s/5d71354c/podcast/rss"
+      "url": "https://anchor.fm/s/5d71354c/podcast/rss",
+      "tags": [
+        "tech"
+      ]
     },
     {
       "url": "http://devopscafe.libsyn.com/rss"
@@ -209,10 +247,16 @@
       ]
     },
     {
-      "url": "https://bdebob.com/category/epsecretos/feed/"
+      "url": "https://bdebob.com/category/epsecretos/feed/",
+      "tags": [
+        "español"
+      ]
     },
     {
-      "url": "https://bdebob.com/category/bdebobpodcast/feed/"
+      "url": "https://bdebob.com/category/bdebobpodcast/feed/",
+      "tags": [
+        "español"
+      ]
     },
     {
       "title": "Art + Music + Technology",
@@ -272,7 +316,10 @@
     },
     {
       "title": "Game Dev Advice",
-      "url": "https://feeds.megaphone.fm/ADL7012656759"
+      "url": "https://feeds.megaphone.fm/ADL7012656759",
+      "tags": [
+        "gamedev"
+      ]
     },
     {
       "title": "Clojurestream",
@@ -284,11 +331,17 @@
     },
     {
       "title": "The Andrew Price Podcast",
-      "url": "https://anchor.fm/s/3a964378/podcast/rss"
+      "url": "https://anchor.fm/s/3a964378/podcast/rss",
+      "tags": [
+        "gamedev"
+      ]
     },
     {
       "title": "Braid Podcast",
-      "url": "https://media.rss.com/braidcast/feed.xml"
+      "url": "https://media.rss.com/braidcast/feed.xml",
+      "tags": [
+        "gamedev"
+      ]
     },
     {
       "title": "indiedevs talk shop",
@@ -398,7 +451,10 @@
     },
     {
       "title": "Haskell Interlude",
-      "url": "https://feeds.buzzsprout.com/1817535.rss"
+      "url": "https://feeds.buzzsprout.com/1817535.rss",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "title": "Happy Path Programming",
@@ -422,16 +478,21 @@
       "title": "Meet the Hackers",
       "url": "https://anchor.fm/s/6728bde4/podcast/rss",
       "tags": [
+        "español",
         "security"
       ]
     },
     {
-      "url": "https://haskellweekly.news/podcast.rss"
+      "url": "https://haskellweekly.news/podcast.rss",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "title": "Tao del Hacking",
       "url": "https://anchor.fm/s/6367c358/podcast/rss",
       "tags": [
+        "español",
         "security"
       ]
     },
@@ -450,7 +511,11 @@
       ]
     },
     {
-      "url": "https://feeds.simplecast.com/L9810DOa"
+      "title": "Signals and Threads",
+      "url": "https://feeds.simplecast.com/L9810DOa",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "title": "ZINE: The Radio Show",
@@ -494,7 +559,10 @@
     },
     {
       "title": "Eric Normand",
-      "url": "https://feeds.transistor.fm/thoughts-on-functional-programming-podcast-by-eric-normand"
+      "url": "https://feeds.transistor.fm/thoughts-on-functional-programming-podcast-by-eric-normand",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "title": "ML Street Talk",
@@ -502,7 +570,10 @@
     },
     {
       "title": "Filosofia a la gorra",
-      "url": "https://anchor.fm/s/2b386e88/podcast/rss"
+      "url": "https://anchor.fm/s/2b386e88/podcast/rss",
+      "tags": [
+        "español"
+      ]
     },
     {
       "title": "This Week in Startups",
@@ -510,7 +581,10 @@
     },
     {
       "title": "Day [0]",
-      "url": "https://anchor.fm/s/a121a24/podcast/rss"
+      "url": "https://anchor.fm/s/a121a24/podcast/rss",
+      "tags": [
+        "security"
+      ]
     },
     {
       "title": "Tooling Talks",
@@ -520,7 +594,10 @@
       "url": "https://feeds.fireside.fm/compositional/rss"
     },
     {
-      "url": "https://feeds.fireside.fm/wtfsharp/rss"
+      "url": "https://feeds.fireside.fm/wtfsharp/rss",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "url": "https://feeds.megaphone.fm/darknetdiaries",
