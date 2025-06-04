@@ -87,7 +87,13 @@ func initTables(db *sql.DB) error {
 }
 
 // LoadDb loads bare minum data from a sqlite db, if exits, into Feeds
-func LoadDb(db *sql.DB) (feeds Feeds, err error) {
+func LoadDb(filepath string) (feeds Feeds, err error) {
+	fmt.Printf("[+] Loading `%s` ... ", filepath)
+	db, err := InitDB(filepath)
+	if err != nil {
+		return nil, err
+	}
+
 	rows, err := db.Query(`
       SELECT feeds.id,
              feeds.url,
@@ -117,7 +123,7 @@ func LoadDb(db *sql.DB) (feeds Feeds, err error) {
 		}
 		feeds = append(feeds, feed)
 	}
-
+	fmt.Println("DONE")
 	return
 }
 
@@ -143,8 +149,12 @@ func InitDB(dbname string) (db *sql.DB, err error) {
 	return
 }
 
-func (feeds Feeds) Save(db *sql.DB) error {
-	fmt.Println("starting db save...")
+func (feeds Feeds) Save(dbname string) error {
+	db, err := InitDB(dbname)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("[+] Starting DB save ... ")
 	tx, err := db.Begin()
 	if err != nil {
 		return err
@@ -280,6 +290,6 @@ func (feeds Feeds) Save(db *sql.DB) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("...save done!")
+	fmt.Println("DONE")
 	return nil
 }

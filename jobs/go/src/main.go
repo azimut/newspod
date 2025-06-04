@@ -6,24 +6,19 @@ import (
 
 func main() {
 
-	db, err := InitDB("./feeds.db")
-	if err != nil {
-		panic(err)
-	}
-
 	feeds_json, err := LoadJson("feeds.json")
 	if err != nil {
 		panic(err)
 	}
 
-	feeds_db, err := LoadDb(db)
+	feeds_db, err := LoadDb("feeds.db")
 	if err != nil {
 		panic(err)
 	}
 
+	fmt.Println("[+] Reconciliating RSS feeds from json and sqlite:")
 	feeds := Feeds{}
 	for _, feed_json := range feeds_json {
-		fmt.Printf("processing json feed (%s)\n", feed_json.Url)
 		for _, feed_db := range feeds_db {
 			if feed_db.Url == feed_json.Url {
 				feed_json.RawId = feed_db.RawId
@@ -32,23 +27,23 @@ func main() {
 				feed_json.RawLastModified = feed_db.RawLastModified
 			}
 		}
-		fmt.Printf("adding feed: %s\n", feed_json.Url)
+		fmt.Println(feed_json.Url)
 		feeds = append(feeds, feed_json)
 	}
 
-	fmt.Println("Starting RSS feeds fetch...")
+	fmt.Println("[+] Starting RSS feeds fetch:")
 	for i := range feeds {
 		err := feeds[i].Fetch()
 		if err == nil {
 			fmt.Printf(
-				"[%02d/%02d] success (%s)\n",
+				"%02d/%02d OK (%s)\n",
 				i+1,
 				len(feeds),
 				feeds[i].Url,
 			)
 		} else {
 			fmt.Printf(
-				"[%02d/%02d] failure (%s) with error (%v)\n",
+				"%02d/%02d ERROR (%s) due (%v)\n",
 				i+1,
 				len(feeds),
 				feeds[i].Url,
@@ -59,7 +54,7 @@ func main() {
 
 	feeds.Sort()
 
-	err = feeds.Save(db)
+	err = feeds.Save("feeds.db")
 	if err != nil {
 		panic(err)
 	}
