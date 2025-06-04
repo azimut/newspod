@@ -150,11 +150,11 @@ func InitDB(dbname string) (db *sql.DB, err error) {
 }
 
 func (feeds Feeds) Save(dbname string) error {
+	fmt.Printf("[+] Saving `%s` ... ", dbname)
 	db, err := InitDB(dbname)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("[+] Starting DB save ... ")
 	tx, err := db.Begin()
 	if err != nil {
 		return err
