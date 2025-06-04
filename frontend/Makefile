@@ -8,8 +8,7 @@ public/elm.js: src/Main.elm
 	elm make src/Main.elm --output=public/elm.js --optimize
 
 .PHONY: dev
-dev: public/temp/bundle.js
-	elm-live src/Main.elm --port=8080 --dir=public/ --open -- --output=public/elm.js --debug
+dev: ; npm run dev
 
 public/favicon.ico public/apple-touch-icon.png:
 	convert -size 1024x1024 \
