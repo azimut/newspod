@@ -103,7 +103,7 @@ type Msg
     | NewDetails EntryDetails
     | AskForSearch
     | NewSearchResults (List NewEntry)
-    | NewDbStats DbStats
+    | InitDbStats DbStats
     | NewError String
     | NewFeedDetails FeedDetails
 
@@ -177,6 +177,12 @@ init _ =
     )
 
 
+
+------------------------------
+--          Update
+------------------------------
+
+
 toEntry : NewEntry -> Entry
 toEntry { id, feedid, title, date, url } =
     { id = id
@@ -191,7 +197,14 @@ toEntry { id, feedid, title, date, url } =
 
 toFeed : InitFeed -> Feed
 toFeed { id, title, nEntries } =
-    { id = id, title = title, details = Nothing, isSelected = False, isVisible = True, nEntries = nEntries, nResults = 0 }
+    { id = id
+    , title = title
+    , details = Nothing
+    , isSelected = False
+    , isVisible = True
+    , nEntries = nEntries
+    , nResults = 0
+    }
 
 
 toggleEntryDetails : Int -> List Entry -> List Entry
@@ -236,7 +249,7 @@ fillDetails eDetails =
 update : Msg -> Model -> ( Model, Cmd msg )
 update msg ({ feeds, entries, search, state } as model) =
     case msg of
-        NewDbStats { nEntries, nPodcasts, dbSize } ->
+        InitDbStats { nEntries, nPodcasts, dbSize } ->
             ( { model | dbStats = Just <| DbStats nPodcasts nEntries dbSize }, Cmd.none )
 
         InitFeeds iFeeds ->
@@ -407,6 +420,12 @@ toggleSelectedFeed ({ feeds, entries } as model) feedid =
                 )
                 entries
     }
+
+
+
+------------------------------
+--          View
+------------------------------
 
 
 open : Bool -> Html.Attribute msg
@@ -700,7 +719,7 @@ subscriptions _ =
         , receiveEntries NewEntries
         , receiveEntryDetails NewDetails
         , receiveSearchResults NewSearchResults
-        , receiveDbStats NewDbStats
+        , receiveDbStats InitDbStats
         , receiveError NewError
         , receiveFeedDetails NewFeedDetails
         ]
