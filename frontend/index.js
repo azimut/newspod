@@ -1,4 +1,4 @@
-import { createSQLiteThread, createHttpBackend } from 'sqlite-wasm-http';
+import { createSQLiteThread, createHttpBackend } from "sqlite-wasm-http";
 
 export async function initConnection() {
   const remoteURL = 'https://azimut.github.io/newspod/feeds.db';
@@ -7,22 +7,21 @@ export async function initConnection() {
   const httpBackend = createHttpBackend({
     maxPageSize: 1024,
     timeout: 10000,
-    cacheSize: 4096
+    cacheSize: 4096,
   });
-  return createSQLiteThread({ http: httpBackend })
-    .then((db) => {
-      db('open', {
-        filename: 'file:' + encodeURI(remoteURL),
-        vfs: 'http'
-      });
-      return db;
+  return createSQLiteThread({ http: httpBackend }).then((db) => {
+    db("open", {
+      filename: "file:" + encodeURI(remoteURL),
+      vfs: "http",
     });
+    return db;
+  });
 }
 
 export async function getFeeds(dbarg) {
   let db = await dbarg;
   let queue = [];
-  await db('exec', {
+  await db("exec", {
     sql: `SELECT feeds.id, feeds.title, count(*)
             FROM feeds
             JOIN entries
@@ -35,14 +34,14 @@ export async function getFeeds(dbarg) {
     bind: {},
     callback: (msg) => {
       if (msg.row) {
-        let [id,title,count] = msg.row;
+        let [id, title, count] = msg.row;
         queue.push({
           id: id,
           title: title,
-          nEntries: count
+          nEntries: count,
         });
       }
-    }
+    },
   });
   return queue;
 }
@@ -50,24 +49,24 @@ export async function getFeeds(dbarg) {
 export async function getEntries(dbarg, feedid) {
   let db = await dbarg;
   let queue = [];
-  await db('exec', {
+  await db("exec", {
     sql: `SELECT id, title, datemillis, url
             FROM entries
            WHERE feedid=$fid
         ORDER BY datemillis DESC`,
-    bind: {$fid: feedid},
+    bind: { $fid: feedid },
     callback: (msg) => {
       if (msg.row) {
-        let [id,title,date,url] = msg.row;
+        let [id, title, date, url] = msg.row;
         queue.push({
           id: id,
           feedid: feedid,
           title: title,
           date: date,
-          url: url
+          url: url,
         });
       }
-    }
+    },
   });
   return queue;
 }
@@ -75,7 +74,7 @@ export async function getEntries(dbarg, feedid) {
 export async function search(dbarg, needle) {
   let db = await dbarg;
   let queue = [];
-  await db('exec', {
+  await db("exec", {
     sql: `SELECT entries.feedid,
                  entries.id,
                  entries.title,
@@ -86,28 +85,27 @@ export async function search(dbarg, needle) {
               ON search.rowid=entries.id
            WHERE search MATCH $match
         ORDER BY entries.datemillis DESC`,
-    bind: {$match: needle},
+    bind: { $match: needle },
     callback: (msg) => {
       if (msg.row) {
-        let [feedid,entryid,title,url,date] = msg.row;
+        let [feedid, entryid, title, url, date] = msg.row;
         queue.push({
           id: entryid,
           feedid: feedid,
           title: title,
           date: date,
-          url: url
+          url: url,
         });
       }
-    }
+    },
   });
   return queue;
 }
 
-
 export async function getFeedDetails(dbarg, feedid) {
   let db = await dbarg;
   let result = {};
-  await db('exec', {
+  await db("exec", {
     sql: `SELECT fd.home,
                  fd.description,
                  fd.language,
@@ -117,10 +115,10 @@ export async function getFeedDetails(dbarg, feedid) {
             FROM feeds_details fd
             JOIN feeds ON feeds.id = fd.feedid
            WHERE feeds.id = $id`,
-    bind: {$id: feedid},
+    bind: { $id: feedid },
     callback: (msg) => {
       if (msg.row) {
-        let [home,description,language,image,author,url] = msg.row;
+        let [home, description, language, image, author, url] = msg.row;
         result = {
           id: feedid,
           home: home,
@@ -128,10 +126,10 @@ export async function getFeedDetails(dbarg, feedid) {
           language: language,
           image: image,
           author: author,
-          url: url
-        }
+          url: url,
+        };
       }
-    }
+    },
   });
   return result;
 }
@@ -140,41 +138,41 @@ export async function getEntryDetails(dbarg, entryId, needle) {
   let db = await dbarg;
   let result;
   if (needle && typeof needle === "string" && needle.length > 0) {
-    await db('exec', {
+    await db("exec", {
       sql: `SELECT entries.feedid, highlight(search,1,'\`\`\`','\`\`\`')
               FROM entries
               JOIN search ON entries.id=search.rowid
              WHERE entries.id=$eid
                AND search MATCH $needle`,
-      bind: {$eid: entryId, $needle: needle},
+      bind: { $eid: entryId, $needle: needle },
       callback: (msg) => {
         if (msg.row) {
-          let [feedid,content] = msg.row;
+          let [feedid, content] = msg.row;
           result = {
             id: entryId,
             feedid: feedid,
-            content: content
+            content: content,
           };
         }
-      }
+      },
     });
   } else {
-    await db('exec', {
+    await db("exec", {
       sql: `SELECT entries.feedid, entries_content.description
               FROM entries
               JOIN entries_content ON entries_content.entriesid=entries.id
              WHERE entries.id=$eid`,
-      bind: {$eid: entryId},
+      bind: { $eid: entryId },
       callback: (msg) => {
         if (msg.row) {
-          let [feedid,content] = msg.row;
+          let [feedid, content] = msg.row;
           result = {
             id: entryId,
             feedid: feedid,
-            content: content
+            content: content,
           };
         }
-      }
+      },
     });
   }
   return result;
@@ -183,7 +181,7 @@ export async function getEntryDetails(dbarg, entryId, needle) {
 export async function db_stats(dbarg) {
   let db = await dbarg;
   let result = 0;
-  await db('exec', {
+  await db("exec", {
     sql: `SELECT *
             FROM (SELECT COUNT(1) FROM feeds)
             JOIN (SELECT COUNT(1) FROM entries)
@@ -198,7 +196,36 @@ export async function db_stats(dbarg) {
           dbSize: size,
         };
       }
-    }
+    },
+  });
+  return result;
+}
+
+export async function db_latest(dbarg) {
+  let db = await dbarg;
+  let result = [];
+  await db("exec", {
+    sql: `SELECT id,
+                 feedid,
+                 title,
+                 datemillis,
+                 url,
+            FROM entries
+        ORDER BY datemillis DESC
+           LIMIT 20`,
+    bind: {},
+    callback: (msg) => {
+      if (msg.row) {
+        let [id, feedid, title, datemillis, url] = msg.row;
+        result.push({
+          id,
+          feedid,
+          title,
+          datemillis,
+          url,
+        });
+      }
+    },
   });
   return result;
 }
