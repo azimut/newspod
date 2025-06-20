@@ -1,7 +1,7 @@
 .PHONY: all
-all: frontend/public/feeds.db
+all:
 	cd jobs/go/ && make
-	cp jobs/go/feeds.db frontend/public/feeds.db
+	cp jobs/go/feeds.db frontend/public/
 	cd frontend/ && npm install && make
 
 .PHONY: slim
