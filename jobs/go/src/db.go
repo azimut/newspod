@@ -93,6 +93,7 @@ func LoadDb(filepath string) (feeds Feeds, err error) {
 	if err != nil {
 		return nil, err
 	}
+	defer db.Close()
 
 	rows, err := db.Query(`
       SELECT feeds.id,
@@ -155,6 +156,8 @@ func (feeds Feeds) Save(dbname string) error {
 	if err != nil {
 		return err
 	}
+	defer db.Close()
+
 	tx, err := db.Begin()
 	if err != nil {
 		return err
