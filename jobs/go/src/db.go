@@ -86,14 +86,18 @@ func createTables(db *sql.DB) error {
 }
 
 func dbOpen(filename, mode string) (db *sql.DB, err error) {
-	alreadyExits := true
+	var dataSource string
+	var alreadyExits bool
 	_, err = os.Stat(filename)
 	if errors.Is(err, os.ErrNotExist) {
 		fmt.Println("  [+] database does NOT exits, will create it")
-		alreadyExits = false
+		dataSource = filename
+	} else {
+		dataSource = fmt.Sprintf("file:%s?mode=%s", filename, mode)
+		alreadyExits = true
 	}
 
-	db, err = sql.Open("sqlite3", fmt.Sprintf("file:%s?mode=%s", filename, mode))
+	db, err = sql.Open("sqlite3", dataSource)
 	if err != nil {
 		return nil, err
 	}
