@@ -85,7 +85,7 @@ func createTables(db *sql.DB) error {
 	return nil
 }
 
-func dbOpen(filename string) (db *sql.DB, err error) {
+func dbOpen(filename, mode string) (db *sql.DB, err error) {
 	alreadyExits := true
 	_, err = os.Stat(filename)
 	if errors.Is(err, os.ErrNotExist) {
@@ -93,7 +93,7 @@ func dbOpen(filename string) (db *sql.DB, err error) {
 		alreadyExits = false
 	}
 
-	db, err = sql.Open("sqlite3", filename)
+	db, err = sql.Open("sqlite3", fmt.Sprintf("file:%s?mode=%s", filename, mode))
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +112,7 @@ func dbOpen(filename string) (db *sql.DB, err error) {
 // LoadDB loads bare minum data from a sqlite db, if exits, into Feeds
 func LoadDB(filepath string) (Feeds, error) {
 	fmt.Printf("[+] Loading `%s`\n", filepath)
-	db, err := dbOpen(filepath)
+	db, err := dbOpen(filepath, "ro")
 	if err != nil {
 		return nil, err
 	}
@@ -151,9 +151,9 @@ func LoadDB(filepath string) (Feeds, error) {
 	return feeds, nil
 }
 
-func (feeds Feeds) Save(dbname string) error {
-	fmt.Printf("[+] Saving `%s` ... ", dbname)
-	db, err := dbOpen(dbname)
+func (feeds Feeds) Save(filename string) error {
+	fmt.Printf("[+] Saving `%s` ... ", filename)
+	db, err := dbOpen(filename, "rwc")
 	if err != nil {
 		return err
 	}
