@@ -4,7 +4,7 @@ export async function initConnection() {
   // const remoteURL = "https://azimut.github.io/newspod/feeds.db";
   // const remoteURL = "http://192.168.100.1/feeds.db";
   // const remoteURL = 'http://127.0.0.1/feeds.db';
-  const remoteURL = "./feeds.db";
+  const remoteURL = "../feeds.db";
   const httpBackend = createHttpBackend({
     maxPageSize: 1024,
     timeout: 10000,
