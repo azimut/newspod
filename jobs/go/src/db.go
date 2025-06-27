@@ -111,7 +111,7 @@ func dbOpen(filename string) (db *sql.DB, err error) {
 
 // LoadDB loads bare minum data from a sqlite db, if exits, into Feeds
 func LoadDB(filepath string) (Feeds, error) {
-	fmt.Printf("[+] Loading `%s` ...", filepath)
+	fmt.Printf("[+] Loading `%s`\n", filepath)
 	db, err := dbOpen(filepath)
 	if err != nil {
 		return nil, err

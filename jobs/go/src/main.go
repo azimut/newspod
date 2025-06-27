@@ -30,7 +30,7 @@ func main() {
 				feed_json.RawLastModified = feed_db.RawLastModified
 			}
 		}
-		fmt.Println("  " + feed_json.Url)
+		fmt.Println("- " + feed_json.Url)
 		feeds = append(feeds, feed_json)
 	}
 
