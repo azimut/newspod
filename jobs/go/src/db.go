@@ -10,7 +10,8 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func initTables(db *sql.DB) error {
+func createTables(db *sql.DB) error {
+	fmt.Printf("[+] Creating tables ... ")
 	initStmt := `
     pragma journal_mode = delete;
     pragma page_size    = 1024;
@@ -82,14 +83,36 @@ func initTables(db *sql.DB) error {
 	if err != nil {
 		return err
 	}
-
+	fmt.Println("DONE")
 	return nil
 }
 
-// LoadDb loads bare minum data from a sqlite db, if exits, into Feeds
-func LoadDb(filepath string) (feeds Feeds, err error) {
+func dbOpen(filename string) (db *sql.DB, err error) {
+	alreadyExits := true
+	_, err = os.Stat(filename)
+	if errors.Is(err, os.ErrNotExist) {
+		fmt.Printf("[+] db (%s) does not exits, will create it\n", filename)
+		alreadyExits = false
+	}
+
+	db, err = sql.Open("sqlite3", filename)
+	if err != nil {
+		return nil, err
+	}
+
+	if !alreadyExits {
+		err = createTables(db)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return
+}
+
+// LoadDB loads bare minum data from a sqlite db, if exits, into Feeds
+func LoadDB(filepath string) (Feeds, error) {
 	fmt.Printf("[+] Loading `%s` ... ", filepath)
-	db, err := InitDB(filepath)
+	db, err := dbOpen(filepath)
 	if err != nil {
 		return nil, err
 	}
@@ -110,6 +133,7 @@ func LoadDb(filepath string) (feeds Feeds, err error) {
 
 	var id, lastfetch int
 	var url, lastmodified, etag string
+	var feeds Feeds
 	for rows.Next() {
 		err = rows.Scan(&id, &url, &lastfetch, &lastmodified, &etag)
 		if err != nil {
@@ -125,34 +149,12 @@ func LoadDb(filepath string) (feeds Feeds, err error) {
 		feeds = append(feeds, feed)
 	}
 	fmt.Println("DONE")
-	return
-}
-
-func InitDB(dbname string) (db *sql.DB, err error) {
-	alreadyExits := true
-	_, err = os.Stat(dbname)
-	if errors.Is(err, os.ErrNotExist) {
-		fmt.Printf("db (%s) does not exits, creating\n", dbname)
-		alreadyExits = false
-	}
-
-	db, err = sql.Open("sqlite3", dbname)
-	if err != nil {
-		return nil, err
-	}
-
-	if !alreadyExits {
-		err = initTables(db)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return
+	return feeds, nil
 }
 
 func (feeds Feeds) Save(dbname string) error {
 	fmt.Printf("[+] Saving `%s` ... ", dbname)
-	db, err := InitDB(dbname)
+	db, err := dbOpen(dbname)
 	if err != nil {
 		return err
 	}

@@ -4,19 +4,22 @@ import (
 	"fmt"
 )
 
+const JSON_FILE = "feeds.json"
+const SQL_FILE = "feeds.db"
+
 func main() {
 
-	feeds_json, err := LoadJson("feeds.json")
+	feeds_json, err := LoadJson(JSON_FILE)
 	if err != nil {
 		panic(err)
 	}
 
-	feeds_db, err := LoadDb("feeds.db")
+	feeds_db, err := LoadDB(SQL_FILE)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println("[+] Reconciliating RSS feeds from json and sqlite:")
+	fmt.Println("[+] Reconciliating RSS feeds from json and sqlite")
 	feeds := Feeds{}
 	for _, feed_json := range feeds_json {
 		for _, feed_db := range feeds_db {
@@ -27,7 +30,7 @@ func main() {
 				feed_json.RawLastModified = feed_db.RawLastModified
 			}
 		}
-		fmt.Println(feed_json.Url)
+		fmt.Println("  " + feed_json.Url)
 		feeds = append(feeds, feed_json)
 	}
 
@@ -54,7 +57,7 @@ func main() {
 
 	feeds.Sort()
 
-	err = feeds.Save("feeds.db")
+	err = feeds.Save(SQL_FILE)
 	if err != nil {
 		panic(err)
 	}
