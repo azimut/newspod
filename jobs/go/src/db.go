@@ -11,7 +11,6 @@ import (
 )
 
 func createTables(db *sql.DB) error {
-	fmt.Printf("[+] Creating tables ... ")
 	initStmt := `
     pragma journal_mode = delete;
     pragma page_size    = 1024;
@@ -83,7 +82,6 @@ func createTables(db *sql.DB) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("DONE")
 	return nil
 }
 
@@ -91,7 +89,7 @@ func dbOpen(filename string) (db *sql.DB, err error) {
 	alreadyExits := true
 	_, err = os.Stat(filename)
 	if errors.Is(err, os.ErrNotExist) {
-		fmt.Printf("[+] db (%s) does not exits, will create it\n", filename)
+		fmt.Println("  [+] database does NOT exits, will create it")
 		alreadyExits = false
 	}
 
@@ -101,7 +99,9 @@ func dbOpen(filename string) (db *sql.DB, err error) {
 	}
 
 	if !alreadyExits {
+		fmt.Printf("  [+] Creating tables ... ")
 		err = createTables(db)
+		fmt.Println("DONE")
 		if err != nil {
 			return nil, err
 		}
@@ -111,7 +111,7 @@ func dbOpen(filename string) (db *sql.DB, err error) {
 
 // LoadDB loads bare minum data from a sqlite db, if exits, into Feeds
 func LoadDB(filepath string) (Feeds, error) {
-	fmt.Printf("[+] Loading `%s` ... ", filepath)
+	fmt.Printf("[+] Loading `%s` ...", filepath)
 	db, err := dbOpen(filepath)
 	if err != nil {
 		return nil, err
@@ -148,7 +148,6 @@ func LoadDB(filepath string) (Feeds, error) {
 		}
 		feeds = append(feeds, feed)
 	}
-	fmt.Println("DONE")
 	return feeds, nil
 }
 
