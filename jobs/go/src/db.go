@@ -12,9 +12,6 @@ import (
 
 func createTables(db *sql.DB) error {
 	initStmt := `
-    pragma journal_mode = delete;
-    pragma page_size    = 1024;
-
     create table feeds (
       id     integer not null primary key,
       title  text,
@@ -85,10 +82,10 @@ func createTables(db *sql.DB) error {
 	return nil
 }
 
-func dbOpen(filename, mode string) (db *sql.DB, err error) {
+func dbOpen(filename, mode string) (*sql.DB, error) {
 	var dataSource string
 	var alreadyExits bool
-	_, err = os.Stat(filename)
+	_, err := os.Stat(filename)
 	if errors.Is(err, os.ErrNotExist) {
 		fmt.Println("  [+] database does NOT exits, will create it")
 		dataSource = filename
@@ -97,7 +94,14 @@ func dbOpen(filename, mode string) (db *sql.DB, err error) {
 		alreadyExits = true
 	}
 
-	db, err = sql.Open("sqlite3", dataSource)
+	db, err := sql.Open("sqlite3", dataSource)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = db.Exec(`
+        pragma journal_mode = delete;
+        pragma page_size    = 1024;`)
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +114,7 @@ func dbOpen(filename, mode string) (db *sql.DB, err error) {
 			return nil, err
 		}
 	}
-	return
+	return db, nil
 }
 
 // LoadDB loads bare minum data from a sqlite db, if exits, into Feeds
@@ -292,7 +296,7 @@ func (feeds Feeds) Save(filename string) error {
 	}
 
 	sqlStmt := `
-	insert into search(search) values('optimize');
+    insert into search(search) values('optimize');
 	vacuum;`
 	_, err = db.Exec(sqlStmt)
 	if err != nil {
