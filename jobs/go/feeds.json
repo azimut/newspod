@@ -1,6 +1,43 @@
 {
   "feeds": [
     {
+      "title": "The Engineering Commons",
+      "url": "https://theengineeringcommons.com/feed/podcast/"
+    },
+    {
+      "title": "Lateralcast",
+      "url": "https://feeds.megaphone.fm/lateralcast"
+    },
+    {
+      "title": "The Spark Gap",
+      "url": "http://thesparkgap.net/rss"
+    },
+    {
+      "title": "postmarketOS",
+      "url": "https://cast.postmarketos.org/feed.rss"
+    },
+    {
+      "title": "Human Factor Security",
+      "url": "http://feeds.libsyn.com/89320/rss",
+      "tags": [
+        "security"
+      ]
+    },
+    {
+      "title": "The Divided Dial",
+      "url": "http://feeds.wnyc.org/onthemedia",
+      "tags": [
+        "politics"
+      ]
+    },
+    {
+      "title": "Engineering Triangle",
+      "url": "https://anchor.fm/s/f90e73ac/podcast/rss",
+      "tags": [
+        "programming"
+      ]
+    },
+    {
       "title": "Well There‘s Your Problem",
       "url": "https://feed.podbean.com/wtyppod/feed.xml",
       "tags": [
