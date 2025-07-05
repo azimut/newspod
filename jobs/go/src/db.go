@@ -171,38 +171,38 @@ func (feeds Feeds) Save(filename string) error {
 	if err != nil {
 		return err
 	}
-	stmt_feeds, err := tx.Prepare("insert into feeds(title,url) values(?,?)")
+	init_feeds, err := tx.Prepare("insert into feeds(title,url) values(?,?)")
 	if err != nil {
 		return err
 	}
-	defer stmt_feeds.Close()
-	stmt_feeds_details, err := tx.Prepare(
+	defer init_feeds.Close()
+	init_feeds_details, err := tx.Prepare(
 		"insert into feeds_details(feedid,home,description,language,image,author) values(?,?,?,?,?,?)",
 	)
 	if err != nil {
 		return err
 	}
-	defer stmt_feeds_details.Close()
-	stmt_feeds_meta_init, err := tx.Prepare("insert into feeds_metadata(feedid) values(?)")
+	defer init_feeds_details.Close()
+	init_feeds_metadata, err := tx.Prepare("insert into feeds_metadata(feedid) values(?)")
 	if err != nil {
 		return err
 	}
-	defer stmt_feeds_meta_init.Close()
-	stmt_entry, err := tx.Prepare(
+	defer init_feeds_metadata.Close()
+	insert_entries, err := tx.Prepare(
 		"insert into entries(feedid,datemillis,title,url) values(?,?,?,?)",
 	)
 	if err != nil {
 		return err
 	}
-	defer stmt_entry.Close()
-	stmt_entry_content, err := tx.Prepare(
+	defer insert_entries.Close()
+	insert_entries_content, err := tx.Prepare(
 		"insert into entries_content(entriesid,title,description) values(?,?,?)",
 	)
 	if err != nil {
 		return err
 	}
-	defer stmt_entry_content.Close()
-	stmt_feeds_meta_update, err := tx.Prepare(`
+	defer insert_entries_content.Close()
+	update_feeds_metadata, err := tx.Prepare(`
     UPDATE feeds_metadata
        SET lastfetch = strftime('%s'), lastmodified = ?, etag = ?
      WHERE feedid = ?
@@ -210,8 +210,8 @@ func (feeds Feeds) Save(filename string) error {
 	if err != nil {
 		return err
 	}
-	defer stmt_feeds_meta_update.Close()
-	stmt_feeds_meta_lastentry, err := tx.Prepare(`
+	defer update_feeds_metadata.Close()
+	update_feeds_metadata_lastentry, err := tx.Prepare(`
     UPDATE feeds_metadata
        SET lastentry = ?
      WHERE feedid = ? AND lastentry < ?
@@ -219,12 +219,12 @@ func (feeds Feeds) Save(filename string) error {
 	if err != nil {
 		return err
 	}
-	defer stmt_feeds_meta_lastentry.Close()
+	defer update_feeds_metadata_lastentry.Close()
 
 	for _, feed := range feeds {
 		effectiveFeedId := feed.RawId
-		if feed.RawLastFetch.IsZero() { // first time seen
-			res, err := stmt_feeds.Exec(feed.Title, feed.Url)
+		if effectiveFeedId == 0 { // first time seen
+			res, err := init_feeds.Exec(feed.Title, feed.Url)
 			if err != nil {
 				return err
 			}
@@ -233,11 +233,11 @@ func (feeds Feeds) Save(filename string) error {
 				return err
 			}
 			effectiveFeedId = int(tmp)
-			_, err = stmt_feeds_meta_init.Exec(effectiveFeedId)
+			_, err = init_feeds_metadata.Exec(effectiveFeedId)
 			if err != nil {
 				return err
 			}
-			_, err = stmt_feeds_details.Exec(
+			_, err = init_feeds_details.Exec(
 				effectiveFeedId,
 				feed.Home,
 				feed.Description,
@@ -250,28 +250,26 @@ func (feeds Feeds) Save(filename string) error {
 			}
 		}
 
-		_, err = stmt_feeds_meta_update.Exec(feed.RawLastModified, feed.RawEtag, effectiveFeedId)
+		_, err = update_feeds_metadata.Exec(feed.RawLastModified, feed.RawEtag, effectiveFeedId)
 		if err != nil {
 			return err
 		}
 
 		for _, entry := range feed.Entries {
-			// entries
-			res, err := stmt_entry.Exec(
+			res, err := insert_entries.Exec(
 				effectiveFeedId,
 				entry.Date.UnixMilli(),
 				entry.Title,
 				entry.Url,
 			)
 			if err != nil {
-				continue // skip content add
+				continue // skip entries_content add
 			}
-			// entries_content
 			lastEntryId, err := res.LastInsertId()
 			if err != nil {
 				return err
 			}
-			_, err = stmt_entry_content.Exec(
+			_, err = insert_entries_content.Exec(
 				lastEntryId,
 				entry.Title,
 				entry.Content,
@@ -279,7 +277,7 @@ func (feeds Feeds) Save(filename string) error {
 			if err != nil {
 				return err
 			}
-			_, err = stmt_feeds_meta_lastentry.Exec(
+			_, err = update_feeds_metadata_lastentry.Exec(
 				entry.Date.UnixMilli(),
 				effectiveFeedId,
 				entry.Date.UnixMilli(),
