@@ -173,11 +173,13 @@ func (feeds Feeds) Save(filename string) error {
 	if err != nil {
 		return err
 	}
+
 	init_feeds, err := tx.Prepare("insert into feeds(title,url) values(?,?)")
 	if err != nil {
 		return err
 	}
 	defer init_feeds.Close()
+
 	init_feeds_details, err := tx.Prepare(
 		"insert into feeds_details(feedid,home,description,language,image,author) values(?,?,?,?,?,?)",
 	)
@@ -185,11 +187,13 @@ func (feeds Feeds) Save(filename string) error {
 		return err
 	}
 	defer init_feeds_details.Close()
+
 	init_feeds_metadata, err := tx.Prepare("insert into feeds_metadata(feedid) values(?)")
 	if err != nil {
 		return err
 	}
 	defer init_feeds_metadata.Close()
+
 	insert_entries, err := tx.Prepare(
 		"insert into entries(feedid,datemillis,title,url) values(?,?,?,?)",
 	)
@@ -197,6 +201,7 @@ func (feeds Feeds) Save(filename string) error {
 		return err
 	}
 	defer insert_entries.Close()
+
 	insert_entries_content, err := tx.Prepare(
 		"insert into entries_content(entriesid,title,description) values(?,?,?)",
 	)
@@ -204,6 +209,7 @@ func (feeds Feeds) Save(filename string) error {
 		return err
 	}
 	defer insert_entries_content.Close()
+
 	update_feeds_metadata, err := tx.Prepare(`
     UPDATE feeds_metadata
        SET lastfetch = strftime('%s'), lastmodified = ?, etag = ?
@@ -213,6 +219,7 @@ func (feeds Feeds) Save(filename string) error {
 		return err
 	}
 	defer update_feeds_metadata.Close()
+
 	update_feeds_metadata_lastentry, err := tx.Prepare(`
     UPDATE feeds_metadata
        SET lastentry = ?
@@ -222,6 +229,12 @@ func (feeds Feeds) Save(filename string) error {
 		return err
 	}
 	defer update_feeds_metadata_lastentry.Close()
+
+	update_feeds_title, err := tx.Prepare(`UPDATE feeds SET title = ? WHERE feedid = ?`)
+	if err != nil {
+		return err
+	}
+	defer update_feeds_title.Close()
 
 	for _, feed := range feeds {
 		effectiveFeedId := feed.RawId
@@ -247,6 +260,11 @@ func (feeds Feeds) Save(filename string) error {
 				feed.Image,
 				feed.Author,
 			)
+			if err != nil {
+				return err
+			}
+		} else {
+			_, err = update_feeds_title.Exec(feed.Title, effectiveFeedId)
 			if err != nil {
 				return err
 			}
