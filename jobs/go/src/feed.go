@@ -30,9 +30,10 @@ type Feed struct {
 	Tags             []string  `json:"tags"`
 
 	RawId           int
-	RawEtag         string
-	RawLastModified string
+	RawLastEntry    time.Time
 	RawLastFetch    time.Time
+	RawLastModified string
+	RawEtag         string
 	NetworkError    bool
 
 	Entries     Entries
@@ -124,8 +125,8 @@ func (feed *Feed) Fetch() error {
 
 	var keepItem bool
 	for _, item := range rawFeed.Items {
-		// Process only NEW entries, after last fetch (avoid INSERT attempts)
-		if item.PublishedParsed.Before(feed.RawLastFetch) {
+		// Process only NEW entries (avoid INSERT attempts)
+		if item.PublishedParsed.Before(feed.RawLastEntry) {
 			continue
 		}
 

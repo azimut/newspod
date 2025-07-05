@@ -129,6 +129,7 @@ func LoadDB(filepath string) (Feeds, error) {
 	rows, err := db.Query(`
       SELECT feeds.id,
              feeds.url,
+             feeds_metadata.lastentry,
              feeds_metadata.lastfetch,
              feeds_metadata.lastmodified,
              feeds_metadata.etag
@@ -139,11 +140,11 @@ func LoadDB(filepath string) (Feeds, error) {
 		return nil, err
 	}
 
-	var id, lastfetch int
+	var id, lastfetch, lastentry int
 	var url, lastmodified, etag string
 	var feeds Feeds
 	for rows.Next() {
-		err = rows.Scan(&id, &url, &lastfetch, &lastmodified, &etag)
+		err = rows.Scan(&id, &url, &lastentry, &lastfetch, &lastmodified, &etag)
 		if err != nil {
 			return nil, err
 		}
@@ -152,6 +153,7 @@ func LoadDB(filepath string) (Feeds, error) {
 			RawId:           id,
 			RawEtag:         etag,
 			RawLastFetch:    time.Unix(int64(lastfetch), 0),
+			RawLastEntry:    time.Unix(int64(lastentry), 0),
 			RawLastModified: lastmodified,
 		}
 		feeds = append(feeds, feed)
