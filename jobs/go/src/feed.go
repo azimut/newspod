@@ -33,6 +33,7 @@ type Feed struct {
 	RawEtag         string
 	RawLastModified string
 	RawLastFetch    time.Time
+	NetworkError    bool
 
 	Entries     Entries
 	RawTitle    string
@@ -49,6 +50,7 @@ func (feed *Feed) FetchMetadata() (err error) {
 
 	res, err := http.Head(feed.Url)
 	if err != nil {
+		feed.NetworkError = true
 		return err
 	}
 

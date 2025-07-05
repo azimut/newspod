@@ -250,6 +250,10 @@ func (feeds Feeds) Save(filename string) error {
 			}
 		}
 
+		if feed.NetworkError {
+			continue
+		}
+
 		_, err = update_feeds_metadata.Exec(feed.RawLastModified, feed.RawEtag, effectiveFeedId)
 		if err != nil {
 			return err
