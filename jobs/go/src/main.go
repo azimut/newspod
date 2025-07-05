@@ -55,8 +55,6 @@ func main() {
 		}
 	}
 
-	feeds.Sort()
-
 	err = feeds.Save(SQL_FILE)
 	if err != nil {
 		panic(err)

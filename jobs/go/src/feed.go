@@ -43,6 +43,8 @@ type Feed struct {
 	Home        string
 }
 
+type Feeds []Feed
+
 func (feed *Feed) FetchMetadata() (err error) {
 
 	res, err := http.Head(feed.Url)
