@@ -230,7 +230,8 @@ func (feeds Feeds) Save(filename string) error {
 	}
 	defer update_feeds_metadata_lastentry.Close()
 
-	update_feeds_title, err := tx.Prepare(`UPDATE feeds SET title = ? WHERE feedid = ?`)
+	update_feeds_title, err := tx.Prepare(
+		`UPDATE feeds SET title = ? WHERE id = ? AND title <> ?`)
 	if err != nil {
 		return err
 	}
@@ -264,9 +265,11 @@ func (feeds Feeds) Save(filename string) error {
 				return err
 			}
 		} else {
-			_, err = update_feeds_title.Exec(feed.Title, effectiveFeedId)
-			if err != nil {
-				return err
+			if feed.Title != "" {
+				_, err = update_feeds_title.Exec(feed.Title, effectiveFeedId, feed.Title)
+				if err != nil {
+					return err
+				}
 			}
 		}
 
