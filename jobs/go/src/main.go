@@ -39,14 +39,14 @@ func main() {
 		err := feeds[i].Fetch()
 		if err == nil {
 			fmt.Printf(
-				"%02d/%02d OK (%s)\n",
+				"%d/%d OK (%s)\n",
 				i+1,
 				len(feeds),
 				feeds[i].Url,
 			)
 		} else {
 			fmt.Printf(
-				"%02d/%02d ERROR (%s) due (%v)\n",
+				"%d/%d ERROR (%s) due (%v)\n",
 				i+1,
 				len(feeds),
 				feeds[i].Url,
