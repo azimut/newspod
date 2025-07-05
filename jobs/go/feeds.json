@@ -97,6 +97,7 @@
       "url": "https://feeds.transistor.fm/acquired"
     },
     {
+      "title": "All-In Podcast",
       "url": "https://allinchamathjason.libsyn.com/rss"
     },
     {
@@ -119,7 +120,7 @@
       "url": "https://anchor.fm/s/fb29b160/podcast/rss"
     },
     {
-      "title": "The security repo podcast",
+      "title": "The Security Repo",
       "url": "https://anchor.fm/s/a4864e54/podcast/rss",
       "tags": [
         "security"
