@@ -1,6 +1,7 @@
 .PHONY: all
 all:
 	cd jobs/go/ && make
+	cd jobs/python/ && python3 main.py
 	cp jobs/go/feeds.db frontend/public/feeds.db.tar.gz
 	cd frontend/ && npm install && make
 
