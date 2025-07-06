@@ -78,12 +78,18 @@ class Feed:
                 entry = Entry(url, rawentry['title'], rawentry['duration'], rawentry['view_count'], rawentry['channel'], rawentry['channel_url'], self.id)
                 self.entries.append(entry)
 
+def fetch_info(video_url):
+    opts = { 'extract_flat': True, 'extractor_args': {'youtube': {'player_client': ['web'] }} }
+    with yt_dlp.YoutubeDL(opts) as ydl:
+        info = ydl.extract_info(video_url, download=False)
+        return (info['description'], info['timestamp'])
 
 def main():
     con = sqlite3.connect(DB_PATH)
     cur = con.cursor()
+    rss_urls = json_urls(DB_JSON)
 
-    for rss_url in json_urls(DB_JSON):
+    for rss_url in rss_urls:
         if 'channel' in rss_url: continue # unsupported, None on playlist_count and modified_date
         feed = Feed(rss_url)
         feed.fetch()
@@ -96,7 +102,19 @@ def main():
             for entry in feed.entries:
                 db_insert_entry(entry, cur)
 
+    print("[+] Running INSERTs")
     con.commit()
+
+
+    print("[+] Fetching empty entries")
+    for rss_url in rss_urls:
+        fid = db_feed_id(rss_url, cur)
+        for eid, eurl, in db_select_entries_empty(fid, cur):
+            description, timestamp = fetch_info(eurl)
+            db_update_entry(eid, description, timestamp, cur)
+    con.commit()
+
+    print("[+] Optimizing database")
     cur.execute("INSERT INTO search(search) VALUES('optimize')")
     con.commit()
     cur.execute("VACUUM")
@@ -139,6 +157,22 @@ def db_insert_entry(entry: Entry, cur: sqlite3.Cursor):
                     (entry.feedid, 0, entry.title, entry.url))
         cur.execute("INSERT INTO entries_content(entriesid,title) VALUES(?,?)",
                     (cur.lastrowid, entry.title,))
+
+def db_select_entries_empty(feedid: int, cur: sqlite3.Cursor):
+    res = cur.execute("""
+      SELECT entries.id, entries.url
+        FROM entries
+        JOIN entries_content
+          ON entries.id=entries_content.entriesid
+       WHERE entries.feedid = ? AND entries_content.description is NULL
+      """, (feedid,))
+    return res.fetchall()
+
+def db_update_entry(eid: int, description: str, timestamp: int, cur: sqlite3.Cursor):
+    cur.execute("UPDATE entries SET datemillis = ? WHERE id = ?",
+                (description, eid,))
+    cur.execute("UPDATE entries_content SET description = ? WHERE entriesid = ?",
+                (timestamp * 1000, eid,))
 
 if __name__ == '__main__':
     main()
