@@ -25,7 +25,6 @@ class Entry:
     # thumbnail
     # view|comment|like / _count
     # uploaded_date: "YYYYMMDD"
-    # timestamp / epoch
     # fulltitle
     # duration_string
 
@@ -72,19 +71,20 @@ class Feed:
             self.entries = []
             for rawentry in info['entries']:
                 url = rawentry['url']
-                if not 'youtube' in url: # skip private or other (?)
-                    print(rawentry)
+                if not 'youtube.com' in url: # skip private or other (?)
+                    print("Skipping: ", rawentry)
                     continue
                 entry = Entry(url, rawentry['title'], rawentry['duration'], rawentry['view_count'], rawentry['channel'], rawentry['channel_url'], self.id)
                 self.entries.append(entry)
 
 def fetch_info(video_url):
-    opts = { 'extract_flat': True, 'extractor_args': {'youtube': {'player_client': ['web'] }} }
+    opts = { 'extract_flat': True, 'extractor_args': {'youtube': {'player_client': ['android'] }} } # we expect "android" to fail
     with yt_dlp.YoutubeDL(opts) as ydl:
         info = ydl.extract_info(video_url, download=False)
         return (info['description'], info['timestamp'])
 
 def main():
+
     con = sqlite3.connect(DB_PATH)
     cur = con.cursor()
     rss_urls = json_urls(DB_JSON)
@@ -105,12 +105,12 @@ def main():
     print("[+] Running INSERTs")
     con.commit()
 
-
-    print("[+] Fetching empty entries")
+    print("[+] Populating empty entries")
     for rss_url in rss_urls:
         fid = db_feed_id(rss_url, cur)
-        for eid, eurl, in db_select_entries_empty(fid, cur):
+        for eid, eurl, in db_select_entries_empty(fid, cur)[1:10]:
             description, timestamp = fetch_info(eurl)
+            description = "..." if description == "" else description
             db_update_entry(eid, description, timestamp, cur)
     con.commit()
 
@@ -164,15 +164,16 @@ def db_select_entries_empty(feedid: int, cur: sqlite3.Cursor):
         FROM entries
         JOIN entries_content
           ON entries.id=entries_content.entriesid
-       WHERE entries.feedid = ? AND entries_content.description is NULL
+       WHERE entries.feedid = ?
+         AND (entries.datemillis = 0 OR entries_content.description is NULL OR entries_content.description = '')
       """, (feedid,))
     return res.fetchall()
 
 def db_update_entry(eid: int, description: str, timestamp: int, cur: sqlite3.Cursor):
     cur.execute("UPDATE entries SET datemillis = ? WHERE id = ?",
-                (description, eid,))
-    cur.execute("UPDATE entries_content SET description = ? WHERE entriesid = ?",
                 (timestamp * 1000, eid,))
+    cur.execute("UPDATE entries_content SET description = ? WHERE entriesid = ?",
+                (description, eid,))
 
 if __name__ == '__main__':
     main()
