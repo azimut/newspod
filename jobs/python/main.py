@@ -157,7 +157,7 @@ def db_insert_entry(entry: Entry, cur: sqlite3.Cursor):
     if entry_not_found:
         cur.execute("INSERT INTO entries(feedid,datemillis,title,url) VALUES(?,?,?,?)",
                     (entry.feedid, 0, entry.title, entry.url))
-        cur.execute("INSERT INTO entries_content(entriesid,title) VALUES(?,?)",
+        cur.execute("INSERT INTO entries_content(entriesid,title,description) VALUES(?,?,'')",
                     (cur.lastrowid, entry.title,))
 
 def db_select_entries_empty(feedid: int, cur: sqlite3.Cursor):
