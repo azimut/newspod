@@ -93,9 +93,10 @@ def main():
             for entry in feed.entries:
                 db_insert_entry(entry, cur)
 
-        break
-
     con.commit()
+    cur.execute("INSERT INTO search(search) VALUES('optimize')")
+    con.commit()
+    cur.execute("VACUUM")
     con.close()
 
 def json_urls(file: str) -> list[str]:
