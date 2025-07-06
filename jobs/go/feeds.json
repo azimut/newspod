@@ -698,6 +698,20 @@
       "tags": [
         "tech"
       ]
+    },
+    {
+      "title": "YT | Mr. 4th Programming",
+      "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=PLT6InxK-XQvOiQLc9CkjwGMkZ946Rj6bI",
+      "tags": [
+        "programming"
+      ]
+    },
+    {
+      "title": "YT | Database School",
+      "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=PLI72dgeNJtzqElnNB6sQoAn2R-F3Vqm15",
+      "tags": [
+        "programming"
+      ]
     }
   ]
 }
