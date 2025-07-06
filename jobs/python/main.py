@@ -105,14 +105,16 @@ def main():
     print("[+] Running INSERTs")
     con.commit()
 
-    print("[+] Populating empty entries")
-    for rss_url in rss_urls:
-        fid = db_feed_id(rss_url, cur)
-        for eid, eurl, in db_select_entries_empty(fid, cur)[1:10]:
-            description, timestamp = fetch_info(eurl)
-            description = "..." if description == "" else description
-            db_update_entry(eid, description, timestamp, cur)
-    con.commit()
+    # Skip description fetch on github actions (needs a cookie)
+    if 'GITHUB_TOKEN' not in os.environ:
+        print("[+] Populating empty entries")
+        for rss_url in rss_urls:
+            fid = db_feed_id(rss_url, cur)
+            for eid, eurl, in db_select_entries_empty(fid, cur)[1:10]:
+                description, timestamp = fetch_info(eurl)
+                description = "..." if description == "" else description
+                db_update_entry(eid, description, timestamp, cur)
+        con.commit()
 
     print("[+] Optimizing database")
     cur.execute("INSERT INTO search(search) VALUES('optimize')")
