@@ -9,6 +9,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           lfs: true
+
       - uses: jorelali/setup-elm@v5
         with:
           elm-version: 0.19.1
@@ -17,4 +18,10 @@ jobs:
           go-version: '1.19'
           cache-dependency-path: |
             jobs/go/go.sum
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+      - run: pip install yt-dlp
+
       - run: make slim all
