@@ -94,11 +94,14 @@ def main():
         if 'channel' in rss_url: continue # unsupported, None on playlist_count and modified_date
         feed = Feed(rss_url)
         feed.fetch()
+        print(feed)
 
         id = db_feed_id(rss_url, cur)
         feed.id = id if id else db_add(feed, cur)
 
-        if feed.count > db_count_entries(id, cur):
+        current_nentries = db_count_entries(id, cur)
+        print(current_nentries)
+        if feed.count > current_nentries:
             feed.fetch_entries()
             for entry in feed.entries:
                 db_insert_entry(entry, cur)
