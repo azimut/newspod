@@ -71,9 +71,6 @@ class Feed:
             self.entries = []
             for rawentry in info['entries']:
                 url = rawentry['url']
-                if not 'youtube.com' in url: # skip private or other (?)
-                    print("Skipping: ", rawentry)
-                    continue
                 entry = Entry(url, rawentry['title'], rawentry['duration'], rawentry['view_count'], rawentry['channel'], rawentry['channel_url'], self.id)
                 self.entries.append(entry)
 
