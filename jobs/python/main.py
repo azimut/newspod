@@ -13,17 +13,34 @@ DB_PATH = "../go/feeds.db"
 DB_JSON = "../go/feeds.json"
 
 @dataclass
+class Entry:
+    url:         str
+    title:       str
+    duration:    int
+    views:       int
+    channel:     str
+    channel_url: str
+    feedid:      int
+    description: str = field(default=False)
+    # thumbnail
+    # view|comment|like / _count
+    # uploaded_date: "YYYYMMDD"
+    # timestamp / epoch
+    # fulltitle
+    # duration_string
+
+@dataclass
 class Feed:
     rssurl:      str
     title:       str         = field(init=False)
     description: str         = field(init=False)
     thumbnail:   str         = field(init=False)
     url:         str         = field(init=False)
-    epoch:       int         = field(init=False)
     count:       int | None  = field(init=False)
     channel:     str         = field(init=False)
     forward:     bool        = True
     id:          int         = 0
+    entries:     list[Entry] = field(default_factory=list)
 
     def from_rss(self) -> str:
         match parse_qsl(urlparse(self.rssurl).query):
@@ -38,47 +55,47 @@ class Feed:
     # .channel (name) / .channel_id / .channel_url
     def fetch(self):
         self.url = self.from_rss()
-        with yt_dlp.YoutubeDL({
-                'playlist_items': '0',
-                'extract_flat': 'in_playlist',
-                # 'quiet': True,
-                # 'daterange': yt_dlp.utils.DateRange('2025-07-01', '9999-12-31'),
-                'skip_download': True}) as ydl:
+        with yt_dlp.YoutubeDL({ 'playlist_items': '0', 'extract_flat': 'in_playlist'}) as ydl:
             info = ydl.extract_info(self.url, download=False)
-            self.title = info['title']
+            # print(info)
+            self.title       = info['title']
             self.description = info['description']
-            self.thumbnail = info['thumbnails'][-1]['url']
-            self.url = info['webpage_url']
-            self.epoch = info['epoch']
-            self.count = info['playlist_count']
-            self.channel = info['channel']
+            self.thumbnail   = info['thumbnails'][-1]['url']
+            self.url         = info['webpage_url']
+            self.count       = info['playlist_count']
+            self.channel     = info['channel']
 
-@dataclass
-class Entry:
-    url: str
-    title: str
-    duration: int
-    views: int
-    channel: str
-    channel_url: str
+    def fetch_entries(self):
+        """fetches all entries on given feed"""
+        with yt_dlp.YoutubeDL({ 'playlist_items': '5-15', 'extract_flat': 'in_playlist' }) as ydl:
+            info = ydl.extract_info(self.url, download=False)
+            self.entries = []
+            for rawentry in info['entries']:
+                entry = Entry(rawentry['url'], rawentry['title'], rawentry['duration'], rawentry['view_count'], rawentry['channel'], rawentry['channel_url'], self.id)
+                self.entries.append(entry)
+
+
 
 def main():
     con = sqlite3.connect(DB_PATH)
     cur = con.cursor()
 
     for rss_url in json_urls(DB_JSON):
+        if 'channel' in rss_url: continue # unsupported, since it doesn't give a playlist size
         feed = Feed(rss_url)
         feed.fetch()
-        print(feed)
-        break
-        # id = db_feed_id(rss_url, cur)
-        # if id:
-        #     feed.id = id
-        # else:
-        #     feed.id = db_add(feed, cur)
-        # lastentry = db_lastentry(id, cur)
-        # print(rss_url, id, lastentry)
 
+        id = db_feed_id(rss_url, cur)
+        feed.id = id if id else db_add(feed, cur)
+
+        if feed.count > db_count_entries(id, cur):
+            feed.fetch_entries()
+            for entry in feed.entries:
+                db_insert_entry(entry, cur)
+
+        break
+
+    con.commit()
     con.close()
 
 def json_urls(file: str) -> list[str]:
@@ -89,13 +106,6 @@ def json_urls(file: str) -> list[str]:
             in json.load(f)['feeds']
             if 'youtube.com' in feed['url']
         ]
-
-def make_entries(info):
-    entries = []
-    for rawentry in info['entries']:
-        entry = Entry(rawentry['url'], rawentry['title'], rawentry['duration'], rawentry['view_count'], rawentry['channel'], rawentry['channel_url'])
-        entries.append(entry)
-    return entries
 
 
 def db_add(feed: str, cur: sqlite3.Cursor) -> int:
@@ -111,11 +121,19 @@ def db_feed_id(rss_url: str, cur: sqlite3.Cursor):
     row = res.fetchone()
     if row: return row[0]
 
-def db_lastentry(id: int, cur: sqlite3.Cursor):
-    res = cur.execute("SELECT lastentry FROM feeds_metadata WHERE feedid = ?", (id,))
+def db_count_entries(feedid: int, cur: sqlite3.Cursor):
+    res = cur.execute("SELECT COUNT(*) FROM entries WHERE feedid = ?", (feedid,))
     row = res.fetchone()
     if row: return row[0]
 
+def db_insert_entry(entry: Entry, cur: sqlite3.Cursor):
+    res = cur.execute("SELECT COUNT(*) FROM entries WHERE url = ?", (entry.url,))
+    n, = res.fetchone()
+    if n == 0:
+        cur.execute("INSERT INTO entries(feedid,datemillis,title,url) VALUES(?,?,?,?)",
+                    (entry.feedid, 0, entry.title, entry.url))
+        cur.execute("INSERT INTO entries_content(entriesid,title) VALUES(?,?)",
+                    (cur.lastrowid, entry.title,))
 
 if __name__ == '__main__':
     main()
