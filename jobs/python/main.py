@@ -7,6 +7,7 @@ import yt_dlp
 import sqlite3
 from urllib.parse import urlparse, parse_qsl
 from dataclasses import dataclass, field
+from dateutil.parser import parse
 
 
 DB_PATH = "../go/feeds.db"
@@ -37,6 +38,7 @@ class Feed:
     url:         str         = field(init=False)
     count:       int | None  = field(init=False)
     channel:     str         = field(init=False)
+    modified:    int         = field(init=False) # modified_date in playlists
     forward:     bool        = True
     id:          int         = 0
     entries:     list[Entry] = field(default_factory=list)
@@ -63,6 +65,8 @@ class Feed:
             self.url         = info['webpage_url']
             self.count       = info['playlist_count']
             self.channel     = info['channel']
+            if 'playlist' in self.rssurl:
+                self.modified = int(parse(info['modified_date']).timestamp())
 
     def fetch_entries(self):
         """fetches all entries on given feed"""
