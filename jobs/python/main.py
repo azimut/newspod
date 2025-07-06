@@ -67,7 +67,7 @@ class Feed:
 
     def fetch_entries(self):
         """fetches all entries on given feed"""
-        with yt_dlp.YoutubeDL({ 'playlist_items': '5-15', 'extract_flat': 'in_playlist' }) as ydl:
+        with yt_dlp.YoutubeDL({ 'extract_flat': 'in_playlist' }) as ydl:
             info = ydl.extract_info(self.url, download=False)
             self.entries = []
             for rawentry in info['entries']:
@@ -75,13 +75,12 @@ class Feed:
                 self.entries.append(entry)
 
 
-
 def main():
     con = sqlite3.connect(DB_PATH)
     cur = con.cursor()
 
     for rss_url in json_urls(DB_JSON):
-        if 'channel' in rss_url: continue # unsupported, since it doesn't give a playlist size
+        if 'channel' in rss_url: continue # unsupported, None on playlist_count and modified_date
         feed = Feed(rss_url)
         feed.fetch()
 
@@ -130,7 +129,8 @@ def db_count_entries(feedid: int, cur: sqlite3.Cursor):
 def db_insert_entry(entry: Entry, cur: sqlite3.Cursor):
     res = cur.execute("SELECT COUNT(*) FROM entries WHERE url = ?", (entry.url,))
     n, = res.fetchone()
-    if n == 0:
+    entry_not_found = n == 0
+    if entry_not_found:
         cur.execute("INSERT INTO entries(feedid,datemillis,title,url) VALUES(?,?,?,?)",
                     (entry.feedid, 0, entry.title, entry.url))
         cur.execute("INSERT INTO entries_content(entriesid,title) VALUES(?,?)",
