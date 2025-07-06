@@ -264,12 +264,12 @@ func (feeds Feeds) Save(filename string) error {
 			if err != nil {
 				return err
 			}
-		} else {
-			if feed.Title != "" {
-				_, err = update_feeds_title.Exec(feed.Title, effectiveFeedId, feed.Title)
-				if err != nil {
-					return err
-				}
+		}
+
+		if feed.Title != "" {
+			_, err = update_feeds_title.Exec(feed.Title, effectiveFeedId, feed.Title)
+			if err != nil {
+				return err
 			}
 		}
 

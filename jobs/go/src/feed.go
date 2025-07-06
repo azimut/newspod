@@ -47,7 +47,7 @@ type Feed struct {
 
 type Feeds []Feed
 
-func (feed *Feed) FetchMetadata() (err error) {
+func (feed *Feed) FetchMetadata() error {
 
 	res, err := http.Head(feed.Url)
 	if err != nil {
@@ -84,7 +84,7 @@ func (feed *Feed) FetchMetadata() (err error) {
 		feed.RawLastModified = lastmodified[0]
 	}
 
-	return
+	return nil
 }
 
 func (feed *Feed) Fetch() error {
