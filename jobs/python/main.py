@@ -106,7 +106,7 @@ def main():
     con.commit()
 
     # Skip description fetch on github actions (needs a cookie)
-    if 'GITHUB_TOKEN' not in os.environ:
+    if 'GITHUB_REPOSITORY' not in os.environ:
         print("[+] Populating empty entries")
         for rss_url in rss_urls:
             fid = db_feed_id(rss_url, cur)
