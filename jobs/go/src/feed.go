@@ -230,8 +230,5 @@ func itemUrl(item gofeed.Item) string {
 	if len(item.Enclosures) > 0 {
 		return item.Enclosures[0].URL
 	}
-	if strings.Contains(item.Link, "www.youtube.com") {
-		return strings.Replace(item.Link, "www.youtube.com", "piped.kavin.rocks", 1) + "&listen=1"
-	}
 	return item.Link
 }
