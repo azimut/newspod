@@ -71,7 +71,11 @@ class Feed:
             info = ydl.extract_info(self.url, download=False)
             self.entries = []
             for rawentry in info['entries']:
-                entry = Entry(rawentry['url'], rawentry['title'], rawentry['duration'], rawentry['view_count'], rawentry['channel'], rawentry['channel_url'], self.id)
+                url = rawentry['url']
+                if not 'youtube' in url: # skip private or other (?)
+                    print(rawentry)
+                    continue
+                entry = Entry(url, rawentry['title'], rawentry['duration'], rawentry['view_count'], rawentry['channel'], rawentry['channel_url'], self.id)
                 self.entries.append(entry)
 
 
