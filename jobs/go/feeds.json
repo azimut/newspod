@@ -1,6 +1,25 @@
 {
   "feeds": [
     {
+      "url": "https://feeds.megaphone.fm/vergecast",
+      "tags": [
+        "tech"
+      ]
+    },
+    {
+      "url": "https://feeds.megaphone.fm/pivot",
+      "tags": [
+        "politics"
+      ]
+    },
+    {
+      "title": "Lemonade Stand",
+      "url": "https://anchor.fm/s/101ec0f34/podcast/rss",
+      "tags": [
+        "politics"
+      ]
+    },
+    {
       "title": "The Engineering Commons",
       "url": "https://theengineeringcommons.com/feed/podcast/"
     },
