@@ -712,6 +712,34 @@
       "tags": [
         "programming"
       ]
+    },
+    {
+      "title": "YT | LiveRecon Sunday by NahamSec",
+      "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=PLKAaMVNxvLmAkqBkzFaOxqs3L66z2n8LA",
+      "tags": [
+        "security"
+      ]
+    },
+    {
+      "title": "YT | Hacking Nights I - by ElMago",
+      "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=PLplKrR_r0x1ekI2YR13eWglIDtTaC72Bo",
+      "tags": [
+        "security"
+      ]
+    },
+    {
+      "title": "YT | Hacking Nights II - by ElMago",
+      "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=PLplKrR_r0x1dOv1TKVUm54RrRuZT4z_DR",
+      "tags": [
+        "security"
+      ]
+    },
+    {
+      "title": "YT | Hacking Nights III - by ElMago",
+      "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=PLplKrR_r0x1cG3yzmpJHb9Qrg6sso_hKw",
+      "tags": [
+        "security"
+      ]
     }
   ]
 }
