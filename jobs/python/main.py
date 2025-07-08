@@ -91,7 +91,6 @@ def main():
     rss_urls = json_urls(DB_JSON)
 
     for rss_url in rss_urls:
-        if 'channel' in rss_url: continue # unsupported, None on playlist_count and modified_date
         feed = Feed(rss_url)
         feed.fetch()
         print(feed)
@@ -101,7 +100,11 @@ def main():
 
         current_nentries = db_count_entries(id, cur)
         print(current_nentries)
-        if feed.count > current_nentries:
+
+        should_fetch_entries = False
+        if 'channel' in rss_url: should_fetch_entries = current_nentries > 15
+        if 'playlist' in rss_url: should_fetch_entries = feed.count > current_nentries
+        if should_fetch_entries:
             feed.fetch_entries()
             for entry in feed.entries:
                 db_insert_entry(entry, cur)
