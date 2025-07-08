@@ -117,7 +117,7 @@ def main():
         print("[+] Populating empty entries")
         for rss_url in rss_urls:
             fid = db_feed_id(rss_url, cur)
-            for eid, eurl, in db_select_entries_empty(fid, cur)[1:10]:
+            for eid, eurl, in db_select_entries_empty(fid, cur):
                 description, timestamp = fetch_info(eurl)
                 description = "..." if description == "" else description
                 db_update_entry(eid, description, timestamp, cur)
