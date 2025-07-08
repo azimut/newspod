@@ -37,7 +37,7 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: jobs/go/feeds.db
-          key: feeds-${​{ hashFiles('jobs/go/feeds.db') }}
+          key: feeds-${​{ hashFiles('/jobs/go/feeds.db') }}
       - run: make
       - uses: actions/configure-pages@v4
       - uses: actions/upload-pages-artifact@v3 # !!!
