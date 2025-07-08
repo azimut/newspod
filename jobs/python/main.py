@@ -38,7 +38,7 @@ class Feed:
     url:         str         = field(init=False)
     count:       int | None  = field(init=False)
     channel:     str         = field(init=False)
-    modified:    int         = field(init=False) # modified_date in playlists
+    modified:    int         = 0                 # modified_date in playlists
     forward:     bool        = True
     id:          int         = 0
     entries:     list[Entry] = field(default_factory=list)
