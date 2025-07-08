@@ -117,11 +117,17 @@
     },
     {
       "title": "All-In Podcast",
-      "url": "https://allinchamathjason.libsyn.com/rss"
+      "url": "https://allinchamathjason.libsyn.com/rss",
+      "tags": [
+        "politics"
+      ]
     },
     {
       "title": "404 Media",
-      "url": "https://feeds.megaphone.fm/TBIEA2761282490"
+      "url": "https://feeds.megaphone.fm/TBIEA2761282490",
+      "tags": [
+        "tech"
+      ]
     },
     {
       "url": "https://generativeartistry.com/index.xml"
@@ -422,11 +428,17 @@
     },
     {
       "title": "Whiskey Web and Whatnot",
-      "url": "https://anchor.fm/s/e329dea0/podcast/rss"
+      "url": "https://anchor.fm/s/e329dea0/podcast/rss",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "title": "The Frontend Masters",
-      "url": "https://anchor.fm/s/ea8edf9c/podcast/rss"
+      "url": "https://anchor.fm/s/ea8edf9c/podcast/rss",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "url": "https://www.idlethumbs.net/feeds/designer-notes"
@@ -439,7 +451,10 @@
     },
     {
       "title": "The Handmade Network",
-      "url": "https://handmade.network/podcast/podcast.xml"
+      "url": "https://handmade.network/podcast/podcast.xml",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "url": "https://feeds.transistor.fm/the-technium-podcast"
@@ -454,11 +469,17 @@
       "url": "http://hackaday.libsyn.com/rss"
     },
     {
-      "url": "https://arraycast.com/episodes?format=rss"
+      "url": "https://arraycast.com/episodes?format=rss",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "title": "freeCodeCamp",
-      "url": "https://freecodecamp.libsyn.com/rss"
+      "url": "https://freecodecamp.libsyn.com/rss",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "url": "https://linuxunplugged.com/rss"
@@ -468,7 +489,10 @@
       "url": "http://feeds.libsyn.com/35155/rss"
     },
     {
-      "url": "https://topenddevs.com/podcasts/ruby-rogues/rss"
+      "url": "https://topenddevs.com/podcasts/ruby-rogues/rss",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "url": "https://wetoker.com/feed/el-bestiario-de-internet/"
@@ -477,11 +501,17 @@
       "url": "https://www.numberphile.com/podcast?format=rss"
     },
     {
-      "url": "https://www.therubyonrailspodcast.com/rss"
+      "url": "https://www.therubyonrailspodcast.com/rss",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "title": "Software Unscripted",
-      "url": "https://pod.link/1602572955.rss"
+      "url": "https://pod.link/1602572955.rss",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "title": "Algorithms + DS = Programs",
@@ -515,7 +545,10 @@
     },
     {
       "title": "Happy Path Programming",
-      "url": "https://anchor.fm/s/2ed56aa0/podcast/rss"
+      "url": "https://anchor.fm/s/2ed56aa0/podcast/rss",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "title": "Backend Banter",
@@ -525,7 +558,10 @@
       "url": "https://feeds.mozilla-podcasts.org/irl"
     },
     {
-      "url": "https://omny.fm/shows/future-of-coding/playlists/podcast.rss"
+      "url": "https://omny.fm/shows/future-of-coding/playlists/podcast.rss",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "title": "Super Data Science",
@@ -598,7 +634,10 @@
       ]
     },
     {
-      "url": "https://publicfeeds.net/f/8376/clickhere"
+      "url": "https://publicfeeds.net/f/8376/clickhere",
+      "tags": [
+        "politics"
+      ]
     },
     {
       "title": "HanselMinutes",
@@ -715,7 +754,8 @@
       "title": "YT | Freddy Vega (Platzi)",
       "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=PLwbyjg7-bjocjc5yp3Hkt3PAc1zCKi9OL",
       "tags": [
-        "tech"
+        "tech",
+        "español"
       ]
     },
     {
@@ -743,21 +783,24 @@
       "title": "YT | Hacking Nights I - by ElMago",
       "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=PLplKrR_r0x1ekI2YR13eWglIDtTaC72Bo",
       "tags": [
-        "security"
+        "security",
+        "español"
       ]
     },
     {
       "title": "YT | Hacking Nights II - by ElMago",
       "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=PLplKrR_r0x1dOv1TKVUm54RrRuZT4z_DR",
       "tags": [
-        "security"
+        "security",
+        "español"
       ]
     },
     {
       "title": "YT | Hacking Nights III - by ElMago",
       "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=PLplKrR_r0x1cG3yzmpJHb9Qrg6sso_hKw",
       "tags": [
-        "security"
+        "security",
+        "español"
       ]
     }
   ]
