@@ -12,13 +12,13 @@ import (
 
 func createTables(db *sql.DB) error {
 	initStmt := `
-    create table feeds (
+    CREATE TABLE feeds (
       id     integer not null primary key,
       title  text,
       url    text    not null unique
     ) strict;
 
-    create table feeds_details (
+    CREATE TABLE feeds_details (
       feedid      integer not null,
       home        text,
       description text,
@@ -27,9 +27,9 @@ func createTables(db *sql.DB) error {
       author      text,
       foreign key(feedid) references feeds(id)
     ) strict;
-    create index feedsdetailsindex on feeds_details(feedid);
+    CREATE INDEX feedsdetailsindex ON feeds_details(feedid);
 
-    create table feeds_metadata (
+    CREATE TABLE feeds_metadata (
       feedid       integer not null,
       lastentry    integer not null default 0,
       lastfetch    integer not null default 0,
@@ -37,9 +37,9 @@ func createTables(db *sql.DB) error {
       etag         text    not null default "",
       foreign key(feedid) references feeds(id)
     ) strict;
-    create index feedsmetaindex on feeds_metadata(feedid);
+    CREATE INDEX feedsmetaindex ON feeds_metadata(feedid);
 
-    create table entries (
+    CREATE TABLE entries (
         id          integer not null primary key,
         feedid      integer not null,
         datemillis  integer not null,
@@ -47,17 +47,17 @@ func createTables(db *sql.DB) error {
         url         text    not null unique,
         foreign key(feedid) references feeds(id)
     ) strict;
-    create index entriesindex on entries(feedid);
+    CREATE INDEX entriesindex ON entries(feedid);
 
-    create table entries_content (
+    CREATE TABLE entries_content (
         entriesid   integer not null,
         title       text,
         description text,
         foreign key(entriesid) references entries(id)
     ) strict;
-    create index entriescindex on entries_content(entriesid);
+    CREATE INDEX entriescindex ON entries_content(entriesid);
 
-    create virtual table search using fts5(
+    CREATE VIRTUAL TABLE search USING fts5(
         title,
         description,
         content='entries_content',
@@ -174,37 +174,37 @@ func (feeds Feeds) Save(filename string) error {
 		return err
 	}
 
-	init_feeds, err := tx.Prepare("insert into feeds(title,url) values(?,?)")
+	init_feeds, err := tx.Prepare(
+		"INSERT INTO feeds(title,url) VALUES(?,?)")
 	if err != nil {
 		return err
 	}
 	defer init_feeds.Close()
 
 	init_feeds_details, err := tx.Prepare(
-		"insert into feeds_details(feedid,home,description,language,image,author) values(?,?,?,?,?,?)",
+		"INSERT INTO feeds_details(feedid,home,description,language,image,author) VALUES(?,?,?,?,?,?)",
 	)
 	if err != nil {
 		return err
 	}
 	defer init_feeds_details.Close()
 
-	init_feeds_metadata, err := tx.Prepare("insert into feeds_metadata(feedid) values(?)")
+	init_feeds_metadata, err := tx.Prepare(
+		"INSERT INTO feeds_metadata(feedid) VALUES(?)")
 	if err != nil {
 		return err
 	}
 	defer init_feeds_metadata.Close()
 
 	insert_entries, err := tx.Prepare(
-		"insert into entries(feedid,datemillis,title,url) values(?,?,?,?)",
-	)
+		"INSERT INTO entries(feedid,datemillis,title,url) VALUES(?,?,?,?)")
 	if err != nil {
 		return err
 	}
 	defer insert_entries.Close()
 
 	insert_entries_content, err := tx.Prepare(
-		"insert into entries_content(entriesid,title,description) values(?,?,?)",
-	)
+		"INSERT INTO entries_content(entriesid,title,description) VALUES(?,?,?)")
 	if err != nil {
 		return err
 	}
@@ -213,8 +213,7 @@ func (feeds Feeds) Save(filename string) error {
 	update_feeds_metadata, err := tx.Prepare(`
     UPDATE feeds_metadata
        SET lastfetch = strftime('%s'), lastmodified = ?, etag = ?
-     WHERE feedid = ?
-    `)
+     WHERE feedid = ?`)
 	if err != nil {
 		return err
 	}
@@ -223,8 +222,7 @@ func (feeds Feeds) Save(filename string) error {
 	update_feeds_metadata_lastentry, err := tx.Prepare(`
     UPDATE feeds_metadata
        SET lastentry = ?
-     WHERE feedid = ? AND lastentry < ?
-    `)
+     WHERE feedid = ? AND lastentry < ?`)
 	if err != nil {
 		return err
 	}
@@ -321,8 +319,8 @@ func (feeds Feeds) Save(filename string) error {
 	}
 
 	sqlStmt := `
-    insert into search(search) values('optimize');
-	vacuum;`
+    INSERT INTO search(search) VALUES('optimize');
+	VACUUM;`
 	_, err = db.Exec(sqlStmt)
 	if err != nil {
 		return err
