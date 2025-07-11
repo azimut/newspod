@@ -1,6 +1,6 @@
 module github.com/azimut/newspod
 
-go 1.19
+go 1.21
 
 require (
 	github.com/JohannesKaufmann/html-to-markdown v1.5.0
