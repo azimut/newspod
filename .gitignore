@@ -2,3 +2,4 @@
 /frontend/public/elm.js
 /frontend/public/out.js
 feeds.db
+feeds.startup.json
