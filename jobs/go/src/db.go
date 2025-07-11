@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"slices"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -56,6 +57,18 @@ func createTables(db *sql.DB) error {
         foreign key(entriesid) references entries(id)
     ) strict;
     CREATE INDEX entriescindex ON entries_content(entriesid);
+
+    CREATE TABLE tags (
+      id     integer not null primary key,
+      name   text    not null unique
+    ) strict;
+
+    CREATE TABLE feed_tags (
+      feedid integer not null,
+      tagid  integer not null,
+      foreign key(feedid) references feeds(id),
+      foreign key(tagid)  references tags(id)
+    ) strict;
 
     CREATE VIRTUAL TABLE search USING fts5(
         title,
@@ -235,7 +248,8 @@ func (feeds Feeds) Save(filename string) error {
 	}
 	defer update_feeds_title.Close()
 
-	for _, feed := range feeds {
+	for fid := range feeds {
+		feed := feeds[fid]
 		effectiveFeedId := feed.RawId
 		if effectiveFeedId == 0 { // first time seen
 			res, err := init_feeds.Exec(feed.Title, feed.Url)
@@ -247,6 +261,7 @@ func (feeds Feeds) Save(filename string) error {
 				return err
 			}
 			effectiveFeedId = int(tmp)
+			feed.RawId = int(tmp)
 			_, err = init_feeds_metadata.Exec(effectiveFeedId)
 			if err != nil {
 				return err
@@ -318,6 +333,11 @@ func (feeds Feeds) Save(filename string) error {
 		return err
 	}
 
+	err = feeds.db_insert_tags(db)
+	if err != nil {
+		return err
+	}
+
 	sqlStmt := `
     INSERT INTO search(search) VALUES('optimize');
 	VACUUM;`
@@ -327,4 +347,50 @@ func (feeds Feeds) Save(filename string) error {
 	}
 	fmt.Println("DONE")
 	return nil
+}
+
+func (feeds Feeds) db_insert_tags(db *sql.DB) error {
+	fmt.Printf("[+] Inserting feed tags ... ")
+	err := db_delete_tags(db)
+	if err != nil {
+		return err
+	}
+	var unique_tags []string
+	var next_tag_id int
+	for _, feed := range feeds {
+		for _, tag_name := range feed.Tags {
+			var tag_id int
+			if slices.Contains(unique_tags, tag_name) {
+				tag_id = slices.Index(unique_tags, tag_name)
+			} else {
+				tag_id = next_tag_id
+				unique_tags = append(unique_tags, tag_name)
+				next_tag_id++
+				err = db_insert_tag(db, tag_id, tag_name)
+				if err != nil {
+					return err
+				}
+			}
+			err = db_insert_feed_tag(db, feed.RawId, tag_id) // assumes feed.RawId has a valid value
+			if err != nil {
+				return err
+			}
+		}
+	}
+	fmt.Println("DONE")
+	fmt.Printf("%+v\n", unique_tags) // output for debug
+	return nil
+}
+
+func db_delete_tags(db *sql.DB) error {
+	_, err := db.Exec("DELETE FROM feed_tags; DELETE FROM tags;")
+	return err
+}
+func db_insert_tag(db *sql.DB, id int, name string) error {
+	_, err := db.Exec("INSERT INTO tags(id, name) VALUES(?,?)", id, name)
+	return err
+}
+func db_insert_feed_tag(db *sql.DB, feed_id, tag_id int) error {
+	_, err := db.Exec("INSERT INTO feed_tags(feedid, tagid) VALUES(?,?)", feed_id, tag_id)
+	return err
 }
