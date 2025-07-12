@@ -261,7 +261,7 @@ func (feeds Feeds) Save(filename string) error {
 				return err
 			}
 			effectiveFeedId = int(tmp)
-			feed.RawId = int(tmp)
+			feeds[fid].RawId = int(tmp)
 			_, err = init_feeds_metadata.Exec(effectiveFeedId)
 			if err != nil {
 				return err
