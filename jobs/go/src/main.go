@@ -30,6 +30,9 @@ func main() {
 				feed_json.RawLastModified = feed_db.RawLastModified
 			}
 		}
+		if len(feed_json.Tags) == 0 {
+			feed_json.Tags = append(feed_json.Tags, "uncategorized")
+		}
 		fmt.Println("- " + feed_json.Url)
 		feeds = append(feeds, feed_json)
 	}
