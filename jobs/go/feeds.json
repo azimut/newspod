@@ -1,6 +1,12 @@
 {
   "feeds": [
     {
+      "url": "https://linuxmatters.sh/episode/index.xml",
+      "tags": [
+        "admin"
+      ]
+    },
+    {
       "url": "https://feeds.megaphone.fm/vergecast",
       "tags": [
         "tech"
@@ -25,15 +31,24 @@
     },
     {
       "title": "Lateralcast",
-      "url": "https://feeds.megaphone.fm/lateralcast"
+      "url": "https://feeds.megaphone.fm/lateralcast",
+      "tags": [
+        "science"
+      ]
     },
     {
       "title": "The Spark Gap",
-      "url": "http://thesparkgap.net/rss"
+      "url": "http://thesparkgap.net/rss",
+      "tags": [
+        "electronics"
+      ]
     },
     {
       "title": "postmarketOS",
-      "url": "https://cast.postmarketos.org/feed.rss"
+      "url": "https://cast.postmarketos.org/feed.rss",
+      "tags": [
+        "tech"
+      ]
     },
     {
       "title": "Human Factor Security",
@@ -113,7 +128,10 @@
       ]
     },
     {
-      "url": "https://feeds.transistor.fm/acquired"
+      "url": "https://feeds.transistor.fm/acquired",
+      "tags": [
+        "politics"
+      ]
     },
     {
       "title": "All-In Podcast",
@@ -181,7 +199,10 @@
       ]
     },
     {
-      "url": "https://newrustacean.com/feed.xml"
+      "url": "https://newrustacean.com/feed.xml",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "title": "GOTO Tech Podcasts",
@@ -189,7 +210,10 @@
     },
     {
       "title": "Front End Happy Hour",
-      "url": "https://anchor.fm/s/fb57a4a8/podcast/rss"
+      "url": "https://anchor.fm/s/fb57a4a8/podcast/rss",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "title": "NYT The Daily",
@@ -207,7 +231,10 @@
     },
     {
       "title": "Google DeepMind",
-      "url": "https://feeds.simplecast.com/JT6pbPkg"
+      "url": "https://feeds.simplecast.com/JT6pbPkg",
+      "tags": [
+        "ai"
+      ]
     },
     {
       "url": "https://feeds.fireside.fm/themanifest/rss"
@@ -227,11 +254,17 @@
       "url": "http://www.soldersmoke.com/soldersmoke.rss"
     },
     {
-      "url": "https://kodsnack.se/international/index.xml"
+      "url": "https://kodsnack.se/international/index.xml",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "title": "Software Developers Journey",
-      "url": "https://feeds.buzzsprout.com/190346.rss"
+      "url": "https://feeds.buzzsprout.com/190346.rss",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "title": "Stack Overflow",
@@ -258,11 +291,17 @@
       "url": "https://www.arresteddevops.com/episode/index.xml"
     },
     {
-      "url": "https://feed.podbean.com/bridgespodcast/feed.xml"
+      "url": "https://feed.podbean.com/bridgespodcast/feed.xml",
+      "tags": [
+        "politics"
+      ]
     },
     {
       "title": "Sean Carroll's Mindscape",
       "url": "https://rss.art19.com/sean-carrolls-mindscape",
+      "tags": [
+        "science"
+      ],
       "episode_blacklist": [
         "AMA"
       ]
@@ -270,6 +309,9 @@
     {
       "title": "The Stephen Wolfram Podcast",
       "url": "http://feeds.soundcloud.com/users/soundcloud:users:337408846/sounds.rss",
+      "tags": [
+        "science"
+      ],
       "episode_blacklist": [
         "Q&A",
         "Business, Innovation"
@@ -281,11 +323,17 @@
     },
     {
       "title": "Go Time",
-      "url": "https://changelog.com/gotime/feed"
+      "url": "https://changelog.com/gotime/feed",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "title": "Practical AI",
-      "url": "https://changelog.com/practicalai/feed"
+      "url": "https://changelog.com/practicalai/feed",
+      "tags": [
+        "ai"
+      ]
     },
     {
       "title": "Ship It!",
@@ -352,7 +400,10 @@
     },
     {
       "title": "State of Cybercrime",
-      "url": "https://feeds.simplecast.com/2Ntuu3AF"
+      "url": "https://feeds.simplecast.com/2Ntuu3AF",
+      "tags": [
+        "security"
+      ]
     },
     {
       "title": "Kiwi Talkz",
@@ -416,7 +467,10 @@
     },
     {
       "title": "Dwarkesh Podcast",
-      "url": "https://api.substack.com/feed/podcast/69345.rss"
+      "url": "https://api.substack.com/feed/podcast/69345.rss",
+      "tags": [
+        "ai"
+      ]
     },
     {
       "title": "The Stray Pointers Podcast",
@@ -466,7 +520,10 @@
       ]
     },
     {
-      "url": "http://hackaday.libsyn.com/rss"
+      "url": "http://hackaday.libsyn.com/rss",
+      "tags": [
+        "electronics"
+      ]
     },
     {
       "url": "https://arraycast.com/episodes?format=rss",
@@ -486,7 +543,10 @@
     },
     {
       "title": "The AMP Hour",
-      "url": "http://feeds.libsyn.com/35155/rss"
+      "url": "http://feeds.libsyn.com/35155/rss",
+      "tags": [
+        "electronics"
+      ]
     },
     {
       "url": "https://topenddevs.com/podcasts/ruby-rogues/rss",
@@ -495,7 +555,10 @@
       ]
     },
     {
-      "url": "https://wetoker.com/feed/el-bestiario-de-internet/"
+      "url": "https://wetoker.com/feed/el-bestiario-de-internet/",
+      "tags": [
+        "spanish"
+      ]
     },
     {
       "url": "https://www.numberphile.com/podcast?format=rss"
@@ -531,10 +594,16 @@
           "from": "**Elixir Community News",
           "to": "**"
         }
+      ],
+      "tags": [
+        "programming"
       ]
     },
     {
-      "url": "https://feed.podbean.com/sardonicast/feed.xml"
+      "url": "https://feed.podbean.com/sardonicast/feed.xml",
+      "tags": [
+        "media"
+      ]
     },
     {
       "title": "Haskell Interlude",
@@ -552,7 +621,10 @@
     },
     {
       "title": "Backend Banter",
-      "url": "https://anchor.fm/s/f39e007c/podcast/rss"
+      "url": "https://anchor.fm/s/f39e007c/podcast/rss",
+      "tags": [
+        "admin"
+      ]
     },
     {
       "url": "https://feeds.mozilla-podcasts.org/irl"
@@ -644,10 +716,18 @@
       "url": "https://feeds.simplecast.com/gvtxUiIf"
     },
     {
-      "url": "https://leanpub.com/podcasts/frontmatter/podcast.xml"
+      "url": "https://leanpub.com/podcasts/frontmatter/podcast.xml",
+      "tags": [
+        "tech",
+        "programming"
+      ]
     },
     {
-      "url": "https://feeds.soundcloud.com/users/soundcloud:users:220484243/sounds.rss"
+      "title": "defn",
+      "url": "https://feeds.soundcloud.com/users/soundcloud:users:220484243/sounds.rss",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "title": "Trail of Bits",
@@ -662,18 +742,25 @@
     },
     {
       "title": "ML Street Talk",
-      "url": "https://anchor.fm/s/1e4a0eac/podcast/rss"
+      "url": "https://anchor.fm/s/1e4a0eac/podcast/rss",
+      "tags": [
+        "ai"
+      ]
     },
     {
       "title": "Filosofia a la gorra",
       "url": "https://anchor.fm/s/2b386e88/podcast/rss",
       "tags": [
-        "spanish"
+        "spanish",
+        "philosophy"
       ]
     },
     {
       "title": "This Week in Startups",
-      "url": "https://anchor.fm/s/7c624c84/podcast/rss"
+      "url": "https://anchor.fm/s/7c624c84/podcast/rss",
+      "tags": [
+        "politics"
+      ]
     },
     {
       "title": "Day [0]",
@@ -684,7 +771,10 @@
     },
     {
       "title": "Tooling Talks",
-      "url": "https://feeds.buzzsprout.com/1830936.rss"
+      "url": "https://feeds.buzzsprout.com/1830936.rss",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "url": "https://feeds.fireside.fm/compositional/rss"
@@ -703,10 +793,17 @@
     },
     {
       "title": "CLI Heroes",
-      "url": "https://feeds.simplecast.com/vUHP7wpf"
+      "url": "https://feeds.simplecast.com/vUHP7wpf",
+      "tags": [
+        "admin"
+      ]
     },
     {
-      "url": "https://lexfridman.com/feed/podcast/"
+      "url": "https://lexfridman.com/feed/podcast/",
+      "tags": [
+        "politics",
+        "science"
+      ]
     },
     {
       "title": "CoRecursive",
@@ -769,7 +866,7 @@
       "title": "YT | Database School",
       "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=PLI72dgeNJtzqElnNB6sQoAn2R-F3Vqm15",
       "tags": [
-        "programming"
+        "admin"
       ]
     },
     {
@@ -800,6 +897,15 @@
       "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=PLplKrR_r0x1cG3yzmpJHb9Qrg6sso_hKw",
       "tags": [
         "security",
+        "spanish"
+      ]
+    },
+    {
+      "title": "YT | Restarteando el POD(cast)",
+      "url": "https://www.youtube.com/playlist?list=PLqRCtm0kbeHDwLiHKtSgXNr8DonRxNLjQ",
+      "tags": [
+        "admin",
+        "tech",
         "spanish"
       ]
     }
