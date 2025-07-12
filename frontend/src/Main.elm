@@ -5,6 +5,7 @@ import Filesize
 import Html exposing (Html, a, article, button, details, div, footer, form, h1, header, img, input, main_, span, summary, text, time)
 import Html.Attributes exposing (attribute, autocomplete, autofocus, class, disabled, href, id, maxlength, minlength, name, placeholder, size, src, style, type_, value)
 import Html.Events exposing (onClick, onInput, onSubmit, stopPropagationOn)
+import Http
 import Json.Decode as JD
 import List.Extra
 import Loaders
@@ -25,6 +26,13 @@ main =
         , view = view
         , subscriptions = subscriptions
         }
+
+
+type alias Startup =
+    { feeds : List InitFeed
+    , stats : DbStats
+    , tags : List String -- TODO: use this
+    }
 
 
 type alias Model =
@@ -94,8 +102,8 @@ type State
 
 
 type Msg
-    = InitFeeds (List InitFeed)
-    | InitClock Time.Posix
+    = InitClock Time.Posix
+    | InitState (Result Http.Error Startup)
     | AskForEntries Int
     | NewEntries (List NewEntry)
     | NewInput String
@@ -103,7 +111,6 @@ type Msg
     | NewDetails EntryDetails
     | AskForSearch
     | NewSearchResults (List NewEntry)
-    | InitDbStats DbStats
     | NewError String
     | NewFeedDetails FeedDetails
 
@@ -152,9 +159,6 @@ port askForSearch : String -> Cmd msg
 port receiveFeedDetails : (FeedDetails -> msg) -> Sub msg
 
 
-port receiveDbStats : (DbStats -> msg) -> Sub msg
-
-
 port receiveSearchResults : (List NewEntry -> msg) -> Sub msg
 
 
@@ -164,17 +168,42 @@ port receiveEntries : (List NewEntry -> msg) -> Sub msg
 port receiveEntryDetails : (EntryDetails -> msg) -> Sub msg
 
 
-port receiveInitFeeds : (List InitFeed -> msg) -> Sub msg
-
-
 port receiveError : (String -> msg) -> Sub msg
 
 
 init : flags -> ( Model, Cmd Msg )
 init _ =
     ( Model [] OrderedDict.empty "" Nothing Nothing 0 Starting (millisToPosix 0)
-    , Task.perform InitClock Time.now
+    , Cmd.batch
+        [ Task.perform InitClock Time.now
+        , Http.get
+            { url = "./feeds.startup.json"
+            , expect = Http.expectJson InitState stateDecoder
+            }
+        ]
     )
+
+
+stateDecoder : JD.Decoder Startup
+stateDecoder =
+    JD.map3 Startup
+        (JD.field "feeds"
+            (JD.list
+                (JD.map3 InitFeed
+                    (JD.field "id" JD.int)
+                    (JD.field "title" JD.string)
+                    (JD.field "nEntries" JD.int)
+                )
+            )
+        )
+        (JD.field "stats"
+            (JD.map3 DbStats
+                (JD.field "nPodcasts" JD.int)
+                (JD.field "nEntries" JD.int)
+                (JD.field "dbSize" JD.int)
+            )
+        )
+        (JD.field "tags" (JD.list JD.string))
 
 
 
@@ -249,16 +278,19 @@ fillDetails eDetails =
 update : Msg -> Model -> ( Model, Cmd msg )
 update msg ({ feeds, entries, search, state } as model) =
     case msg of
-        InitDbStats { nEntries, nPodcasts, dbSize } ->
-            ( { model | dbStats = Just <| DbStats nPodcasts nEntries dbSize }, Cmd.none )
+        InitState result ->
+            case result of
+                Ok initState ->
+                    ( { model
+                        | state = Idle
+                        , feeds = List.map toFeed initState.feeds
+                        , dbStats = Just initState.stats
+                      }
+                    , Cmd.none
+                    )
 
-        InitFeeds iFeeds ->
-            ( { model
-                | feeds = List.map toFeed iFeeds
-                , state = Idle
-              }
-            , Cmd.none
-            )
+                Err _ ->
+                    ( { model | state = Error }, Cmd.none )
 
         InitClock n ->
             ( { model | now = n }, Cmd.none )
@@ -715,11 +747,9 @@ sortFeeds feeds ids acc =
 subscriptions : model -> Sub Msg
 subscriptions _ =
     Sub.batch
-        [ receiveInitFeeds InitFeeds
-        , receiveEntries NewEntries
+        [ receiveEntries NewEntries
         , receiveEntryDetails NewDetails
         , receiveSearchResults NewSearchResults
-        , receiveDbStats InitDbStats
         , receiveError NewError
         , receiveFeedDetails NewFeedDetails
         ]

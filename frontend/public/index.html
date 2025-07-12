@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -246,12 +246,6 @@
         node: document.getElementById("app"),
       });
       let db = Muh.initConnection();
-      Muh.db_stats(db).then((dbStats) => {
-        app.ports.receiveDbStats.send(dbStats);
-      });
-      Muh.getFeeds(db).then((fs) => {
-        app.ports.receiveInitFeeds.send(fs);
-      });
       app.ports.askForFeedDetails.subscribe((feedid) => {
         Muh.getFeedDetails(db, feedid).then(app.ports.receiveFeedDetails.send);
       });
@@ -260,7 +254,7 @@
       });
       app.ports.askForEntryDetails.subscribe(({ entryId, search }) => {
         Muh.getEntryDetails(db, entryId, search).then(
-          app.ports.receiveEntryDetails.send,
+          app.ports.receiveEntryDetails.send
         );
       });
       app.ports.askForSearch.subscribe((searchTerm) => {

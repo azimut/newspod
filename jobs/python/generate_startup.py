@@ -31,7 +31,7 @@ def db_feeds(cur: sqlite3.Cursor):
       GROUP BY entries.feedid
         HAVING count(*) > 0
       ORDER BY feeds_metadata.lastentry DESC """)
-    return [ {"id": id, "title": title, "count": count}
+    return [ {"id": id, "title": title, "nEntries": count}
              for id, title, count in res.fetchall()]
 
 def db_stats(cur: sqlite3.Cursor):
@@ -40,11 +40,11 @@ def db_stats(cur: sqlite3.Cursor):
           FROM (SELECT COUNT(1) FROM feeds)
           JOIN (SELECT COUNT(1) FROM entries)
           JOIN (SELECT page_size*page_count FROM pragma_page_count(), pragma_page_size())""")
-    nfeeds, nentries, filesize = res.fetchall()[0]
+    nf, ne, dbsize = res.fetchall()[0]
     return {
-          "nfeeds": nfeeds,
-        "nentries": nentries,
-        "filesize": filesize,
+        "nPodcasts": nf,
+         "nEntries": ne,
+           "dbSize": dbsize,
     }
 
 if __name__ == '__main__':
