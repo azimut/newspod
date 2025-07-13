@@ -44,13 +44,17 @@ class Feed:
     entries:     list[Entry] = field(default_factory=list)
 
     def from_rss(self) -> str:
-        match parse_qsl(urlparse(self.rssurl).query):
+        url = urlparse(self.rssurl)
+        if not url:
+            print("invalid url")
+            sys.exit(1)
+        match parse_qsl(url.query):
             case [('playlist_id', id)]:
                 return f"https://www.youtube.com/playlist?list={id}"
             case [('channel_id', id)]:
                 return f"https://www.youtube.com/channel/{id}"
             case _:
-                print(f"invalid url ({url})!")
+                print(f"invalid url: ({url})")
                 sys.exit(1)
 
     # .channel (name) / .channel_id / .channel_url
