@@ -1,17 +1,11 @@
 .PHONY: all
 all: public/elm.js public/temp/bundle.js public/apple-touch-icon.png public/favicon.ico
 
-public/temp/bundle.js: index.js
-	npm run build
-
 public/elm.js: src/Main.elm
 	elm make src/Main.elm --output=public/elm.js --optimize
 
-.PHONY: dev dev/elm-live dev/webpack dev/css
-dev:          ; $(MAKE) -j3 dev/elm-live dev/webpack dev/css
-dev/elm-live: ; elm-live src/Main.elm --port=8080 --dir=public/ --open -- --output=public/elm.js --debug
-dev/webpack:  ; npx webpack --mode=development --watch
-dev/css:      ; echo public/styles.css | entr -rp touch src/Main.elm
+public/temp/bundle.js: index.js
+	npm run build
 
 public/favicon.ico public/apple-touch-icon.png:
 	convert -size 1024x1024 \
@@ -23,6 +17,12 @@ public/favicon.ico public/apple-touch-icon.png:
 		\( -clone 0 -resize 180x180 -write public/apple-touch-icon.png \) \
 		\( -clone 0 -define icon:auto-resize=64,48,32,16 -write public/favicon.ico \) \
 		null:
+
+.PHONY: dev dev/elm-live dev/webpack dev/css
+dev:          ; $(MAKE) -j3 dev/elm-live dev/webpack dev/css
+dev/elm-live: ; elm-live src/Main.elm --port=8080 --dir=public/ --open -- --output=public/elm.js --debug
+dev/webpack:  ; npx webpack --mode=development --watch
+dev/css:      ; echo public/styles.css | entr -rp touch src/Main.elm
 
 .PHONY: clean
 clean: ; rm -vrf public/temp
