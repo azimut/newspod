@@ -2,7 +2,7 @@
 import sqlite3
 import json
 
-DB_PATH = "../go/feeds.db"
+DB_PATH = "../../go/feeds.db"
 DB_JSON = "./feeds.startup.json"
 
 def main():
@@ -23,13 +23,13 @@ def db_tags(cur: sqlite3.Cursor):
     return [ x[0] for x in res.fetchall() ]
 
 def db_feeds(cur: sqlite3.Cursor):
-    with open("feeds.sql") as file: res = cur.execute(file.read())
+    with open("sql/feeds.sql") as file: res = cur.execute(file.read())
     return [ {"id": id, "title": title, "nEntries": count, "tags": tags.split(",")}
              for id, title, count, tags
              in res.fetchall() ]
 
 def db_stats(cur: sqlite3.Cursor):
-    with open("stats.sql") as file: res = cur.execute(file.read())
+    with open("sql/stats.sql") as file: res = cur.execute(file.read())
     nf, ne, dbsize = res.fetchall()[0]
     return {
         "nPodcasts": nf,
