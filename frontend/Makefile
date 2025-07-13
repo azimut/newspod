@@ -7,8 +7,11 @@ public/temp/bundle.js: index.js
 public/elm.js: src/Main.elm
 	elm make src/Main.elm --output=public/elm.js --optimize
 
-.PHONY: dev
-dev: ; npm run dev
+.PHONY: dev dev/elm-live dev/webpack dev/css
+dev:          ; $(MAKE) -j3 dev/elm-live dev/webpack dev/css
+dev/elm-live: ; elm-live src/Main.elm --port=8080 --dir=public/ --open -- --output=public/elm.js --debug
+dev/webpack:  ; npx webpack --mode=development --watch
+dev/css:      ; echo public/styles.css | entr -rp touch src/Main.elm
 
 public/favicon.ico public/apple-touch-icon.png:
 	convert -size 1024x1024 \
