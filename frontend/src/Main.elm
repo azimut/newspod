@@ -2,7 +2,7 @@ port module Main exposing (..)
 
 import Browser
 import Filesize
-import Html exposing (Html, a, article, button, details, div, footer, form, h1, header, img, input, main_, span, summary, text, time)
+import Html exposing (Html, a, article, button, details, div, footer, form, h1, header, img, input, li, main_, span, summary, text, time, ul)
 import Html.Attributes exposing (attribute, autocomplete, autofocus, class, disabled, href, id, maxlength, minlength, name, placeholder, size, src, style, type_, value)
 import Html.Events exposing (onClick, onInput, onSubmit, stopPropagationOn)
 import Http
@@ -31,7 +31,7 @@ main =
 type alias Startup =
     { feeds : List InitFeed
     , stats : DbStats
-    , tags : List String -- TODO: use this
+    , tags : List String
     }
 
 
@@ -45,6 +45,7 @@ type alias Model =
     , state : State
     , now : Time.Posix
     , tags : List String
+    , selectedTags : Set.Set String
     }
 
 
@@ -63,7 +64,7 @@ type alias Feed =
     , isVisible : Bool
     , nEntries : Int
     , nResults : Int
-    , tags : List String
+    , tags : Set.Set String
     }
 
 
@@ -107,6 +108,7 @@ type Msg
     = InitClock Time.Posix
     | InitState (Result Http.Error Startup)
     | AskForEntries Int
+    | ToggleTag String
     | NewEntries (List NewEntry)
     | NewInput String
     | AskForDetails Int Int
@@ -176,7 +178,7 @@ port receiveError : (String -> msg) -> Sub msg
 
 init : flags -> ( Model, Cmd Msg )
 init _ =
-    ( Model [] OrderedDict.empty "" Nothing Nothing 0 Starting (millisToPosix 0) []
+    ( Model [] OrderedDict.empty "" Nothing Nothing 0 Starting (millisToPosix 0) [] Set.empty
     , Cmd.batch
         [ Task.perform InitClock Time.now
         , Http.get
@@ -237,7 +239,7 @@ toFeed { id, title, nEntries, tags } =
     , isVisible = True
     , nEntries = nEntries
     , nResults = 0
-    , tags = tags
+    , tags = Set.fromList tags
     }
 
 
@@ -288,7 +290,7 @@ update msg ({ feeds, entries, search, state } as model) =
                 Ok initState ->
                     ( { model
                         | state = Idle
-                        , tags = initState.tags
+                        , tags = List.sort initState.tags
                         , feeds = List.map toFeed initState.feeds
                         , dbStats = Just initState.stats
                       }
@@ -309,12 +311,18 @@ update msg ({ feeds, entries, search, state } as model) =
                     , state = Idle
                     , currentSearch = Nothing
                     , search = ""
+                    , selectedTags = Set.empty
                   }
                 , Cmd.none
                 )
 
             else
-                ( { model | search = newSearch }, Cmd.none )
+                ( { model
+                    | search = newSearch
+                    , selectedTags = Set.empty
+                  }
+                , Cmd.none
+                )
 
         AskForSearch ->
             if String.isEmpty (String.trim search) then
@@ -324,6 +332,7 @@ update msg ({ feeds, entries, search, state } as model) =
                 ( { model
                     | state = WaitingForResults
                     , currentSearch = Just search
+                    , selectedTags = Set.empty
                   }
                 , askForSearch search
                 )
@@ -382,6 +391,36 @@ update msg ({ feeds, entries, search, state } as model) =
               }
             , Cmd.none
             )
+
+        ToggleTag tag ->
+            let
+                updatedTags =
+                    toggleSet tag model.selectedTags
+            in
+            ( { model
+                | selectedTags = updatedTags
+                , feeds = updateVisibleFeeds updatedTags model.feeds
+              }
+            , Cmd.none
+            )
+
+
+updateVisibleFeeds : Set.Set String -> List Feed -> List Feed
+updateVisibleFeeds selectedTags feeds =
+    List.map
+        (\feed ->
+            { feed | isVisible = not (Set.isEmpty (Set.intersect feed.tags selectedTags)) }
+        )
+        feeds
+
+
+toggleSet : String -> Set.Set String -> Set.Set String
+toggleSet needle hay =
+    if Set.member needle hay then
+        Set.remove needle hay
+
+    else
+        Set.insert needle hay
 
 
 newSearchResults : Model -> List NewEntry -> Model
@@ -576,7 +615,7 @@ viewEntry feedId now entry =
 
 
 viewHeader : Model -> Html Msg
-viewHeader { search, state } =
+viewHeader { search, state, tags, selectedTags } =
     let
         isDisabled =
             state == Starting
@@ -610,7 +649,37 @@ viewHeader { search, state } =
                 []
             , button [ type_ "submit", style "display" "none" ] []
             ]
+        , ul [] (liTags tags selectedTags)
         ]
+
+
+btnAction : String -> Html.Attribute Msg
+btnAction tag =
+    onClick (ToggleTag tag)
+
+
+btnClass : String -> Set.Set String -> Html.Attribute Msg
+btnClass tag selectedTags =
+    if Set.member tag selectedTags then
+        class "enabled"
+
+    else
+        class ""
+
+
+liTags : List String -> Set.Set String -> List (Html Msg)
+liTags tags selectedTags =
+    List.map
+        (\tag ->
+            li []
+                [ button
+                    [ btnClass tag selectedTags
+                    , btnAction tag
+                    ]
+                    [ text tag ]
+                ]
+        )
+        tags
 
 
 viewFooter : Html Msg
@@ -633,6 +702,16 @@ viewStats { dbStats } =
                 , div [] [ text (fromInt nEntries ++ " episodes,") ]
                 , div [] [ text (Filesize.format dbSize) ]
                 ]
+
+
+viewFeeds : Model -> List (Html Msg)
+viewFeeds { feeds, now, entries, state, selectedTags } =
+    let
+        emptyTags =
+            Set.isEmpty selectedTags
+    in
+    List.map (\feed -> viewFeed feed state now entries)
+        (List.filter (\feed -> feed.isVisible || emptyTags) feeds)
 
 
 viewMain : Model -> Html Msg
@@ -661,7 +740,7 @@ viewMain ({ state, dbStats } as model) =
 
             Idle ->
                 viewStats model
-                    :: List.map (\feed -> viewFeed feed state model.now model.entries) model.feeds
+                    :: viewFeeds model
 
             WaitingForResults ->
                 [ div [ class "loader-search" ]
