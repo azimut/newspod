@@ -192,7 +192,10 @@
     },
     {
       "title": "Malicious Life",
-      "url": "https://feeds.redcircle.com/597cfd00-b29a-49c6-9622-03c8decfc35f"
+      "url": "https://feeds.redcircle.com/597cfd00-b29a-49c6-9622-03c8decfc35f",
+      "tags": [
+        "security"
+      ]
     },
     {
       "url": "https://www.codingblocks.net/feed/podcast/"
@@ -249,18 +252,27 @@
       "url": "https://feeds.fireside.fm/themanifest/rss"
     },
     {
-      "url": "https://thespaceaboveus.libsyn.com/rss"
+      "url": "https://thespaceaboveus.libsyn.com/rss",
+      "tags": [
+        "science"
+      ]
     },
     {
       "title": "Inference",
-      "url": "https://anchor.fm/s/50673b6c/podcast/rss"
+      "url": "https://anchor.fm/s/50673b6c/podcast/rss",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "title": "Functional Futures",
       "url": "https://anchor.fm/s/7b1db340/podcast/rss"
     },
     {
-      "url": "http://www.soldersmoke.com/soldersmoke.rss"
+      "url": "http://www.soldersmoke.com/soldersmoke.rss",
+      "tags": [
+        "electronics"
+      ]
     },
     {
       "url": "https://kodsnack.se/international/index.xml",
@@ -411,11 +423,17 @@
       ]
     },
     {
-      "url": "https://feeds.blubrry.com/feeds/voices_from_darpa.xml"
+      "url": "https://feeds.blubrry.com/feeds/voices_from_darpa.xml",
+      "tags": [
+        "science"
+      ]
     },
     {
       "title": "DevRock",
-      "url": "http://feeds.soundcloud.com/users/soundcloud:users:5797383/sounds.rss"
+      "url": "http://feeds.soundcloud.com/users/soundcloud:users:5797383/sounds.rss",
+      "tags": [
+        "spanish"
+      ]
     },
     {
       "title": "Oxide and Friends",
@@ -444,7 +462,10 @@
     },
     {
       "title": "Hardcore History",
-      "url": "https://feeds.feedburner.com/dancarlin/history?format=xml"
+      "url": "https://feeds.feedburner.com/dancarlin/history?format=xml",
+      "tags": [
+        "science"
+      ]
     },
     {
       "title": "Rustacean Station",
@@ -495,7 +516,10 @@
     },
     {
       "title": "indiedevs talk shop",
-      "url": "https://anchor.fm/s/f472c280/podcast/rss"
+      "url": "https://anchor.fm/s/f472c280/podcast/rss",
+      "tags": [
+        "gamedev"
+      ]
     },
     {
       "title": "Thoughtworks Technology",
@@ -510,7 +534,10 @@
     },
     {
       "title": "The Stray Pointers Podcast",
-      "url": "http://feeds.libsyn.com/481983/rss"
+      "url": "http://feeds.libsyn.com/481983/rss",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "title": "Exascale Computing Project",
@@ -603,7 +630,10 @@
       ]
     },
     {
-      "url": "https://www.numberphile.com/podcast?format=rss"
+      "url": "https://www.numberphile.com/podcast?format=rss",
+      "tags": [
+        "science"
+      ]
     },
     {
       "url": "https://www.therubyonrailspodcast.com/rss",
@@ -645,10 +675,7 @@
       ]
     },
     {
-      "url": "https://feed.podbean.com/sardonicast/feed.xml",
-      "tags": [
-        "media"
-      ]
+      "url": "https://feed.podbean.com/sardonicast/feed.xml"
     },
     {
       "title": "Haskell Interlude",
@@ -889,14 +916,14 @@
       ]
     },
     {
-      "title": "YT | ColdFusion",
+      "title": "ColdFusion",
       "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC4QZ_LsYcvcq7qOsOhpAX4A",
       "tags": [
         "tech"
       ]
     },
     {
-      "title": "YT | Freddy Vega (Platzi)",
+      "title": "Freddy Vega (Platzi)",
       "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=PLwbyjg7-bjocjc5yp3Hkt3PAc1zCKi9OL",
       "tags": [
         "tech",
@@ -904,28 +931,28 @@
       ]
     },
     {
-      "title": "YT | Mr. 4th Programming",
+      "title": "Mr. 4th Programming",
       "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=PLT6InxK-XQvOiQLc9CkjwGMkZ946Rj6bI",
       "tags": [
         "programming"
       ]
     },
     {
-      "title": "YT | Database School",
+      "title": "Database School",
       "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=PLI72dgeNJtzqElnNB6sQoAn2R-F3Vqm15",
       "tags": [
         "admin"
       ]
     },
     {
-      "title": "YT | LiveRecon Sunday by NahamSec",
+      "title": "LiveRecon Sunday by NahamSec",
       "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=PLKAaMVNxvLmAkqBkzFaOxqs3L66z2n8LA",
       "tags": [
         "security"
       ]
     },
     {
-      "title": "YT | Hacking Nights I - by ElMago",
+      "title": "Hacking Nights I",
       "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=PLplKrR_r0x1ekI2YR13eWglIDtTaC72Bo",
       "tags": [
         "security",
@@ -933,7 +960,7 @@
       ]
     },
     {
-      "title": "YT | Hacking Nights II - by ElMago",
+      "title": "Hacking Nights II",
       "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=PLplKrR_r0x1dOv1TKVUm54RrRuZT4z_DR",
       "tags": [
         "security",
@@ -941,7 +968,7 @@
       ]
     },
     {
-      "title": "YT | Hacking Nights III - by ElMago",
+      "title": "Hacking Nights III",
       "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=PLplKrR_r0x1cG3yzmpJHb9Qrg6sso_hKw",
       "tags": [
         "security",
@@ -949,11 +976,10 @@
       ]
     },
     {
-      "title": "YT | Restarteando el POD(cast)",
+      "title": "Restarteando el POD(cast)",
       "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=PLqRCtm0kbeHDwLiHKtSgXNr8DonRxNLjQ",
       "tags": [
         "admin",
-        "tech",
         "spanish"
       ]
     }
