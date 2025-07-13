@@ -44,6 +44,7 @@ type alias Model =
     , nResults : Int
     , state : State
     , now : Time.Posix
+    , tags : List String
     }
 
 
@@ -62,6 +63,7 @@ type alias Feed =
     , isVisible : Bool
     , nEntries : Int
     , nResults : Int
+    , tags : List String
     }
 
 
@@ -119,6 +121,7 @@ type alias InitFeed =
     { id : Int
     , title : String
     , nEntries : Int
+    , tags : List String
     }
 
 
@@ -173,7 +176,7 @@ port receiveError : (String -> msg) -> Sub msg
 
 init : flags -> ( Model, Cmd Msg )
 init _ =
-    ( Model [] OrderedDict.empty "" Nothing Nothing 0 Starting (millisToPosix 0)
+    ( Model [] OrderedDict.empty "" Nothing Nothing 0 Starting (millisToPosix 0) []
     , Cmd.batch
         [ Task.perform InitClock Time.now
         , Http.get
@@ -189,10 +192,11 @@ stateDecoder =
     JD.map3 Startup
         (JD.field "feeds"
             (JD.list
-                (JD.map3 InitFeed
+                (JD.map4 InitFeed
                     (JD.field "id" JD.int)
                     (JD.field "title" JD.string)
                     (JD.field "nEntries" JD.int)
+                    (JD.field "tags" (JD.list JD.string))
                 )
             )
         )
@@ -225,7 +229,7 @@ toEntry { id, feedid, title, date, url } =
 
 
 toFeed : InitFeed -> Feed
-toFeed { id, title, nEntries } =
+toFeed { id, title, nEntries, tags } =
     { id = id
     , title = title
     , details = Nothing
@@ -233,6 +237,7 @@ toFeed { id, title, nEntries } =
     , isVisible = True
     , nEntries = nEntries
     , nResults = 0
+    , tags = tags
     }
 
 
@@ -283,6 +288,7 @@ update msg ({ feeds, entries, search, state } as model) =
                 Ok initState ->
                     ( { model
                         | state = Idle
+                        , tags = initState.tags
                         , feeds = List.map toFeed initState.feeds
                         , dbStats = Just initState.stats
                       }

@@ -24,15 +24,17 @@ def db_tags(cur: sqlite3.Cursor):
 
 def db_feeds(cur: sqlite3.Cursor):
     res = cur.execute("""
-        SELECT feeds.id, feeds.title, count(*)
+        SELECT feeds.id, feeds.title, count(*), group_concat(DISTINCT tags.name)
           FROM feeds
           JOIN entries        ON feeds.id =        entries.feedid
           JOIN feeds_metadata ON feeds.id = feeds_metadata.feedid
+          JOIN  feed_tags     ON feeds.id =      feed_tags.feedid
+          JOIN       tags     ON  tags.id =      feed_tags.tagid
       GROUP BY entries.feedid
         HAVING count(*) > 0
       ORDER BY feeds_metadata.lastentry DESC """)
-    return [ {"id": id, "title": title, "nEntries": count}
-             for id, title, count in res.fetchall()]
+    return [ {"id": id, "title": title, "nEntries": count, "tags": tags.split(",")}
+             for id, title, count, tags in res.fetchall()]
 
 def db_stats(cur: sqlite3.Cursor):
     res = cur.execute("""
