@@ -266,7 +266,10 @@
     },
     {
       "title": "Functional Futures",
-      "url": "https://anchor.fm/s/7b1db340/podcast/rss"
+      "url": "https://anchor.fm/s/7b1db340/podcast/rss",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "url": "http://www.soldersmoke.com/soldersmoke.rss",
@@ -558,7 +561,10 @@
       ]
     },
     {
-      "url": "https://www.idlethumbs.net/feeds/designer-notes"
+      "url": "https://www.idlethumbs.net/feeds/designer-notes",
+      "tags": [
+        "gamedev"
+      ]
     },
     {
       "url": "http://makingembeddedsystems.libsyn.com/rss",
@@ -580,6 +586,7 @@
       "url": "https://feeds.transistor.fm/the-technium-podcast"
     },
     {
+      "title": "UnNamedRE",
       "url": "http://reverseengineering.libsyn.com/rss",
       "tags": [
         "security"
@@ -738,11 +745,17 @@
     },
     {
       "title": "Critical Thinking",
-      "url": "https://media.rss.com/ctbbpodcast/feed.xml"
+      "url": "https://media.rss.com/ctbbpodcast/feed.xml",
+      "tags": [
+        "security"
+      ]
     },
     {
       "title": "The Art of Network Engineering",
-      "url": "https://feeds.buzzsprout.com/2127872.rss"
+      "url": "https://feeds.buzzsprout.com/2127872.rss",
+      "tags": [
+        "security"
+      ]
     },
     {
       "url": "https://www.smashingsecurity.com/rss",
