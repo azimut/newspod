@@ -4,7 +4,7 @@
   "description": "My favority podcasts",
   "main": "index.js",
   "scripts": {
-    "dev": "concurrently \"elm-live src/Main.elm --port=8080 --dir=public/ --open -- --output=public/elm.js --debug\" \"webpack --mode=development --watch\"",
+    "dev": "concurrently \"elm-live src/Main.elm --port=8080 --dir=public/ --open -- --output=public/elm.js --debug\" \"webpack --mode=development --watch\" \"echo public/styles.css | entr -rp touch src/Main.elm\"",
     "build": "webpack --mode=production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
