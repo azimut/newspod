@@ -2,7 +2,7 @@ port module Main exposing (..)
 
 import Browser
 import Filesize
-import Html exposing (Html, a, article, button, details, div, footer, form, h1, header, img, input, main_, span, summary, text, time)
+import Html exposing (li, Html, a, article, button, details, div, footer, form, h1, header, img, input, main_, span, summary, text, time, ul)
 import Html.Attributes exposing (attribute, autocomplete, autofocus, class, disabled, href, id, maxlength, minlength, name, placeholder, size, src, style, type_, value)
 import Html.Events exposing (onClick, onInput, onSubmit, stopPropagationOn)
 import Http
@@ -31,7 +31,7 @@ main =
 type alias Startup =
     { feeds : List InitFeed
     , stats : DbStats
-    , tags : List String -- TODO: use this
+    , tags : List String
     }
 
 
@@ -45,6 +45,7 @@ type alias Model =
     , state : State
     , now : Time.Posix
     , tags : List String
+    , selectedTags : Set.Set String
     }
 
 
@@ -63,7 +64,7 @@ type alias Feed =
     , isVisible : Bool
     , nEntries : Int
     , nResults : Int
-    , tags : List String
+    , tags : Set.Set String
     }
 
 
@@ -176,7 +177,7 @@ port receiveError : (String -> msg) -> Sub msg
 
 init : flags -> ( Model, Cmd Msg )
 init _ =
-    ( Model [] OrderedDict.empty "" Nothing Nothing 0 Starting (millisToPosix 0) []
+    ( Model [] OrderedDict.empty "" Nothing Nothing 0 Starting (millisToPosix 0) [] Set.empty
     , Cmd.batch
         [ Task.perform InitClock Time.now
         , Http.get
@@ -237,7 +238,7 @@ toFeed { id, title, nEntries, tags } =
     , isVisible = True
     , nEntries = nEntries
     , nResults = 0
-    , tags = tags
+    , tags = Set.fromList tags
     }
 
 
@@ -288,7 +289,7 @@ update msg ({ feeds, entries, search, state } as model) =
                 Ok initState ->
                     ( { model
                         | state = Idle
-                        , tags = initState.tags
+                        , tags = List.sort initState.tags
                         , feeds = List.map toFeed initState.feeds
                         , dbStats = Just initState.stats
                       }
@@ -576,7 +577,7 @@ viewEntry feedId now entry =
 
 
 viewHeader : Model -> Html Msg
-viewHeader { search, state } =
+viewHeader { search, state, tags } =
     let
         isDisabled =
             state == Starting
@@ -610,7 +611,13 @@ viewHeader { search, state } =
                 []
             , button [ type_ "submit", style "display" "none" ] []
             ]
+        , ul [] (liTags tags)
         ]
+
+
+liTags : List String -> List (Html Msg)
+liTags tags =
+    List.map (\tag -> li [] [button [][text tag]]) tags
 
 
 viewFooter : Html Msg

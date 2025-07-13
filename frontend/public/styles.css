@@ -18,6 +18,26 @@ a:visited {
   color: var(--deep-blue);
 }
 
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.15em;
+}
+
+li {
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+
+li > button {
+  font-size: 0.4em;
+}
+
 body {
   padding: 0;
   max-width: 1080px;
@@ -101,6 +121,9 @@ svg {
   margin: 1em auto; /* center spinner when bare on main */
   display: block;
 }
+
+/* Feeds */
+
 div.some-results {
   display: flex;
   flex-direction: row;
@@ -152,6 +175,8 @@ details[open] summary {
   }
 }
 
+/* Feed */
+
 .feed-details {
   display: flex;
   flex-direction: column;
@@ -188,6 +213,8 @@ details[open] summary {
     padding: 0 0 0 3em;
   }
 }
+
+/* Episode */
 
 div.episode {
   padding: 1.2em 0.5em;
