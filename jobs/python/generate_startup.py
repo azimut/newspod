@@ -23,26 +23,13 @@ def db_tags(cur: sqlite3.Cursor):
     return [ x[0] for x in res.fetchall() ]
 
 def db_feeds(cur: sqlite3.Cursor):
-    res = cur.execute("""
-        SELECT feeds.id, feeds.title, count(DISTINCT entries.id), group_concat(DISTINCT tags.name)
-          FROM feeds
-          JOIN entries        ON feeds.id =        entries.feedid
-          JOIN feeds_metadata ON feeds.id = feeds_metadata.feedid
-          JOIN  feed_tags     ON feeds.id =      feed_tags.feedid
-          JOIN       tags     ON  tags.id =      feed_tags.tagid
-      GROUP BY entries.feedid
-        HAVING count(*) > 0
-      ORDER BY feeds_metadata.lastentry DESC """)
+    with open("feeds.sql") as file: res = cur.execute(file.read())
     return [ {"id": id, "title": title, "nEntries": count, "tags": tags.split(",")}
              for id, title, count, tags
              in res.fetchall() ]
 
 def db_stats(cur: sqlite3.Cursor):
-    res = cur.execute("""
-        SELECT *
-          FROM (SELECT COUNT(1) FROM feeds)
-          JOIN (SELECT COUNT(1) FROM entries)
-          JOIN (SELECT page_size*page_count FROM pragma_page_count(), pragma_page_size())""")
+    with open("stats.sql") as file: res = cur.execute(file.read())
     nf, ne, dbsize = res.fetchall()[0]
     return {
         "nPodcasts": nf,
