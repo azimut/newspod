@@ -171,14 +171,20 @@
     },
     {
       "title": "Crypto Critics' Corner",
-      "url": "https://anchor.fm/s/4fa795b4/podcast/rss"
+      "url": "https://anchor.fm/s/4fa795b4/podcast/rss",
+      "tags": [
+        "politics"
+      ]
     },
     {
       "url": "http://www.magicreadalong.com/episode?format=rss"
     },
     {
       "title": "devtools.fm",
-      "url": "https://anchor.fm/s/dd6922b4/podcast/rss"
+      "url": "https://anchor.fm/s/dd6922b4/podcast/rss",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "title": "NSA (No Such Podcast)",
@@ -223,7 +229,10 @@
       ]
     },
     {
-      "url": "https://feed.podbean.com/exercism/feed.xml"
+      "url": "https://feed.podbean.com/exercism/feed.xml",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "title": "Latent Space",
@@ -272,7 +281,10 @@
     },
     {
       "title": "SRE Prodcast",
-      "url": "https://feeds.libsyn.com/407036"
+      "url": "https://feeds.libsyn.com/407036",
+      "tags": [
+        "admin"
+      ]
     },
     {
       "title": "Asianometry",
@@ -282,13 +294,22 @@
       ]
     },
     {
-      "url": "http://devopscafe.libsyn.com/rss"
+      "url": "http://devopscafe.libsyn.com/rss",
+      "tags": [
+        "admin"
+      ]
     },
     {
-      "url": "https://topenddevs.com/podcasts/adventures-in-devops/rss"
+      "url": "https://topenddevs.com/podcasts/adventures-in-devops/rss",
+      "tags": [
+        "admin"
+      ]
     },
     {
-      "url": "https://www.arresteddevops.com/episode/index.xml"
+      "url": "https://www.arresteddevops.com/episode/index.xml",
+      "tags": [
+        "admin"
+      ]
     },
     {
       "url": "https://feed.podbean.com/bridgespodcast/feed.xml",
@@ -355,6 +376,9 @@
       "episode_blacklist": [
         "Solo",
         "Solo Episode"
+      ],
+      "tags": [
+        "admin"
       ]
     },
     {
@@ -381,7 +405,10 @@
       ]
     },
     {
-      "url": "https://feeds.megaphone.fm/slatelexiconvalley"
+      "url": "https://feeds.megaphone.fm/slatelexiconvalley",
+      "tags": [
+        "politics"
+      ]
     },
     {
       "url": "https://feeds.blubrry.com/feeds/voices_from_darpa.xml"
@@ -396,7 +423,10 @@
     },
     {
       "title": "Transistor Radio",
-      "url": "https://anchor.fm/s/7b86e554/podcast/rss"
+      "url": "https://anchor.fm/s/7b86e554/podcast/rss",
+      "tags": [
+        "electronics"
+      ]
     },
     {
       "title": "State of Cybercrime",
@@ -407,7 +437,10 @@
     },
     {
       "title": "Kiwi Talkz",
-      "url": "https://media.rss.com/kiwi-talkz/feed.xml"
+      "url": "https://media.rss.com/kiwi-talkz/feed.xml",
+      "tags": [
+        "gamedev"
+      ]
     },
     {
       "title": "Hardcore History",
@@ -437,7 +470,10 @@
     },
     {
       "title": "Clojurestream",
-      "url": "http://feeds.soundcloud.com/users/soundcloud:users:627190089/sounds.rss"
+      "url": "http://feeds.soundcloud.com/users/soundcloud:users:627190089/sounds.rss",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "title": "Unconfuse Me with Bill Gates",
@@ -498,7 +534,10 @@
       "url": "https://www.idlethumbs.net/feeds/designer-notes"
     },
     {
-      "url": "http://makingembeddedsystems.libsyn.com/rss"
+      "url": "http://makingembeddedsystems.libsyn.com/rss",
+      "tags": [
+        "electronics"
+      ]
     },
     {
       "url": "https://adventofcomputing.libsyn.com/rss"
@@ -539,7 +578,10 @@
       ]
     },
     {
-      "url": "https://linuxunplugged.com/rss"
+      "url": "https://linuxunplugged.com/rss",
+      "tags": [
+        "admin"
+      ]
     },
     {
       "title": "The AMP Hour",
@@ -578,7 +620,10 @@
     },
     {
       "title": "Algorithms + DS = Programs",
-      "url": "https://feeds.buzzsprout.com/1501960.rss"
+      "url": "https://feeds.buzzsprout.com/1501960.rss",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "title": "Streaming Audio",
@@ -637,7 +682,10 @@
     },
     {
       "title": "Super Data Science",
-      "url": "https://feeds.soundcloud.com/users/soundcloud:users:253585900/sounds.rss"
+      "url": "https://feeds.soundcloud.com/users/soundcloud:users:253585900/sounds.rss",
+      "tags": [
+        "ai"
+      ]
     },
     {
       "title": "Meet the Hackers",
