@@ -24,7 +24,7 @@ def db_tags(cur: sqlite3.Cursor):
 
 def db_feeds(cur: sqlite3.Cursor):
     res = cur.execute("""
-        SELECT feeds.id, feeds.title, count(*), group_concat(DISTINCT tags.name)
+        SELECT feeds.id, feeds.title, count(DISTINCT entries.id), group_concat(DISTINCT tags.name)
           FROM feeds
           JOIN entries        ON feeds.id =        entries.feedid
           JOIN feeds_metadata ON feeds.id = feeds_metadata.feedid
