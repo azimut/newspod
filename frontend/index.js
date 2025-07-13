@@ -19,34 +19,6 @@ export async function initConnection() {
   });
 }
 
-export async function getFeeds(dbarg) {
-  let db = await dbarg;
-  let queue = [];
-  await db("exec", {
-    sql: `SELECT feeds.id, feeds.title, count(*)
-            FROM feeds
-            JOIN entries
-                ON feeds.id=entries.feedid
-            JOIN feeds_metadata
-                ON feeds.id=feeds_metadata.feedid
-        GROUP BY entries.feedid
-          HAVING count(*) > 0
-        ORDER BY feeds_metadata.lastentry DESC`,
-    bind: {},
-    callback: (msg) => {
-      if (msg.row) {
-        let [id, title, count] = msg.row;
-        queue.push({
-          id: id,
-          title: title,
-          nEntries: count,
-        });
-      }
-    },
-  });
-  return queue;
-}
-
 export async function getEntries(dbarg, feedid) {
   let db = await dbarg;
   let queue = [];
@@ -179,29 +151,7 @@ export async function getEntryDetails(dbarg, entryId, needle) {
   return result;
 }
 
-export async function db_stats(dbarg) {
-  let db = await dbarg;
-  let result = 0;
-  await db("exec", {
-    sql: `SELECT *
-            FROM (SELECT COUNT(1) FROM feeds)
-            JOIN (SELECT COUNT(1) FROM entries)
-            JOIN (SELECT page_size*page_count FROM pragma_page_count(), pragma_page_size())`,
-    bind: {},
-    callback: (msg) => {
-      if (msg.row) {
-        let [nfeeds, nentries, size] = msg.row;
-        result = {
-          nPodcasts: nfeeds,
-          nEntries: nentries,
-          dbSize: size,
-        };
-      }
-    },
-  });
-  return result;
-}
-
+// TODO: use it!
 export async function db_latest(dbarg) {
   let db = await dbarg;
   let result = [];
