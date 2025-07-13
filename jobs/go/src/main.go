@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 )
 
 const JSON_FILE = "feeds.json"
@@ -29,6 +30,10 @@ func main() {
 				feed_json.RawLastFetch = feed_db.RawLastFetch
 				feed_json.RawLastModified = feed_db.RawLastModified
 			}
+		}
+		isVideoFeed := strings.Contains(feed_json.Url, "youtube.com")
+		if isVideoFeed {
+			feed_json.Tags = append(feed_json.Tags, "video")
 		}
 		if len(feed_json.Tags) == 0 {
 			feed_json.Tags = append(feed_json.Tags, "uncategorized")

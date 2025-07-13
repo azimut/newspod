@@ -34,7 +34,8 @@ def db_feeds(cur: sqlite3.Cursor):
         HAVING count(*) > 0
       ORDER BY feeds_metadata.lastentry DESC """)
     return [ {"id": id, "title": title, "nEntries": count, "tags": tags.split(",")}
-             for id, title, count, tags in res.fetchall()]
+             for id, title, count, tags
+             in res.fetchall() ]
 
 def db_stats(cur: sqlite3.Cursor):
     res = cur.execute("""
