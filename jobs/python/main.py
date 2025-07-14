@@ -58,6 +58,15 @@ class Feed:
                 sys.exit(1)
 
     # .channel (name) / .channel_id / .channel_url
+    def thumbnail(raw_thumbnails) -> str:
+        """returns the most suitable thumbnail url from the given ones"""
+        thumbnails = [ x for x in raw_thumbnails if 'width' in x and not 'preference' in x ]
+        url, width = thumbnails[0]['url'], thumbnails[0]['width']
+        for thumb in thumbnails:
+            if thumb['width'] > width:
+                url, width = thumb['url'], thumb['width']
+        return url
+
     def fetch(self):
         self.url = self.from_rss()
         with yt_dlp.YoutubeDL({ 'playlist_items': '0', 'extract_flat': 'in_playlist'}) as ydl:
@@ -65,7 +74,7 @@ class Feed:
             # print(info)
             self.title       = info['title']
             self.description = info['description']
-            self.thumbnail   = info['thumbnails'][-1]['url']
+            self.thumbnail   = self.thumbnail(info['thumbnails'])
             self.url         = info['webpage_url']
             self.count       = info['playlist_count']
             self.channel     = info['channel']
@@ -99,10 +108,9 @@ def main():
         feed.fetch()
         print(feed)
 
-        id = db_feed_id(rss_url, cur)
-        feed.id = id if id else db_add(feed, cur)
-
-        current_nentries = db_count_entries(id, cur)
+        feed.id = db_feed_id(rss_url, cur)
+        db_update_details(feed, cur)
+        current_nentries = db_count_entries(feed.id, cur)
         print(current_nentries)
 
         should_fetch_entries = False
@@ -122,7 +130,7 @@ def main():
         for rss_url in rss_urls:
             fid = db_feed_id(rss_url, cur)
             for eid, eurl, in db_select_entries_empty(fid, cur):
-                description, timestamp = fetch_info(eurl)
+                description, timestamp = fetch_info(eurl) # FIXME: check if eurls are available
                 description = "..." if description == "" else description
                 db_update_entry(eid, description, timestamp, cur)
         con.commit()
@@ -143,18 +151,21 @@ def json_urls(file: str) -> list[str]:
         ]
 
 
-def db_add(feed: str, cur: sqlite3.Cursor) -> int:
-    cur.execute("INSERT INTO feeds(title,url) VALUES(?,?)", (feed.title,feed.rssurl,))
-    id = cur.lastrowid
-    cur.execute("INSERT INTO feeds_details(feedid,home,description,language,image,author) VALUES (?,?,?,?,?,?)",
-                (id,feed.url,feed.description,"en",feed.thumbnail,feed.channel,))
-    cur.execute("INSERT INTO feeds_metadata(feedid) VALUES(?)", (id,))
-    return id
+def db_update_details(feed: Feed, cur: sqlite3.Cursor):
+    cur.execute("""UPDATE feeds_details
+                      SET home        = ?,
+                          description = ?,
+                          language    = ?,
+                          image       = ?,
+                          author      = ?
+                    WHERE feedid      = ?""",
+                (feed.url,feed.description,"en",feed.thumbnail,feed.channel,feed.id,))
 
 def db_feed_id(rss_url: str, cur: sqlite3.Cursor):
+    """get feed.id, we assume it should exist"""
     res = cur.execute("SELECT id FROM feeds WHERE url = ?", (rss_url,))
     row = res.fetchone()
-    if row: return row[0]
+    return row[0]
 
 def db_count_entries(feedid: int, cur: sqlite3.Cursor):
     res = cur.execute("SELECT COUNT(*) FROM entries WHERE feedid = ?", (feedid,))
