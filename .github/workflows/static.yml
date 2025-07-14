@@ -34,11 +34,18 @@ jobs:
           python-version: '3.10'
       - run: pip install yt-dlp python-dateutil
 
-      - uses: actions/cache@v4
+      - uses: actions/cache/load@v4
+        id: feedsdb-restore
         with:
+          key: feedsdb
           path: jobs/go/feeds.db
-          key: feeds-${​{ hashFiles('**/feeds.db') }}
       - run: make
+      - uses: actions/cache/save@v4
+        if: always() && steps.feedsdb-restore.outputs.cache-hit != 'true'
+        with:
+          key: ${{ steps.feedsdb-restore.outputs.cache-primary-key }}
+          path: jobs/go/feeds.db
+
       - uses: actions/configure-pages@v4
       - uses: actions/upload-pages-artifact@v3 # !!!
         with:
