@@ -160,7 +160,10 @@
     },
     {
       "title": "The Top Shelf (primeagen)",
-      "url": "https://anchor.fm/s/fb29b160/podcast/rss"
+      "url": "https://anchor.fm/s/fb29b160/podcast/rss",
+      "tags": [
+        "programming"
+      ]
     },
     {
       "title": "The Security Repo",
@@ -373,7 +376,10 @@
     },
     {
       "title": "Ship It!",
-      "url": "https://changelog.com/shipit/feed"
+      "url": "https://changelog.com/shipit/feed",
+      "tags": [
+        "admin"
+      ]
     },
     {
       "title": "The Changelog",
@@ -573,7 +579,10 @@
       ]
     },
     {
-      "url": "https://adventofcomputing.libsyn.com/rss"
+      "url": "https://adventofcomputing.libsyn.com/rss",
+      "tags": [
+        "admin"
+      ]
     },
     {
       "title": "The Handmade Network",
