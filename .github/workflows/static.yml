@@ -34,7 +34,7 @@ jobs:
           python-version: '3.10'
       - run: pip install yt-dlp python-dateutil
 
-      - uses: actions/cache/load@v4
+      - uses: actions/cache/restore@v4
         id: feedsdb-restore
         with:
           key: feedsdb
