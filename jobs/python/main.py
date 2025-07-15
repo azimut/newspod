@@ -109,7 +109,8 @@ def main():
         try:
             feed.fetch()
         except:
-            print(f"[?] ERROR: to fetch feed = {rss_url}")
+            print(f"rss_url = {rss_url}")
+            continue
 
         print(feed)
 
