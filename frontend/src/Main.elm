@@ -652,33 +652,35 @@ viewHeader { search, state, tags, selectedTags } =
             state == Starting
     in
     header []
-        [ h1 []
-            [ text "news"
-            , span [ class "pod" ] [ text "pod" ]
-            ]
-        , form [ onSubmit AskForSearch ]
-            [ input
-                [ type_ "search"
-                , disabled isDisabled
-                , placeholder
-                    (if isDisabled then
-                        ""
-
-                     else
-                        "search..."
-                    )
-                , id "newsearch"
-                , name "newsearch"
-                , value search
-                , onInput NewInput
-                , minlength 3
-                , maxlength 30
-                , size 12
-                , autofocus True
-                , autocomplete True
+        [ div [ class "logo" ]
+            [ h1 []
+                [ text "news"
+                , span [ class "pod" ] [ text "pod" ]
                 ]
-                []
-            , button [ type_ "submit", style "display" "none" ] []
+            , form [ onSubmit AskForSearch ]
+                [ input
+                    [ type_ "search"
+                    , disabled isDisabled
+                    , placeholder
+                        (if isDisabled then
+                            ""
+
+                         else
+                            "search..."
+                        )
+                    , id "newsearch"
+                    , name "newsearch"
+                    , value search
+                    , onInput NewInput
+                    , minlength 3
+                    , maxlength 30
+                    , size 12
+                    , autofocus True
+                    , autocomplete True
+                    ]
+                    []
+                , button [ type_ "submit", style "display" "none" ] []
+                ]
             ]
         , ul [] (liTags tags selectedTags)
         ]

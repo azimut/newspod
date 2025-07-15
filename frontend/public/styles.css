@@ -75,30 +75,37 @@ div.loader-search {
   justify-content: center;
 }
 /* ----------------- */
+header {
+  font-size: 4em;
+  margin: auto;
+  padding: 0.3em 0 0.6em 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5em;
+}
+div.logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4em;
+}
 h1 {
   font-weight: normal;
   font-size: 1em;
-}
-header {
-  display: flex;
-  margin: auto;
-  flex-direction: column;
-  font-size: 4em;
-  justify-content: center;
-  align-items: center;
-  padding: 0.3em 0 0.3em 0;
-  gap: 0.2em;
-}
-header > * {
-  margin: 0.1em auto;
+  margin: 0;
 }
 @media (min-width: 1200px) {
   header {
     flex-direction: row;
     gap: 0;
   }
-  header > * {
-    margin: 0 0.2em;
+  div.logo {
+    flex-grow: 1;
+  }
+  ul {
+    flex: 0 0 50%;
   }
 }
 header span.pod {
