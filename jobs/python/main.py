@@ -105,7 +105,12 @@ def main():
 
     for rss_url in rss_urls:
         feed = Feed(rss_url)
-        feed.fetch()
+
+        try:
+            feed.fetch()
+        except:
+            print(f"[?] ERROR: to fetch feed = {rss_url}")
+
         print(feed)
 
         feed.id = db_feed_id(rss_url, cur)
