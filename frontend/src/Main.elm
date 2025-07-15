@@ -343,10 +343,14 @@ update msg ({ feeds, entries, search, state } as model) =
         AskForEntries feedId ->
             case state of
                 Idle ->
-                    ( toggleSelectedFeed model feedId, Cmd.batch [ askForFeedDetails feedId, askForEntries feedId ] )
+                    ( toggleSelectedFeed model feedId
+                    , Cmd.batch [ askForFeedDetails feedId, askForEntries feedId ]
+                    )
 
                 _ ->
-                    ( toggleSelectedFeed model feedId, Cmd.none )
+                    ( toggleSelectedFeed model feedId
+                    , Cmd.none
+                    )
 
         -- TODO: getting feedid from newEntries[0] is kind of hacky
         NewEntries es ->
@@ -396,13 +400,40 @@ update msg ({ feeds, entries, search, state } as model) =
             let
                 updatedTags =
                     toggleSet tag model.selectedTags
+
+                updatedFeeds =
+                    updateVisibleFeeds updatedTags model.feeds
             in
             ( { model
                 | selectedTags = updatedTags
-                , feeds = updateVisibleFeeds updatedTags model.feeds
+                , feeds = updatedFeeds
+                , dbStats = Maybe.map (computeNewStats updatedFeeds updatedTags) model.dbStats
               }
             , Cmd.none
             )
+
+
+computeNewStats : List Feed -> Set.Set String -> DbStats -> DbStats
+computeNewStats feeds selectedTags stats =
+    if Set.isEmpty selectedTags then
+        List.foldr addFeed (DbStats 0 0 stats.dbSize) feeds
+
+    else
+        List.foldr addVisibleFeed (DbStats 0 0 stats.dbSize) feeds
+
+
+addFeed : Feed -> DbStats -> DbStats
+addFeed feed ({ nPodcasts, nEntries } as stats) =
+    { stats | nPodcasts = nPodcasts + 1, nEntries = nEntries + feed.nEntries }
+
+
+addVisibleFeed : Feed -> DbStats -> DbStats
+addVisibleFeed feed ({ nPodcasts, nEntries } as stats) =
+    if feed.isVisible then
+        { stats | nPodcasts = nPodcasts + 1, nEntries = nEntries + feed.nEntries }
+
+    else
+        stats
 
 
 updateVisibleFeeds : Set.Set String -> List Feed -> List Feed
