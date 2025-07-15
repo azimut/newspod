@@ -808,7 +808,7 @@ viewMain ({ state, dbStats } as model) =
                         div [ class "some-results" ] [ text message ]
                             :: List.map
                                 (\feed -> viewFeed feed state model.now model.entries)
-                                (sortFeeds model.feeds feedIds [])
+                                (sortFeeds filteredFeeds feedIds [])
 
 
 view : Model -> Html Msg
