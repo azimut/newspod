@@ -41,7 +41,6 @@ jobs:
           path: jobs/go/feeds.db
       - run: make
       - uses: actions/cache/save@v4
-        if: always() && steps.feedsdb-restore.outputs.cache-hit != 'true'
         with:
           key: ${{ steps.feedsdb-restore.outputs.cache-primary-key }}
           path: jobs/go/feeds.db
