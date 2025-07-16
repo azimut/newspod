@@ -304,14 +304,19 @@ update msg ({ feeds, entries, search, state } as model) =
             ( { model | now = n }, Cmd.none )
 
         NewInput newSearch ->
+            let
+                updatedFeeds =
+                    List.map (\feed -> { feed | isVisible = True, isSelected = False }) feeds
+            in
             if String.isEmpty (String.trim newSearch) then
                 ( { model
-                    | feeds = List.map (\feed -> { feed | isVisible = True, isSelected = False }) feeds
+                    | feeds = updatedFeeds
                     , entries = OrderedDict.empty
                     , state = Idle
                     , currentSearch = Nothing
                     , search = ""
                     , selectedTags = Set.empty
+                    , dbStats = Maybe.map (computeNewStats updatedFeeds Set.empty) model.dbStats
                   }
                 , Cmd.none
                 )
@@ -783,7 +788,11 @@ viewMain ({ state, dbStats } as model) =
             ShowingResults ->
                 let
                     filteredFeeds =
-                        List.filter .isVisible model.feeds
+                        if Set.isEmpty model.selectedTags then
+                            model.feeds
+
+                        else
+                            List.filter (\feed -> feed.isVisible) model.feeds
                 in
                 case filteredFeeds of
                     [] ->
