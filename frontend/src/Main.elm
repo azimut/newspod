@@ -765,7 +765,7 @@ viewStatus model =
                     div [ class "some-results" ] [ text message ]
 
         WaitingForResults ->
-            text ""
+            div [ class "some-results" ] [ text "..." ]
 
 
 viewStats : Model -> Html Msg
