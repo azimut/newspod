@@ -1,6 +1,13 @@
 {
   "feeds": [
     {
+      "title": "NonZero",
+      "url": "https://api.substack.com/feed/podcast/17302.rss",
+      "tags": [
+        "politics"
+      ]
+    },
+    {
       "url": "https://linuxmatters.sh/episode/index.xml",
       "tags": [
         "admin"
