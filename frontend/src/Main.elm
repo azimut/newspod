@@ -760,21 +760,7 @@ viewMain ({ state, dbStats } as model) =
                 [ div [ class "some-results" ] [ text "ERROR x(" ] ]
 
             Starting ->
-                case dbStats of
-                    Nothing ->
-                        [ div [ class "some-results" ]
-                            [ div [ style "visibility" "hidden" ] [ text "..." ] ]
-                        , Loaders.ballTriangle 150 "#fff"
-                        ]
-
-                    Just _ ->
-                        [ viewStats model
-                        , if List.isEmpty model.feeds then
-                            Loaders.ballTriangle 150 "#fff"
-
-                          else
-                            text ""
-                        ]
+                [ Loaders.ballTriangle 150 "#fff" ]
 
             Idle ->
                 viewStats model
