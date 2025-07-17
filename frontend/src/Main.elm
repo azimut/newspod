@@ -569,9 +569,9 @@ viewFeed ({ title, id, isSelected } as feed) state now entries =
                 _ ->
                     viewFeedEntries id now entries
     in
-    article [ onClick (AskForEntries id) ]
+    article []
         [ details [ open isSelected ] <|
-            summary []
+            summary [ onClick (AskForEntries id) ]
                 [ span [] [ text title ]
                 , span [] [ text (" [" ++ fromInt count ++ "]") ]
                 ]
