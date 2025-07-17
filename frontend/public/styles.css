@@ -24,35 +24,9 @@ ul {
   padding: 0;
 }
 
-header ul {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 0.15em;
-}
-
 li {
   margin: 0;
   padding: 0;
-}
-
-header li {
-  display: flex;
-}
-
-li > button.enabled {
-  background: var(--light);
-  color: var(--darkness);
-  opacity: 1;
-}
-li > button {
-  border-radius: 6px;
-  padding: 0.1em 0.3em;
-  background: var(--darkness);
-  font-family: monospace;
-  border-color: dimgray;
-  color: var(--light);
-  font-size: 0.4em;
 }
 
 body {
@@ -75,12 +49,9 @@ div.loader {
   left: 50%;
   transform: translate(-50%, -50%);
 }
-div.loader-search {
-  margin: 0.5em 0;
-  display: flex;
-  justify-content: center;
-}
-/* ----------------- */
+
+/* Header */
+
 header {
   font-size: 4em;
   margin: auto;
@@ -89,16 +60,41 @@ header {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 0.5em;
+  gap: 0.35em;
 }
+
+header ul {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.15em;
+}
+
+header li {
+  display: flex;
+}
+header li > button.enabled {
+  background: var(--light);
+  color: var(--darkness);
+  opacity: 1;
+}
+header li > button {
+  border-radius: 6px;
+  padding: 0.1em 0.3em;
+  background: var(--darkness);
+  font-family: monospace;
+  border-color: dimgray;
+  color: var(--light);
+  font-size: 0.4em;
+}
+
 div.logo {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.4em;
+  gap: 0.35em;
 }
 h1 {
-  display: none;
   font-weight: normal;
   font-size: 1em;
   margin: 0;
@@ -113,9 +109,6 @@ h1 {
   }
   header ul {
     flex: 0 0 50%;
-  }
-  h1 {
-    display: block;
   }
 }
 header span.pod {
@@ -140,22 +133,6 @@ input:disabled {
   background-color: var(--darkness);
   color: var(--light);
 }
-/* ----------------- */
-footer {
-  text-align: center;
-  padding: 1em 0em;
-}
-
-main {
-  display: flex;
-  flex-direction: column;
-}
-svg {
-  margin: 1em auto; /* center spinner when bare on main */
-  display: block;
-}
-
-/* Feeds */
 
 div.some-results {
   display: flex;
@@ -163,8 +140,7 @@ div.some-results {
   align-items: center;
   justify-content: center;
   font-family: monospace;
-  font-size: 1.8em;
-  padding: 0 0 1.5em 0; /* need to push down due grow of open description */
+  font-size: 0.5em;
   text-wrap: nowrap; /* needed for chrome... */
 }
 div.some-results > * {
@@ -183,6 +159,25 @@ div.no-results {
   font-size: 2.45em;
   margin: 0 auto;
 }
+
+/* ----------------- */
+
+footer {
+  text-align: center;
+  padding: 1em 0em;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+}
+svg {
+  margin: 1em auto; /* center spinner when bare on main */
+  display: block;
+}
+
+/* Feeds */
+
 details {
   border: 1px solid #aaa;
   border-radius: 5px;

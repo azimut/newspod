@@ -651,10 +651,10 @@ viewEntry feedId now entry =
 
 
 viewHeader : Model -> Html Msg
-viewHeader { search, state, tags, selectedTags } =
+viewHeader model =
     let
-        isDisabled =
-            state == Starting
+        isStarting =
+            model.state == Starting
     in
     header []
         [ div [ class "logo" ]
@@ -665,9 +665,9 @@ viewHeader { search, state, tags, selectedTags } =
             , form [ onSubmit AskForSearch ]
                 [ input
                     [ type_ "search"
-                    , disabled isDisabled
+                    , disabled isStarting
                     , placeholder
-                        (if isDisabled then
+                        (if isStarting then
                             ""
 
                          else
@@ -675,7 +675,7 @@ viewHeader { search, state, tags, selectedTags } =
                         )
                     , id "newsearch"
                     , name "newsearch"
-                    , value search
+                    , value model.search
                     , onInput NewInput
                     , minlength 3
                     , maxlength 30
@@ -686,8 +686,9 @@ viewHeader { search, state, tags, selectedTags } =
                     []
                 , button [ type_ "submit", style "display" "none" ] []
                 ]
+            , viewStatus model
             ]
-        , ul [] (liTags tags selectedTags)
+        , ul [] (liTags model.tags model.selectedTags)
         ]
 
 
@@ -728,6 +729,45 @@ viewFooter =
         ]
 
 
+viewStatus : Model -> Html Msg
+viewStatus model =
+    case model.state of
+        Starting ->
+            text ""
+
+        Idle ->
+            viewStats model
+
+        Error ->
+            div [ class "some-results" ] [ text "ERROR x(" ]
+
+        ShowingResults ->
+            let
+                filteredFeeds =
+                    resultFeeds model
+
+                nResults =
+                    List.foldl (\f acc -> f.nResults + acc) 0 filteredFeeds
+
+                message =
+                    case model.nResults of
+                        1 ->
+                            fromInt nResults ++ " result found"
+
+                        _ ->
+                            fromInt nResults ++ " results found"
+            in
+            case filteredFeeds of
+                [] ->
+                    div [ class "no-results" ] [ text "no results found :(" ]
+
+                _ ->
+                    div [ class "some-results" ] [ text message ]
+
+        WaitingForResults ->
+            text ""
+
+
 viewStats : Model -> Html Msg
 viewStats { dbStats } =
     case dbStats of
@@ -753,57 +793,41 @@ viewFeeds { feeds, now, entries, state, selectedTags } =
 
 
 viewMain : Model -> Html Msg
-viewMain ({ state, dbStats } as model) =
+viewMain model =
     main_ [] <|
-        case state of
+        case model.state of
             Error ->
-                [ div [ class "some-results" ] [ text "ERROR x(" ] ]
+                [ text "" ]
 
             Starting ->
                 [ Loaders.ballTriangle 150 "#fff" ]
 
             Idle ->
-                viewStats model
-                    :: viewFeeds model
+                viewFeeds model
 
             WaitingForResults ->
-                [ div [ class "loader-search" ]
-                    [ Loaders.ballTriangle 150 "#fff" ]
-                ]
+                [ Loaders.ballTriangle 150 "#fff" ]
 
             ShowingResults ->
                 let
                     filteredFeeds =
-                        if Set.isEmpty model.selectedTags then
-                            model.feeds
+                        resultFeeds model
 
-                        else
-                            List.filter (\feed -> feed.isVisible) model.feeds
+                    feedIds =
+                        OrderedDict.keys model.entries |> List.reverse
                 in
-                case filteredFeeds of
-                    [] ->
-                        [ div [ class "no-results" ] [ text "no results found :(" ] ]
+                List.map
+                    (\feed -> viewFeed feed model.state model.now model.entries)
+                    (sortFeeds filteredFeeds feedIds [])
 
-                    _ ->
-                        let
-                            nResults =
-                                List.foldl (\f acc -> f.nResults + acc) 0 filteredFeeds
 
-                            message =
-                                case nResults of
-                                    1 ->
-                                        fromInt nResults ++ " result found"
+resultFeeds : Model -> List Feed
+resultFeeds model =
+    if Set.isEmpty model.selectedTags then
+        model.feeds
 
-                                    _ ->
-                                        fromInt nResults ++ " results found"
-
-                            feedIds =
-                                OrderedDict.keys model.entries |> List.reverse
-                        in
-                        div [ class "some-results" ] [ text message ]
-                            :: List.map
-                                (\feed -> viewFeed feed state model.now model.entries)
-                                (sortFeeds filteredFeeds feedIds [])
+    else
+        List.filter (\feed -> feed.isVisible) model.feeds
 
 
 view : Model -> Html Msg
