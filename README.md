@@ -2,7 +2,7 @@
 
 From a list of RSS feeds. Generates a static site where you can perform full text searches of the podcast episodes from an also generated SQLite database. Update daily through *GitHub Actions*.
 
-![screenshot](./static/Screenshot 2025-07-17 at 02-52-38 newspod.png)
+![screenshot](static/Screenshot 2025-07-17 at 02-52-38 newspod.png)
 
 ## Why?
 
