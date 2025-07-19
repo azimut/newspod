@@ -28,13 +28,6 @@ main =
         }
 
 
-type alias Startup =
-    { feeds : List InitFeed
-    , stats : DbStats
-    , tags : List String
-    }
-
-
 type alias Model =
     { feeds : List Feed
     , entries : OrderedDict Int (List Entry)
@@ -46,13 +39,6 @@ type alias Model =
     , now : Time.Posix
     , tags : List String
     , selectedTags : Set.Set String
-    }
-
-
-type alias DbStats =
-    { nPodcasts : Int
-    , nEntries : Int
-    , dbSize : Int
     }
 
 
@@ -96,6 +82,13 @@ type EntryContent
     | EntryReceived String
 
 
+type alias DbStats =
+    { nPodcasts : Int
+    , nEntries : Int
+    , dbSize : Int
+    }
+
+
 type State
     = Starting
     | Idle
@@ -117,6 +110,13 @@ type Msg
     | NewSearchResults (List NewEntry)
     | NewError String
     | NewFeedDetails FeedDetails
+
+
+type alias Startup =
+    { feeds : List InitFeed
+    , stats : DbStats
+    , tags : List String
+    }
 
 
 type alias InitFeed =
@@ -216,70 +216,6 @@ stateDecoder =
 ------------------------------
 --          Update
 ------------------------------
-
-
-toEntry : NewEntry -> Entry
-toEntry { id, feedid, title, date, url } =
-    { id = id
-    , feedid = feedid
-    , title = title
-    , date = date
-    , url = url
-    , content = EntryBlank
-    , isShowingDetails = False
-    }
-
-
-toFeed : InitFeed -> Feed
-toFeed { id, title, nEntries, tags } =
-    { id = id
-    , title = title
-    , details = Nothing
-    , isSelected = False
-    , isVisible = True
-    , nEntries = nEntries
-    , nResults = 0
-    , tags = Set.fromList tags
-    }
-
-
-toggleEntryDetails : Int -> List Entry -> List Entry
-toggleEntryDetails entryId =
-    List.map
-        (\entry ->
-            if entry.id == entryId then
-                { entry
-                    | isShowingDetails = not entry.isShowingDetails
-                    , content =
-                        if entry.isShowingDetails then
-                            EntryBlank
-
-                        else
-                            EntryWaiting
-                }
-
-            else
-                entry
-        )
-
-
-fillDetails : EntryDetails -> List Entry -> List Entry
-fillDetails eDetails =
-    List.map
-        (\entry ->
-            if entry.id == eDetails.id then
-                { entry
-                    | content =
-                        if eDetails.content == "" then
-                            EntryReceived "No description."
-
-                        else
-                            EntryReceived eDetails.content
-                }
-
-            else
-                entry
-        )
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
@@ -418,6 +354,70 @@ update msg ({ feeds, entries, search, state } as model) =
             )
 
 
+toEntry : NewEntry -> Entry
+toEntry { id, feedid, title, date, url } =
+    { id = id
+    , feedid = feedid
+    , title = title
+    , date = date
+    , url = url
+    , content = EntryBlank
+    , isShowingDetails = False
+    }
+
+
+toFeed : InitFeed -> Feed
+toFeed { id, title, nEntries, tags } =
+    { id = id
+    , title = title
+    , details = Nothing
+    , isSelected = False
+    , isVisible = True
+    , nEntries = nEntries
+    , nResults = 0
+    , tags = Set.fromList tags
+    }
+
+
+toggleEntryDetails : Int -> List Entry -> List Entry
+toggleEntryDetails entryId =
+    List.map
+        (\entry ->
+            if entry.id == entryId then
+                { entry
+                    | isShowingDetails = not entry.isShowingDetails
+                    , content =
+                        if entry.isShowingDetails then
+                            EntryBlank
+
+                        else
+                            EntryWaiting
+                }
+
+            else
+                entry
+        )
+
+
+fillDetails : EntryDetails -> List Entry -> List Entry
+fillDetails eDetails =
+    List.map
+        (\entry ->
+            if entry.id == eDetails.id then
+                { entry
+                    | content =
+                        if eDetails.content == "" then
+                            EntryReceived "No description."
+
+                        else
+                            EntryReceived eDetails.content
+                }
+
+            else
+                entry
+        )
+
+
 computeNewStats : List Feed -> Set.Set String -> DbStats -> DbStats
 computeNewStats feeds selectedTags stats =
     if Set.isEmpty selectedTags then
@@ -541,13 +541,220 @@ toggleSelectedFeed ({ feeds, entries } as model) feedid =
 ------------------------------
 
 
-open : Bool -> Html.Attribute msg
-open flag =
-    if flag then
-        attribute "open" ""
+view : Model -> Html Msg
+view model =
+    case model.state of
+        Error ->
+            div []
+                [ viewHeader model
+                , viewMain model
+                ]
+
+        Starting ->
+            div []
+                [ viewHeader model
+                , viewMain model
+                ]
+
+        Idle ->
+            div []
+                [ viewHeader model
+                , viewMain model
+                , viewFooter
+                ]
+
+        WaitingForResults ->
+            div []
+                [ viewHeader model
+                , viewMain model
+                ]
+
+        ShowingResults ->
+            div []
+                [ viewHeader model
+                , viewMain model
+                , viewFooter
+                ]
+
+
+viewFooter : Html Msg
+viewFooter =
+    footer []
+        [ a [ href "https://github.com/azimut/newspod" ]
+            [ text "source code" ]
+        ]
+
+
+viewHeader : Model -> Html Msg
+viewHeader model =
+    let
+        isStarting =
+            model.state == Starting
+    in
+    header []
+        [ div [ class "logo" ]
+            [ h1 []
+                [ text "news"
+                , span [ class "pod" ] [ text "pod" ]
+                ]
+            , form [ onSubmit AskForSearch ]
+                [ input
+                    [ type_ "search"
+                    , disabled isStarting
+                    , placeholder
+                        (if isStarting then
+                            ""
+
+                         else
+                            "search..."
+                        )
+                    , id "newsearch"
+                    , name "newsearch"
+                    , value model.search
+                    , onInput NewInput
+                    , minlength 3
+                    , maxlength 30
+                    , size 12
+                    , autofocus True
+                    , autocomplete True
+                    ]
+                    []
+                , button [ type_ "submit", style "display" "none" ] []
+                ]
+            , viewStatus model
+            ]
+        , ul [] (liTags model.tags model.selectedTags)
+        ]
+
+
+viewStatus : Model -> Html Msg
+viewStatus model =
+    case model.state of
+        Starting ->
+            text ""
+
+        Idle ->
+            viewStats model
+
+        Error ->
+            div [ class "some-results" ] [ text "ERROR x(" ]
+
+        ShowingResults ->
+            let
+                filteredFeeds =
+                    resultFeeds model
+
+                nResults =
+                    List.foldl (\f acc -> f.nResults + acc) 0 filteredFeeds
+
+                message =
+                    case model.nResults of
+                        1 ->
+                            fromInt nResults ++ " result found"
+
+                        _ ->
+                            fromInt nResults ++ " results found"
+            in
+            case filteredFeeds of
+                [] ->
+                    div [ class "no-results" ] [ text "no results found :(" ]
+
+                _ ->
+                    div [ class "some-results" ] [ text message ]
+
+        WaitingForResults ->
+            div [ class "some-results" ] [ text "..." ]
+
+
+viewStats : Model -> Html Msg
+viewStats { dbStats } =
+    case dbStats of
+        Nothing ->
+            text ""
+
+        Just { nPodcasts, nEntries, dbSize } ->
+            div [ class "some-results" ]
+                [ div [ class "npodcasts" ] [ text (fromInt nPodcasts ++ " podcasts,") ]
+                , div [] [ text (fromInt nEntries ++ " episodes,") ]
+                , div [] [ text (Filesize.format dbSize) ]
+                ]
+
+
+resultFeeds : Model -> List Feed
+resultFeeds model =
+    if Set.isEmpty model.selectedTags then
+        model.feeds
+
+    else
+        List.filter (\feed -> feed.isVisible) model.feeds
+
+
+liTags : List String -> Set.Set String -> List (Html Msg)
+liTags tags selectedTags =
+    List.map
+        (\tag ->
+            li []
+                [ button
+                    [ btnClass tag selectedTags
+                    , btnAction tag
+                    ]
+                    [ text tag ]
+                ]
+        )
+        tags
+
+
+btnClass : String -> Set.Set String -> Html.Attribute Msg
+btnClass tag selectedTags =
+    if Set.member tag selectedTags then
+        class "enabled"
 
     else
         class ""
+
+
+btnAction : String -> Html.Attribute Msg
+btnAction tag =
+    onClick (ToggleTag tag)
+
+
+viewMain : Model -> Html Msg
+viewMain model =
+    main_ [] <|
+        case model.state of
+            Error ->
+                [ text "" ]
+
+            Starting ->
+                [ Loaders.ballTriangle 150 "#fff" ]
+
+            Idle ->
+                viewFeeds model
+
+            WaitingForResults ->
+                [ Loaders.ballTriangle 150 "#fff" ]
+
+            ShowingResults ->
+                let
+                    filteredFeeds =
+                        resultFeeds model
+
+                    feedIds =
+                        OrderedDict.keys model.entries |> List.reverse
+                in
+                List.map
+                    (\feed -> viewFeed feed model.state model.now model.entries)
+                    (sortFeeds filteredFeeds feedIds [])
+
+
+viewFeeds : Model -> List (Html Msg)
+viewFeeds { feeds, now, entries, state, selectedTags } =
+    let
+        emptyTags =
+            Set.isEmpty selectedTags
+    in
+    List.map (\feed -> viewFeed feed state now entries)
+        (List.filter (\feed -> feed.isVisible || emptyTags) feeds)
 
 
 viewFeed : Feed -> State -> Time.Posix -> OrderedDict Int (List Entry) -> Html Msg
@@ -613,11 +820,6 @@ viewFeedEntries feedId now entries =
         Maybe.withDefault [] (OrderedDict.get feedId entries)
 
 
-onClickWithStopPropagation : msg -> Html.Attribute msg
-onClickWithStopPropagation msg =
-    stopPropagationOn "click" (JD.map (\m -> ( m, True )) (JD.succeed msg))
-
-
 viewEntry : Int -> Time.Posix -> Entry -> Html Msg
 viewEntry feedId now entry =
     div
@@ -650,220 +852,18 @@ viewEntry feedId now entry =
         ]
 
 
-viewHeader : Model -> Html Msg
-viewHeader model =
-    let
-        isStarting =
-            model.state == Starting
-    in
-    header []
-        [ div [ class "logo" ]
-            [ h1 []
-                [ text "news"
-                , span [ class "pod" ] [ text "pod" ]
-                ]
-            , form [ onSubmit AskForSearch ]
-                [ input
-                    [ type_ "search"
-                    , disabled isStarting
-                    , placeholder
-                        (if isStarting then
-                            ""
-
-                         else
-                            "search..."
-                        )
-                    , id "newsearch"
-                    , name "newsearch"
-                    , value model.search
-                    , onInput NewInput
-                    , minlength 3
-                    , maxlength 30
-                    , size 12
-                    , autofocus True
-                    , autocomplete True
-                    ]
-                    []
-                , button [ type_ "submit", style "display" "none" ] []
-                ]
-            , viewStatus model
-            ]
-        , ul [] (liTags model.tags model.selectedTags)
-        ]
+onClickWithStopPropagation : msg -> Html.Attribute msg
+onClickWithStopPropagation msg =
+    stopPropagationOn "click" (JD.map (\m -> ( m, True )) (JD.succeed msg))
 
 
-btnAction : String -> Html.Attribute Msg
-btnAction tag =
-    onClick (ToggleTag tag)
-
-
-btnClass : String -> Set.Set String -> Html.Attribute Msg
-btnClass tag selectedTags =
-    if Set.member tag selectedTags then
-        class "enabled"
+open : Bool -> Html.Attribute msg
+open flag =
+    if flag then
+        attribute "open" ""
 
     else
         class ""
-
-
-liTags : List String -> Set.Set String -> List (Html Msg)
-liTags tags selectedTags =
-    List.map
-        (\tag ->
-            li []
-                [ button
-                    [ btnClass tag selectedTags
-                    , btnAction tag
-                    ]
-                    [ text tag ]
-                ]
-        )
-        tags
-
-
-viewFooter : Html Msg
-viewFooter =
-    footer []
-        [ a [ href "https://github.com/azimut/newspod" ]
-            [ text "source code" ]
-        ]
-
-
-viewStatus : Model -> Html Msg
-viewStatus model =
-    case model.state of
-        Starting ->
-            text ""
-
-        Idle ->
-            viewStats model
-
-        Error ->
-            div [ class "some-results" ] [ text "ERROR x(" ]
-
-        ShowingResults ->
-            let
-                filteredFeeds =
-                    resultFeeds model
-
-                nResults =
-                    List.foldl (\f acc -> f.nResults + acc) 0 filteredFeeds
-
-                message =
-                    case model.nResults of
-                        1 ->
-                            fromInt nResults ++ " result found"
-
-                        _ ->
-                            fromInt nResults ++ " results found"
-            in
-            case filteredFeeds of
-                [] ->
-                    div [ class "no-results" ] [ text "no results found :(" ]
-
-                _ ->
-                    div [ class "some-results" ] [ text message ]
-
-        WaitingForResults ->
-            div [ class "some-results" ] [ text "..." ]
-
-
-viewStats : Model -> Html Msg
-viewStats { dbStats } =
-    case dbStats of
-        Nothing ->
-            text ""
-
-        Just { nPodcasts, nEntries, dbSize } ->
-            div [ class "some-results" ]
-                [ div [ class "npodcasts" ] [ text (fromInt nPodcasts ++ " podcasts,") ]
-                , div [] [ text (fromInt nEntries ++ " episodes,") ]
-                , div [] [ text (Filesize.format dbSize) ]
-                ]
-
-
-viewFeeds : Model -> List (Html Msg)
-viewFeeds { feeds, now, entries, state, selectedTags } =
-    let
-        emptyTags =
-            Set.isEmpty selectedTags
-    in
-    List.map (\feed -> viewFeed feed state now entries)
-        (List.filter (\feed -> feed.isVisible || emptyTags) feeds)
-
-
-viewMain : Model -> Html Msg
-viewMain model =
-    main_ [] <|
-        case model.state of
-            Error ->
-                [ text "" ]
-
-            Starting ->
-                [ Loaders.ballTriangle 150 "#fff" ]
-
-            Idle ->
-                viewFeeds model
-
-            WaitingForResults ->
-                [ Loaders.ballTriangle 150 "#fff" ]
-
-            ShowingResults ->
-                let
-                    filteredFeeds =
-                        resultFeeds model
-
-                    feedIds =
-                        OrderedDict.keys model.entries |> List.reverse
-                in
-                List.map
-                    (\feed -> viewFeed feed model.state model.now model.entries)
-                    (sortFeeds filteredFeeds feedIds [])
-
-
-resultFeeds : Model -> List Feed
-resultFeeds model =
-    if Set.isEmpty model.selectedTags then
-        model.feeds
-
-    else
-        List.filter (\feed -> feed.isVisible) model.feeds
-
-
-view : Model -> Html Msg
-view model =
-    case model.state of
-        Error ->
-            div []
-                [ viewHeader model
-                , viewMain model
-                ]
-
-        Starting ->
-            div []
-                [ viewHeader model
-                , viewMain model
-                ]
-
-        Idle ->
-            div []
-                [ viewHeader model
-                , viewMain model
-                , viewFooter
-                ]
-
-        WaitingForResults ->
-            div []
-                [ viewHeader model
-                , viewMain model
-                ]
-
-        ShowingResults ->
-            div []
-                [ viewHeader model
-                , viewMain model
-                , viewFooter
-                ]
 
 
 sortFeeds : List Feed -> List Int -> List Feed -> List Feed
