@@ -222,48 +222,13 @@ update : Msg -> Model -> ( Model, Cmd msg )
 update msg ({ feeds, entries, search, state } as model) =
     case msg of
         InitState result ->
-            case result of
-                Ok initState ->
-                    ( { model
-                        | state = Idle
-                        , tags = List.sort initState.tags
-                        , feeds = List.map toFeed initState.feeds
-                        , dbStats = Just initState.stats
-                      }
-                    , Cmd.none
-                    )
-
-                Err _ ->
-                    ( { model | state = Error }, Cmd.none )
+            updateInitState result model
 
         InitClock n ->
             ( { model | now = n }, Cmd.none )
 
         NewInput newSearch ->
-            let
-                updatedFeeds =
-                    List.map (\feed -> { feed | isVisible = True, isSelected = False }) feeds
-            in
-            if String.isEmpty (String.trim newSearch) then
-                ( { model
-                    | feeds = updatedFeeds
-                    , entries = OrderedDict.empty
-                    , state = Idle
-                    , currentSearch = Nothing
-                    , search = ""
-                    , selectedTags = Set.empty
-                    , dbStats = Maybe.map (computeNewStats updatedFeeds Set.empty) model.dbStats
-                  }
-                , Cmd.none
-                )
-
-            else
-                ( { model
-                    | search = newSearch
-                    , selectedTags = Set.empty
-                  }
-                , Cmd.none
-                )
+            updateNewInput newSearch model
 
         AskForSearch ->
             if String.isEmpty (String.trim search) then
@@ -354,16 +319,21 @@ update msg ({ feeds, entries, search, state } as model) =
             )
 
 
-toEntry : NewEntry -> Entry
-toEntry { id, feedid, title, date, url } =
-    { id = id
-    , feedid = feedid
-    , title = title
-    , date = date
-    , url = url
-    , content = EntryBlank
-    , isShowingDetails = False
-    }
+updateInitState : Result Http.Error Startup -> Model -> ( Model, Cmd msg )
+updateInitState result model =
+    case result of
+        Ok startup ->
+            ( { model
+                | dbStats = Just startup.stats
+                , feeds = List.map toFeed startup.feeds
+                , state = Idle
+                , tags = List.sort startup.tags
+              }
+            , Cmd.none
+            )
+
+        Err _ ->
+            ( { model | state = Error }, Cmd.none )
 
 
 toFeed : InitFeed -> Feed
@@ -376,6 +346,69 @@ toFeed { id, title, nEntries, tags } =
     , nEntries = nEntries
     , nResults = 0
     , tags = Set.fromList tags
+    }
+
+
+updateNewInput : String -> Model -> ( Model, Cmd msg )
+updateNewInput newSearch model =
+    if String.isEmpty (String.trim newSearch) then
+        let
+            updatedFeeds =
+                List.map (\feed -> { feed | isVisible = True, isSelected = False }) model.feeds
+        in
+        ( { model
+            | currentSearch = Nothing
+            , dbStats = Maybe.map (computeNewStats updatedFeeds Set.empty) model.dbStats
+            , entries = OrderedDict.empty
+            , feeds = updatedFeeds
+            , search = ""
+            , selectedTags = Set.empty
+            , state = Idle
+          }
+        , Cmd.none
+        )
+
+    else
+        ( { model
+            | search = newSearch
+            , selectedTags = Set.empty
+          }
+        , Cmd.none
+        )
+
+
+computeNewStats : List Feed -> Set.Set String -> DbStats -> DbStats
+computeNewStats feeds selectedTags stats =
+    if Set.isEmpty selectedTags then
+        List.foldr addFeed (DbStats 0 0 stats.dbSize) feeds
+
+    else
+        List.foldr addVisibleFeed (DbStats 0 0 stats.dbSize) feeds
+
+
+addFeed : Feed -> DbStats -> DbStats
+addFeed feed ({ nPodcasts, nEntries } as stats) =
+    { stats | nPodcasts = nPodcasts + 1, nEntries = nEntries + feed.nEntries }
+
+
+addVisibleFeed : Feed -> DbStats -> DbStats
+addVisibleFeed feed ({ nPodcasts, nEntries } as stats) =
+    if feed.isVisible then
+        { stats | nPodcasts = nPodcasts + 1, nEntries = nEntries + feed.nEntries }
+
+    else
+        stats
+
+
+toEntry : NewEntry -> Entry
+toEntry { id, feedid, title, date, url } =
+    { id = id
+    , feedid = feedid
+    , title = title
+    , date = date
+    , url = url
+    , content = EntryBlank
+    , isShowingDetails = False
     }
 
 
@@ -416,29 +449,6 @@ fillDetails eDetails =
             else
                 entry
         )
-
-
-computeNewStats : List Feed -> Set.Set String -> DbStats -> DbStats
-computeNewStats feeds selectedTags stats =
-    if Set.isEmpty selectedTags then
-        List.foldr addFeed (DbStats 0 0 stats.dbSize) feeds
-
-    else
-        List.foldr addVisibleFeed (DbStats 0 0 stats.dbSize) feeds
-
-
-addFeed : Feed -> DbStats -> DbStats
-addFeed feed ({ nPodcasts, nEntries } as stats) =
-    { stats | nPodcasts = nPodcasts + 1, nEntries = nEntries + feed.nEntries }
-
-
-addVisibleFeed : Feed -> DbStats -> DbStats
-addVisibleFeed feed ({ nPodcasts, nEntries } as stats) =
-    if feed.isVisible then
-        { stats | nPodcasts = nPodcasts + 1, nEntries = nEntries + feed.nEntries }
-
-    else
-        stats
 
 
 updateVisibleFeeds : Set.Set String -> List Feed -> List Feed
