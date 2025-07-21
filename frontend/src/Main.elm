@@ -219,121 +219,60 @@ stateDecoder =
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
-update msg ({ feeds, entries, search, state } as model) =
+update msg model =
     case msg of
         InitState result ->
-            updateInitState result model
+            ( updateInitState result model, Cmd.none )
 
         InitClock n ->
             ( { model | now = n }, Cmd.none )
 
         NewInput newSearch ->
-            updateNewInput newSearch model
+            ( updateNewInput newSearch model, Cmd.none )
 
         AskForSearch ->
-            if String.isEmpty (String.trim search) then
-                ( model, Cmd.none )
-
-            else
-                ( { model
-                    | state = WaitingForResults
-                    , currentSearch = Just search
-                    , selectedTags = Set.empty
-                  }
-                , askForSearch search
-                )
+            updateAskForSearch model
 
         NewSearchResults es ->
-            ( newSearchResults model es, Cmd.none )
+            ( updateNewSearchResults model es, Cmd.none )
 
         AskForEntries feedId ->
-            case state of
-                Idle ->
-                    ( toggleSelectedFeed model feedId
-                    , Cmd.batch [ askForFeedDetails feedId, askForEntries feedId ]
-                    )
-
-                _ ->
-                    ( toggleSelectedFeed model feedId
-                    , Cmd.none
-                    )
+            updateAskForEntries feedId model
 
         -- TODO: getting feedid from newEntries[0] is kind of hacky
         NewEntries es ->
-            ( case es of
-                [] ->
-                    model
-
-                entry :: _ ->
-                    { model | entries = OrderedDict.insert entry.feedid (List.map toEntry es) entries }
-            , Cmd.none
-            )
+            ( updateNewEntries es model, Cmd.none )
 
         -- TODO: check if already has details
         AskForDetails feedId entryId ->
-            ( { model | entries = OrderedDict.update feedId (Maybe.map (toggleEntryDetails entryId)) entries }
-            , askForEntryDetails
-                (QuestionEntryDetails entryId <|
-                    Maybe.withDefault "" model.currentSearch
-                )
-            )
+            updateAskForDetails feedId entryId model
 
-        NewDetails ({ feedid } as entryDetails) ->
-            ( { model | entries = OrderedDict.update feedid (Maybe.map (fillDetails entryDetails)) entries }
-            , Cmd.none
-            )
+        NewDetails entryDetails ->
+            ( updateNewDetails entryDetails model, Cmd.none )
 
         NewError _ ->
             ( { model | state = Error }, Cmd.none )
 
-        NewFeedDetails ({ id } as feedDetails) ->
-            ( { model
-                | feeds =
-                    List.map
-                        (\feed ->
-                            if feed.id == id && feed.details == Nothing then
-                                { feed | details = Just feedDetails }
-
-                            else
-                                feed
-                        )
-                        feeds
-              }
-            , Cmd.none
-            )
+        NewFeedDetails feedDetails ->
+            ( updateNewFeedDetails feedDetails model, Cmd.none )
 
         ToggleTag tag ->
-            let
-                updatedTags =
-                    toggleSet tag model.selectedTags
-
-                updatedFeeds =
-                    updateVisibleFeeds updatedTags model.feeds
-            in
-            ( { model
-                | selectedTags = updatedTags
-                , feeds = updatedFeeds
-                , dbStats = Maybe.map (computeNewStats updatedFeeds updatedTags) model.dbStats
-              }
-            , Cmd.none
-            )
+            ( updateToggleTag tag model, Cmd.none )
 
 
-updateInitState : Result Http.Error Startup -> Model -> ( Model, Cmd msg )
+updateInitState : Result Http.Error Startup -> Model -> Model
 updateInitState result model =
     case result of
         Ok startup ->
-            ( { model
+            { model
                 | dbStats = Just startup.stats
                 , feeds = List.map toFeed startup.feeds
                 , state = Idle
                 , tags = List.sort startup.tags
-              }
-            , Cmd.none
-            )
+            }
 
         Err _ ->
-            ( { model | state = Error }, Cmd.none )
+            { model | state = Error }
 
 
 toFeed : InitFeed -> Feed
@@ -349,14 +288,14 @@ toFeed { id, title, nEntries, tags } =
     }
 
 
-updateNewInput : String -> Model -> ( Model, Cmd msg )
+updateNewInput : String -> Model -> Model
 updateNewInput newSearch model =
     if String.isEmpty (String.trim newSearch) then
         let
             updatedFeeds =
                 List.map (\feed -> { feed | isVisible = True, isSelected = False }) model.feeds
         in
-        ( { model
+        { model
             | currentSearch = Nothing
             , dbStats = Maybe.map (computeNewStats updatedFeeds Set.empty) model.dbStats
             , entries = OrderedDict.empty
@@ -364,17 +303,13 @@ updateNewInput newSearch model =
             , search = ""
             , selectedTags = Set.empty
             , state = Idle
-          }
-        , Cmd.none
-        )
+        }
 
     else
-        ( { model
+        { model
             | search = newSearch
             , selectedTags = Set.empty
-          }
-        , Cmd.none
-        )
+        }
 
 
 computeNewStats : List Feed -> Set.Set String -> DbStats -> DbStats
@@ -400,77 +335,23 @@ addVisibleFeed feed ({ nPodcasts, nEntries } as stats) =
         stats
 
 
-toEntry : NewEntry -> Entry
-toEntry { id, feedid, title, date, url } =
-    { id = id
-    , feedid = feedid
-    , title = title
-    , date = date
-    , url = url
-    , content = EntryBlank
-    , isShowingDetails = False
-    }
-
-
-toggleEntryDetails : Int -> List Entry -> List Entry
-toggleEntryDetails entryId =
-    List.map
-        (\entry ->
-            if entry.id == entryId then
-                { entry
-                    | isShowingDetails = not entry.isShowingDetails
-                    , content =
-                        if entry.isShowingDetails then
-                            EntryBlank
-
-                        else
-                            EntryWaiting
-                }
-
-            else
-                entry
-        )
-
-
-fillDetails : EntryDetails -> List Entry -> List Entry
-fillDetails eDetails =
-    List.map
-        (\entry ->
-            if entry.id == eDetails.id then
-                { entry
-                    | content =
-                        if eDetails.content == "" then
-                            EntryReceived "No description."
-
-                        else
-                            EntryReceived eDetails.content
-                }
-
-            else
-                entry
-        )
-
-
-updateVisibleFeeds : Set.Set String -> List Feed -> List Feed
-updateVisibleFeeds selectedTags feeds =
-    List.map
-        (\feed ->
-            { feed | isVisible = not (Set.isEmpty (Set.intersect feed.tags selectedTags)) }
-        )
-        feeds
-
-
-toggleSet : String -> Set.Set String -> Set.Set String
-toggleSet needle hay =
-    if Set.member needle hay then
-        Set.remove needle hay
+updateAskForSearch : Model -> ( Model, Cmd msg )
+updateAskForSearch model =
+    if String.isEmpty (String.trim model.search) then
+        ( model, Cmd.none )
 
     else
-        Set.insert needle hay
+        ( { model
+            | state = WaitingForResults
+            , currentSearch = Just model.search
+            , selectedTags = Set.empty
+          }
+        , askForSearch model.search
+        )
 
 
-newSearchResults : Model -> List NewEntry -> Model
-newSearchResults model newEntries =
+updateNewSearchResults : Model -> List NewEntry -> Model
+updateNewSearchResults model newEntries =
     let
         feedIds =
             List.foldl (\e -> Set.insert e.feedid) Set.empty newEntries
@@ -515,6 +396,20 @@ newSearchResults model newEntries =
     { model | feeds = feeds, entries = entries, state = ShowingResults }
 
 
+updateAskForEntries : Int -> Model -> ( Model, Cmd msg )
+updateAskForEntries feedId model =
+    case model.state of
+        Idle ->
+            ( toggleSelectedFeed model feedId
+            , Cmd.batch [ askForFeedDetails feedId, askForEntries feedId ]
+            )
+
+        _ ->
+            ( toggleSelectedFeed model feedId
+            , Cmd.none
+            )
+
+
 toggleSelectedFeed : Model -> Int -> Model
 toggleSelectedFeed ({ feeds, entries } as model) feedid =
     { model
@@ -543,6 +438,132 @@ toggleSelectedFeed ({ feeds, entries } as model) feedid =
                 )
                 entries
     }
+
+
+updateNewEntries : List NewEntry -> Model -> Model
+updateNewEntries es model =
+    case es of
+        [] ->
+            model
+
+        entry :: _ ->
+            { model | entries = OrderedDict.insert entry.feedid (List.map toEntry es) model.entries }
+
+
+toEntry : NewEntry -> Entry
+toEntry { id, feedid, title, date, url } =
+    { id = id
+    , feedid = feedid
+    , title = title
+    , date = date
+    , url = url
+    , content = EntryBlank
+    , isShowingDetails = False
+    }
+
+
+updateAskForDetails : Int -> Int -> Model -> ( Model, Cmd msg )
+updateAskForDetails feedId entryId model =
+    ( { model | entries = OrderedDict.update feedId (Maybe.map (toggleEntryDetails entryId)) model.entries }
+    , askForEntryDetails
+        (QuestionEntryDetails entryId <|
+            Maybe.withDefault "" model.currentSearch
+        )
+    )
+
+
+toggleEntryDetails : Int -> List Entry -> List Entry
+toggleEntryDetails entryId =
+    List.map
+        (\entry ->
+            if entry.id == entryId then
+                { entry
+                    | isShowingDetails = not entry.isShowingDetails
+                    , content =
+                        if entry.isShowingDetails then
+                            EntryBlank
+
+                        else
+                            EntryWaiting
+                }
+
+            else
+                entry
+        )
+
+
+updateNewDetails : EntryDetails -> Model -> Model
+updateNewDetails ({ feedid } as entryDetails) model =
+    { model | entries = OrderedDict.update feedid (Maybe.map (fillDetails entryDetails)) model.entries }
+
+
+fillDetails : EntryDetails -> List Entry -> List Entry
+fillDetails eDetails =
+    List.map
+        (\entry ->
+            if entry.id == eDetails.id then
+                { entry
+                    | content =
+                        if eDetails.content == "" then
+                            EntryReceived "No description."
+
+                        else
+                            EntryReceived eDetails.content
+                }
+
+            else
+                entry
+        )
+
+
+updateNewFeedDetails : FeedDetails -> Model -> Model
+updateNewFeedDetails feedDetails model =
+    { model
+        | feeds =
+            List.map
+                (\feed ->
+                    if feed.id == feedDetails.id && feed.details == Nothing then
+                        { feed | details = Just feedDetails }
+
+                    else
+                        feed
+                )
+                model.feeds
+    }
+
+
+updateToggleTag : String -> Model -> Model
+updateToggleTag tag model =
+    let
+        updatedTags =
+            toggleSet tag model.selectedTags
+
+        updatedFeeds =
+            updateVisibleFeeds updatedTags model.feeds
+    in
+    { model
+        | selectedTags = updatedTags
+        , feeds = updatedFeeds
+        , dbStats = Maybe.map (computeNewStats updatedFeeds updatedTags) model.dbStats
+    }
+
+
+updateVisibleFeeds : Set.Set String -> List Feed -> List Feed
+updateVisibleFeeds selectedTags feeds =
+    List.map
+        (\feed ->
+            { feed | isVisible = not (Set.isEmpty (Set.intersect feed.tags selectedTags)) }
+        )
+        feeds
+
+
+toggleSet : String -> Set.Set String -> Set.Set String
+toggleSet needle hay =
+    if Set.member needle hay then
+        Set.remove needle hay
+
+    else
+        Set.insert needle hay
 
 
 
