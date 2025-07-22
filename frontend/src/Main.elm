@@ -689,24 +689,17 @@ viewStatus model =
             div [ class "some-results" ] [ text "ERROR x(" ]
 
         ShowingResults ->
-            let
-                filteredFeeds =
-                    resultFeeds model
+            case model.nResults of
+                0 ->
+                    div [ class "some-results" ] [ text "no results found :(" ]
 
-                message =
-                    case model.nResults of
-                        1 ->
-                            fromInt model.nResults ++ " result found"
-
-                        _ ->
-                            fromInt model.nResults ++ " results found"
-            in
-            case filteredFeeds of
-                [] ->
-                    div [ class "no-results" ] [ text "no results found :(" ]
+                1 ->
+                    div [ class "some-results" ]
+                        [ text <| fromInt model.nResults ++ " result found" ]
 
                 _ ->
-                    div [ class "some-results" ] [ text message ]
+                    div [ class "some-results" ]
+                        [ text <| fromInt model.nResults ++ " results found" ]
 
         WaitingForResults ->
             div [ class "some-results" ] [ text "..." ]

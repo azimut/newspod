@@ -154,11 +154,6 @@ div.some-results > div.npodcasts {
     display: block;
   }
 }
-div.no-results {
-  font-family: monospace;
-  font-size: 2.45em;
-  margin: 0 auto;
-}
 
 /* ----------------- */
 
