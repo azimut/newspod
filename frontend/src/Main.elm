@@ -314,11 +314,15 @@ updateNewInput newSearch model =
 
 computeNewStats : List Feed -> Set.Set String -> DbStats -> DbStats
 computeNewStats feeds selectedTags stats =
+    let
+        emptyStats =
+            DbStats 0 0 stats.dbSize
+    in
     if Set.isEmpty selectedTags then
-        List.foldr addFeed (DbStats 0 0 stats.dbSize) feeds
+        List.foldr addFeed emptyStats feeds
 
     else
-        List.foldr addVisibleFeed (DbStats 0 0 stats.dbSize) feeds
+        List.foldr addFeedIfVisible emptyStats feeds
 
 
 addFeed : Feed -> DbStats -> DbStats
@@ -326,8 +330,8 @@ addFeed feed ({ nPodcasts, nEntries } as stats) =
     { stats | nPodcasts = nPodcasts + 1, nEntries = nEntries + feed.nEntries }
 
 
-addVisibleFeed : Feed -> DbStats -> DbStats
-addVisibleFeed feed ({ nPodcasts, nEntries } as stats) =
+addFeedIfVisible : Feed -> DbStats -> DbStats
+addFeedIfVisible feed ({ nPodcasts, nEntries } as stats) =
     if feed.isVisible then
         { stats | nPodcasts = nPodcasts + 1, nEntries = nEntries + feed.nEntries }
 
@@ -393,7 +397,12 @@ updateNewSearchResults model newEntries =
                     OrderedDict.empty
                 |> OrderedDict.map (\_ es -> List.reverse es)
     in
-    { model | feeds = feeds, entries = entries, state = ShowingResults }
+    { model
+        | feeds = feeds
+        , entries = entries
+        , state = ShowingResults
+        , nResults = List.sum <| List.map .nResults feeds
+    }
 
 
 updateAskForEntries : Int -> Model -> ( Model, Cmd msg )
@@ -545,6 +554,15 @@ updateToggleTag tag model =
         | selectedTags = updatedTags
         , feeds = updatedFeeds
         , dbStats = Maybe.map (computeNewStats updatedFeeds updatedTags) model.dbStats
+        , nResults =
+            List.sum <|
+                List.map .nResults
+                    (if Set.isEmpty updatedTags then
+                        updatedFeeds
+
+                     else
+                        List.filter .isVisible updatedFeeds
+                    )
     }
 
 
@@ -675,16 +693,13 @@ viewStatus model =
                 filteredFeeds =
                     resultFeeds model
 
-                nResults =
-                    List.foldl (\f acc -> f.nResults + acc) 0 filteredFeeds
-
                 message =
                     case model.nResults of
                         1 ->
-                            fromInt nResults ++ " result found"
+                            fromInt model.nResults ++ " result found"
 
                         _ ->
-                            fromInt nResults ++ " results found"
+                            fromInt model.nResults ++ " results found"
             in
             case filteredFeeds of
                 [] ->
@@ -717,22 +732,23 @@ resultFeeds model =
         model.feeds
 
     else
-        List.filter (\feed -> feed.isVisible) model.feeds
+        List.filter .isVisible model.feeds
 
 
 liTags : List String -> Set.Set String -> List (Html Msg)
 liTags tags selectedTags =
-    List.map
-        (\tag ->
-            li []
-                [ button
-                    [ btnClass tag selectedTags
-                    , btnAction tag
-                    ]
-                    [ text tag ]
-                ]
-        )
-        tags
+    List.map (liTag selectedTags) tags
+
+
+liTag : Set.Set String -> String -> Html Msg
+liTag selectedTags tag =
+    li []
+        [ button
+            [ btnClass tag selectedTags
+            , btnAction tag
+            ]
+            [ text tag ]
+        ]
 
 
 btnClass : String -> Set.Set String -> Html.Attribute Msg
@@ -781,11 +797,15 @@ viewMain model =
 viewFeeds : Model -> List (Html Msg)
 viewFeeds { feeds, now, entries, state, selectedTags } =
     let
-        emptyTags =
-            Set.isEmpty selectedTags
+        visibleFeeds =
+            if Set.isEmpty selectedTags then
+                feeds
+
+            else
+                List.filter .isVisible feeds
     in
     List.map (\feed -> viewFeed feed state now entries)
-        (List.filter (\feed -> feed.isVisible || emptyTags) feeds)
+        visibleFeeds
 
 
 viewFeed : Feed -> State -> Time.Posix -> OrderedDict Int (List Entry) -> Html Msg
