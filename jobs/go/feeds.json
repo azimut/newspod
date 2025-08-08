@@ -1,6 +1,12 @@
 {
   "feeds": [
     {
+      "url": "https://feeds.transistor.fm/talkingpostgres",
+      "tags": [
+        "tech"
+      ]
+    },
+    {
       "title": "NonZero",
       "url": "https://api.substack.com/feed/podcast/17302.rss",
       "tags": [
