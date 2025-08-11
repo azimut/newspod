@@ -1,6 +1,13 @@
 {
   "feeds": [
     {
+      "title": "Wookash",
+      "url": "https://anchor.fm/s/dd7643a4/podcast/rss",
+      "tags": [
+        "programming"
+      ]
+    },
+    {
       "url": "https://feeds.transistor.fm/talkingpostgres",
       "tags": [
         "tech"
@@ -1017,6 +1024,13 @@
       "tags": [
         "admin",
         "spanish"
+      ]
+    },
+    {
+      "title": "The Standup",
+      "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=PL2Fq-K0QdOQiJpufsnhEd1z3xOv2JMHuk",
+      "tags": [
+        "programming"
       ]
     }
   ]
