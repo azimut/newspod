@@ -1,6 +1,12 @@
 {
   "feeds": [
     {
+      "url": "https://cppcast.com/feed.rss",
+      "tags": [
+        "programming"
+      ]
+    },
+    {
       "title": "Wookash",
       "url": "https://anchor.fm/s/dd7643a4/podcast/rss",
       "tags": [
