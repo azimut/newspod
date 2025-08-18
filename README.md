@@ -1,8 +1,16 @@
 # newspod
 
-From a list of RSS feeds. Generates a static site where you can perform full text searches of the podcast episodes from an also generated SQLite database. Update daily through *GitHub Actions*.
+From a list of RSS feeds. Generates a static site where you can perform full text searches of the podcast episodes.
 
 ![screenshot](static/Screenshot_2025-07-17_at_02-52-38_newspod.png)
+
+## Features
+
+- Search and navigation can be filtered by a feed category
+- Backed by a SQLite database.
+- SQL pagination for entries on a feed.
+- Full text search.
+- Update daily through *GitHub Actions*.
 
 ## Why?
 
