@@ -43,6 +43,11 @@ type alias Model =
     }
 
 
+type FeedState
+    = FetchingMore
+    | Waiting
+
+
 type alias Feed =
     { id : Int
     , title : String
@@ -54,6 +59,7 @@ type alias Feed =
     , tags : Set.Set String
     , currentPage : Int
     , endOfFeed : Bool
+    , state : FeedState
     }
 
 
@@ -304,6 +310,7 @@ toFeed { id, title, nEntries, tags } =
     , tags = Set.fromList tags
     , currentPage = 1
     , endOfFeed = False
+    , state = Waiting
     }
 
 
@@ -480,7 +487,7 @@ entriesPerQuery =
 nextPageIt : List Feed -> Int -> List Feed
 nextPageIt feeds feedId =
     List.Extra.updateIf (\f -> f.id == feedId)
-        (\f -> { f | currentPage = f.currentPage + 1 })
+        (\f -> { f | currentPage = f.currentPage + 1, state = FetchingMore })
         feeds
 
 
@@ -525,7 +532,7 @@ updateNewEntries es model =
             let
                 feeds =
                     List.Extra.updateIf (\feed -> feed.id == entry.feedid)
-                        (\feed -> { feed | endOfFeed = List.length es /= entriesPerQuery })
+                        (\feed -> { feed | endOfFeed = List.length es /= entriesPerQuery, state = Waiting })
                         model.feeds
 
                 entries =
@@ -907,7 +914,15 @@ viewFeed ({ title, id, isSelected } as feed) state now entries =
                         [ text "" ]
 
                     else
-                        [ div [ class "askformore" ] [ button [ onClick (AskForMoreEntries id) ] [ text "More" ] ] ]
+                        [ div [ class "askformore" ]
+                            [ case feed.state of
+                                Waiting ->
+                                    button [ onClick (AskForMoreEntries id) ] [ text "More" ]
+
+                                FetchingMore ->
+                                    Loaders.ballTriangle 20 "#fff"
+                            ]
+                        ]
 
                 _ ->
                     [ text "" ]
