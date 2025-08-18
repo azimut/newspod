@@ -1,6 +1,18 @@
 {
   "feeds": [
     {
+      "url": "https://realpython.com/podcasts/rpp/feed",
+      "tags": [
+        "programming"
+      ]
+    },
+    {
+      "url": "https://talkpython.fm/episodes/all",
+      "tags": [
+        "programming"
+      ]
+    },
+    {
       "name": "Lost in Lambduhhs",
       "url": "https://anchor.fm/s/581d4eb4/podcast/rss",
       "tags": [
