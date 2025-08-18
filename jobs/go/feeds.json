@@ -1,6 +1,33 @@
 {
   "feeds": [
     {
+      "name": "Lost in Lambduhhs",
+      "url": "https://anchor.fm/s/581d4eb4/podcast/rss",
+      "tags": [
+        "programming"
+      ]
+    },
+    {
+      "name": "Hard Fork",
+      "url": "https://feeds.simplecast.com/l2i9YnTd",
+      "tags": [
+        "tech"
+      ]
+    },
+    {
+      "name": "Book Overflow",
+      "url": "https://anchor.fm/s/f5bbb69c/podcast/rss",
+      "tags": [
+        "programming"
+      ]
+    },
+    {
+      "url": "https://www.twoscomplement.org/podcast/feed.xml",
+      "tags": [
+        "programming"
+      ]
+    },
+    {
       "url": "https://cppcast.com/feed.rss",
       "tags": [
         "programming"
@@ -10,7 +37,7 @@
       "title": "Wookash",
       "url": "https://anchor.fm/s/dd7643a4/podcast/rss",
       "tags": [
-        "programming"
+        "gamedev"
       ]
     },
     {
