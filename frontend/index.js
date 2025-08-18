@@ -19,15 +19,16 @@ export async function initConnection() {
   });
 }
 
-export async function getEntries(dbarg, feedid) {
+export async function getEntries(dbarg, feedid, page, rows) {
   let db = await dbarg;
   let queue = [];
   await db("exec", {
     sql: `SELECT id, title, datemillis, url
             FROM entries
            WHERE feedid=$fid
-        ORDER BY datemillis DESC`,
-    bind: { $fid: feedid },
+        ORDER BY datemillis DESC
+           LIMIT $rows OFFSET $offset`,
+    bind: { $fid: feedid, $rows: rows, $offset: page * rows }, // assuming page[0..]
     callback: (msg) => {
       if (msg.row) {
         let [id, title, date, url] = msg.row;

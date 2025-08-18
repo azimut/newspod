@@ -28,8 +28,10 @@
       app.ports.askForFeedDetails.subscribe((feedid) => {
         Muh.getFeedDetails(db, feedid).then(app.ports.receiveFeedDetails.send);
       });
-      app.ports.askForEntries.subscribe((feedid) => {
-        Muh.getEntries(db, feedid).then(app.ports.receiveEntries.send);
+      app.ports.askForEntries.subscribe(({ feedId, page, rows }) => {
+        Muh.getEntries(db, feedId, page, rows).then(
+          app.ports.receiveEntries.send
+        );
       });
       app.ports.askForEntryDetails.subscribe(({ entryId, search }) => {
         Muh.getEntryDetails(db, entryId, search).then(

@@ -51,6 +51,8 @@ type alias Feed =
     , nEntries : Int
     , nResults : Int
     , tags : Set.Set String
+    , currentPage : Int
+    , endOfFeed : Bool
     }
 
 
@@ -100,7 +102,9 @@ type State
 type Msg
     = InitClock Time.Posix
     | InitState (Result Http.Error Startup)
+    | CloseFeed Int
     | AskForEntries Int
+    | AskForMoreEntries Int
     | ToggleTag String
     | NewEntries (List NewEntry)
     | NewInput String
@@ -149,13 +153,20 @@ type alias QuestionEntryDetails =
     }
 
 
+type alias QueryEntries =
+    { feedId : Int
+    , page : Int
+    , rows : Int
+    }
+
+
 port askForFeedDetails : Int -> Cmd msg
 
 
 port askForEntryDetails : QuestionEntryDetails -> Cmd msg
 
 
-port askForEntries : Int -> Cmd msg
+port askForEntries : QueryEntries -> Cmd msg
 
 
 port askForSearch : String -> Cmd msg
@@ -236,10 +247,15 @@ update msg model =
         NewSearchResults es ->
             ( updateNewSearchResults model es, Cmd.none )
 
+        CloseFeed feedId ->
+            updateCloseFeed feedId model
+
         AskForEntries feedId ->
             updateAskForEntries feedId model
 
-        -- TODO: getting feedid from newEntries[0] is kind of hacky
+        AskForMoreEntries feedId ->
+            updateAskForMoreEntries feedId model
+
         NewEntries es ->
             ( updateNewEntries es model, Cmd.none )
 
@@ -285,6 +301,8 @@ toFeed { id, title, nEntries, tags } =
     , nEntries = nEntries
     , nResults = 0
     , tags = Set.fromList tags
+    , currentPage = 1
+    , endOfFeed = False
     }
 
 
@@ -293,7 +311,8 @@ updateNewInput newSearch model =
     if String.isEmpty (String.trim newSearch) then
         let
             updatedFeeds =
-                List.map (\feed -> { feed | isVisible = True, isSelected = False }) model.feeds
+                List.map (\feed -> { feed | isVisible = True, isSelected = False, endOfFeed = False, currentPage = 1 })
+                    model.feeds
         in
         { model
             | currentSearch = Nothing
@@ -405,18 +424,63 @@ updateNewSearchResults model newEntries =
     }
 
 
+updateCloseFeed : Int -> Model -> ( Model, Cmd msg )
+updateCloseFeed feedId model =
+    ( toggleSelectedFeed model feedId, Cmd.none )
+
+
 updateAskForEntries : Int -> Model -> ( Model, Cmd msg )
 updateAskForEntries feedId model =
     case model.state of
         Idle ->
             ( toggleSelectedFeed model feedId
-            , Cmd.batch [ askForFeedDetails feedId, askForEntries feedId ]
+            , case OrderedDict.get feedId model.entries of
+                Nothing ->
+                    Cmd.batch
+                        [ askForFeedDetails feedId
+                        , askForEntries (QueryEntries feedId 0 entriesPerQuery)
+                        ]
+
+                Just _ ->
+                    askForFeedDetails feedId
             )
 
         _ ->
             ( toggleSelectedFeed model feedId
             , Cmd.none
             )
+
+
+updateAskForMoreEntries : Int -> Model -> ( Model, Cmd msg )
+updateAskForMoreEntries feedId model =
+    let
+        mFeed =
+            List.Extra.find (\feed -> feed.id == feedId) model.feeds
+    in
+    case mFeed of
+        Just feed ->
+            if feed.endOfFeed then
+                ( model, Cmd.none )
+
+            else
+                ( { model | feeds = nextPageIt model.feeds feedId }
+                , askForEntries (QueryEntries feedId feed.currentPage entriesPerQuery)
+                )
+
+        Nothing ->
+            ( model, Cmd.none )
+
+
+entriesPerQuery : Int
+entriesPerQuery =
+    200
+
+
+nextPageIt : List Feed -> Int -> List Feed
+nextPageIt feeds feedId =
+    List.Extra.updateIf (\f -> f.id == feedId)
+        (\f -> { f | currentPage = f.currentPage + 1 })
+        feeds
 
 
 toggleSelectedFeed : Model -> Int -> Model
@@ -455,8 +519,32 @@ updateNewEntries es model =
         [] ->
             model
 
+        -- TODO: getting feedid from newEntries[0] is kind of hacky
         entry :: _ ->
-            { model | entries = OrderedDict.insert entry.feedid (List.map toEntry es) model.entries }
+            let
+                feeds =
+                    List.Extra.updateIf (\feed -> feed.id == entry.feedid)
+                        (\feed -> { feed | endOfFeed = List.length es /= entriesPerQuery })
+                        model.feeds
+
+                entries =
+                    OrderedDict.update entry.feedid (upsertEntries es) model.entries
+            in
+            { model | entries = entries, feeds = feeds }
+
+
+upsertEntries : List NewEntry -> Maybe (List Entry) -> Maybe (List Entry)
+upsertEntries es mes =
+    let
+        newEntries =
+            List.map toEntry es
+    in
+    case mes of
+        Nothing ->
+            Just <| newEntries
+
+        Just olds ->
+            Just <| olds ++ newEntries
 
 
 toEntry : NewEntry -> Entry
@@ -810,14 +898,34 @@ viewFeed ({ title, id, isSelected } as feed) state now entries =
 
                 _ ->
                     viewFeedEntries id now entries
+
+        more =
+            case state of
+                Idle ->
+                    if feed.endOfFeed then
+                        [ text "" ]
+
+                    else
+                        [ div [ class "askformore" ] [ button [ onClick (AskForMoreEntries id) ] [ text "More" ] ] ]
+
+                _ ->
+                    [ text "" ]
+
+        action =
+            if feed.isSelected then
+                CloseFeed id
+
+            else
+                AskForEntries id
     in
     article []
         [ details [ open isSelected ] <|
-            summary [ onClick (AskForEntries id) ]
+            summary [ onClick action ]
                 [ span [] [ text title ]
                 , span [] [ text (" [" ++ fromInt count ++ "]") ]
                 ]
                 :: content
+                ++ more
         ]
 
 

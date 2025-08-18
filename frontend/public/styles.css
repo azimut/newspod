@@ -134,6 +134,16 @@ input:disabled {
   color: var(--light);
 }
 
+div.askformore {
+  display: flex;
+  flex-direction: column;
+  padding: 1em;
+}
+
+div.askformore button {
+  padding: 1em;
+}
+
 div.some-results {
   display: flex;
   flex-direction: row;
