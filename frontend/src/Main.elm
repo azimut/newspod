@@ -10,6 +10,7 @@ import Json.Decode as JD
 import List.Extra
 import Loaders
 import Markdown
+import Maybe.Extra
 import OrderedDict exposing (OrderedDict)
 import Set
 import String exposing (fromInt)
@@ -902,7 +903,7 @@ viewFeed ({ title, id, isSelected } as feed) state now entries =
         more =
             case state of
                 Idle ->
-                    if feed.endOfFeed then
+                    if feed.endOfFeed || Maybe.Extra.isNothing feed.details then
                         [ text "" ]
 
                     else
