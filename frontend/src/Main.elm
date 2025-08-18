@@ -719,15 +719,6 @@ viewStats { dbStats } =
                 ]
 
 
-resultFeeds : Model -> List Feed
-resultFeeds model =
-    if Set.isEmpty model.selectedTags then
-        model.feeds
-
-    else
-        List.filter .isVisible model.feeds
-
-
 liTags : List String -> Set.Set String -> List (Html Msg)
 liTags tags selectedTags =
     List.map (liTag selectedTags) tags
@@ -923,6 +914,15 @@ sortFeeds feeds ids acc =
 
                 Just foundFeed ->
                     sortFeeds feeds rest (foundFeed :: acc)
+
+
+resultFeeds : Model -> List Feed
+resultFeeds model =
+    if Set.isEmpty model.selectedTags then
+        model.feeds
+
+    else
+        List.filter .isVisible model.feeds
 
 
 subscriptions : model -> Sub Msg
