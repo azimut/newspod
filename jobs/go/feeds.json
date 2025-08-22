@@ -1,6 +1,13 @@
 {
   "feeds": [
     {
+      "title": "Pivot to AI",
+      "url": "https://pivottoai.libsyn.com/rss",
+      "tags": [
+        "ai"
+      ]
+    },
+    {
       "url": "https://realpython.com/podcasts/rpp/feed",
       "tags": [
         "programming"
