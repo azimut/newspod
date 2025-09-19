@@ -1,6 +1,13 @@
 {
   "feeds": [
     {
+      "title": "The Marco Show",
+      "url": "https://anchor.fm/s/10726bd8c/podcast/rss",
+      "tags": [
+        "programming"
+      ]
+    },
+    {
       "title": "Pivot to AI",
       "url": "https://pivottoai.libsyn.com/rss",
       "tags": [
