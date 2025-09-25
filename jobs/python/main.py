@@ -87,6 +87,7 @@ class Feed:
             info = ydl.extract_info(self.url, download=False)
             self.entries = []
             for rawentry in info['entries']:
+                if not 'view_count' in rawentry: continue # upcoming video
                 url = rawentry['url']
                 entry = Entry(url, rawentry['title'], rawentry['duration'], rawentry['view_count'], rawentry['channel'], rawentry['channel_url'], self.id)
                 self.entries.append(entry)
