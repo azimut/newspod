@@ -3,12 +3,8 @@
 From a list of RSS feeds. Generates a static site where you can perform full text searches of the podcast episodes.
 
 <p float="left" align="middle">
-    <a href="static/Screenshot_2025-07-17_at_02-52-38_newspod.png">
-        <img src="static/Screenshot_2025-07-17_at_02-52-38_newspod.png" width="400" />
-    </a>
-    <a href="static/Screenshot_2025-09-25_at_21-41-32_newspod.png">
-        <img src="static/Screenshot_2025-09-25_at_21-41-32_newspod.png" width="100" />
-    </a>
+<a href="static/Screenshot_2025-07-17_at_02-52-38_newspod.png"><img src="static/Screenshot_2025-07-17_at_02-52-38_newspod.png" width="430"/></a>
+<a href="static/Screenshot_2025-09-25_at_21-41-32_newspod.png"><img src="static/Screenshot_2025-09-25_at_21-41-32_newspod.png" width="100"/></a>
 </p>
 
 ## Features
