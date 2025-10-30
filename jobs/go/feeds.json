@@ -1,6 +1,13 @@
 {
   "feeds": [
     {
+      "title": "Todo es Fake",
+      "url": "https://anchor.fm/s/6fb208a8/podcast/rss",
+      "tags": [
+        "spanish"
+      ]
+    },
+    {
       "url": "https://cpp.chat/rss/",
       "tags": [
         "programming"
