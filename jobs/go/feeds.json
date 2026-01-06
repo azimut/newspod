@@ -1,6 +1,22 @@
 {
   "feeds": [
     {
+      "title": "LA IA - Entre la señal y el ruido",
+      "url": "https://anchor.fm/s/e5ab5640/podcast/rss",
+      "tags": [
+        "spanish",
+        "ai"
+      ]
+    },
+    {
+      "title": "Pojo y Nada",
+      "url": "https://anchor.fm/s/14f5ace4/podcast/rss",
+      "tags": [
+        "programming",
+        "spanish"
+      ]
+    },
+    {
       "title": "Todo es Fake",
       "url": "https://anchor.fm/s/6fb208a8/podcast/rss",
       "tags": [
