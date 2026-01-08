@@ -1,6 +1,13 @@
 {
   "feeds": [
     {
+      "title": "The Agile Embedded Podcast",
+      "url": "https://feeds.simplecast.com/rNXmD7y7",
+      "tags": [
+        "electronics"
+      ]
+    },
+    {
       "title": "LA IA - Entre la señal y el ruido",
       "url": "https://anchor.fm/s/e5ab5640/podcast/rss",
       "tags": [
