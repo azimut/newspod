@@ -1,6 +1,24 @@
 {
   "feeds": [
     {
+      "url": "https://www.circuitpythonshow.com/@circuitpythonshow/feed.xml",
+      "tags": [
+        "electronics"
+      ]
+    },
+    {
+      "url": "https://www.circuitpythonshow.com/@thebootloader/feed.xml",
+      "tags": [
+        "tech"
+      ]
+    },
+    {
+      "url": "https://feed.pod.co/almost-viral-with-simon-the-magpie"
+    },
+    {
+      "url": "https://feed.pod.co/magpie-pirates"
+    },
+    {
       "title": "The Agile Embedded Podcast",
       "url": "https://feeds.simplecast.com/rNXmD7y7",
       "tags": [
