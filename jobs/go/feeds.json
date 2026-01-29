@@ -1,6 +1,13 @@
 {
   "feeds": [
     {
+      "title": "BBVA Aprendemos juntos",
+      "url": "http://feeds.libsyn.com/109232/feed",
+      "tags": [
+        "spanish"
+      ]
+    },
+    {
       "url": "https://www.circuitpythonshow.com/@circuitpythonshow/feed.xml",
       "tags": [
         "electronics"
