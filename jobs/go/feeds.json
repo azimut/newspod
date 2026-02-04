@@ -1,6 +1,14 @@
 {
   "feeds": [
     {
+      "title": "La Última Frontera",
+      "url": "https://anchor.fm/s/dcc7fc68/podcast/rss",
+      "tags": [
+        "spanish",
+        "tech"
+      ]
+    },
+    {
       "title": "Bibliotequeando",
       "url": "https://feeds.megaphone.fm/EATCI1817497530",
       "tags": [
