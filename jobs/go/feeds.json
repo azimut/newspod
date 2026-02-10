@@ -1,6 +1,13 @@
 {
   "feeds": [
     {
+      "title": "Next without for",
+      "url": "https://feeds.libsyn.com/452148/rss",
+      "tags": [
+        "programming"
+      ]
+    },
+    {
       "title": "La Última Frontera",
       "url": "https://anchor.fm/s/dcc7fc68/podcast/rss",
       "tags": [
