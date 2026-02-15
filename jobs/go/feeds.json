@@ -1,6 +1,12 @@
 {
   "feeds": [
     {
+      "url": "https://feed.syntax.fm/",
+      "tags": [
+        "programming"
+      ]
+    },
+    {
       "title": "Next without for",
       "url": "https://feeds.libsyn.com/452148/rss",
       "tags": [
