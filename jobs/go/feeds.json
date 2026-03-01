@@ -848,7 +848,7 @@
     },
     {
       "title": "Software Unscripted",
-      "url": "https://pod.link/1602572955.rss",
+      "url": "https://feeds.acast.com/public/shows/664fde3eda02bb0012bad909",
       "tags": [
         "programming"
       ]
@@ -986,7 +986,8 @@
       ]
     },
     {
-      "url": "https://pod.link/developer-voices.rss",
+      "title": "Developer Voices",
+      "url": "https://feeds.zencastr.com/f/oSn1i316.rss",
       "tags": [
         "programming"
       ]
