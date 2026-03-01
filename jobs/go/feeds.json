@@ -130,7 +130,7 @@
       ]
     },
     {
-      "url": "https://talkpython.fm/episodes/all",
+      "url": "https://talkpython.fm/subscribe/rss",
       "tags": [
         "programming"
       ]
@@ -796,7 +796,7 @@
       ]
     },
     {
-      "url": "https://arraycast.com/episodes?format=rss",
+      "url": "https://www.arraycast.com/podcast.rss",
       "tags": [
         "programming"
       ]
