@@ -10,7 +10,7 @@ import (
 
 func main() {
 
-	fp := gogetfp.New(gogetfp.FreeProxyConfig{Random: true})
+	fp := gogetfp.New(gogetfp.FreeProxyConfig{})
 	proxy, err := fp.GetWorkingProxy()
 	if err != nil {
 		fmt.Println("Error:", err)

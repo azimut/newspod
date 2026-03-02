@@ -113,7 +113,7 @@ func (feed *Feed) Fetch(proxyurl *url.URL) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode == 403 {
-		fmt.Println("WARN: Got 403. Retrying with proxy...")
+		fmt.Println("Got 403. Retrying with proxy...")
 		client := &http.Client{Transport: &http.Transport{Proxy: http.ProxyURL(proxyurl)}}
 		resp, err := client.Do(req)
 		if err != nil {

@@ -332,6 +332,7 @@ func (feeds Feeds) Save(filename string) error {
 	if err != nil {
 		return err
 	}
+	fmt.Println("DONE")
 
 	err = feeds.db_insert_tags(db)
 	if err != nil {
