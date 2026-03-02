@@ -2,11 +2,25 @@ package main
 
 import (
 	"fmt"
+	"net/url"
 	"strings"
+
+	"github.com/thelicato/gogetfp"
 )
 
-
 func main() {
+
+	fp := gogetfp.New(gogetfp.FreeProxyConfig{Random: true})
+	proxy, err := fp.GetWorkingProxy()
+	if err != nil {
+		fmt.Println("Error:", err)
+	} else {
+		fmt.Println("Got a Working Proxy:", proxy)
+	}
+	proxyurl, err := url.Parse(proxy)
+	if err != nil {
+		panic(err)
+	}
 
 	feeds_json, err := LoadJson(JSON_FILE)
 	if err != nil {
@@ -42,7 +56,7 @@ func main() {
 
 	fmt.Println("[+] Starting RSS feeds fetch:")
 	for i := range feeds {
-		err := feeds[i].Fetch()
+		err := feeds[i].Fetch(proxyurl)
 		if err == nil {
 			fmt.Printf(
 				"%d/%d OK (%s)\n",

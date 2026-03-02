@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
@@ -87,7 +88,7 @@ func (feed *Feed) FetchMetadata() error {
 	return nil
 }
 
-func (feed *Feed) Fetch() error {
+func (feed *Feed) Fetch(proxyurl *url.URL) error {
 
 	err := feed.FetchMetadata()
 	if err != nil {
@@ -110,6 +111,16 @@ func (feed *Feed) Fetch() error {
 		return err
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode == 403 {
+		fmt.Println("WARN: Got 403. Retrying with proxy...")
+		client := &http.Client{Transport: &http.Transport{Proxy: http.ProxyURL(proxyurl)}}
+		resp, err := client.Do(req)
+		if err != nil {
+			return err
+		}
+		defer resp.Body.Close()
+	}
 
 	if resp.StatusCode != 200 {
 		return fmt.Errorf("Invalid HTTP response code %d", resp.StatusCode)
