@@ -5,8 +5,6 @@ import (
 	"strings"
 )
 
-const JSON_FILE = "feeds.json"
-const SQL_FILE = "feeds.db"
 
 func main() {
 

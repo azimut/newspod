@@ -98,7 +98,25 @@ func (feed *Feed) Fetch() error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
 	defer cancel()
 
-	rawFeed, err := gofeed.NewParser().ParseURLWithContext(feed.Url, ctx)
+	req, err := http.NewRequestWithContext(ctx, "GET", feed.Url, nil)
+	if err != nil {
+		return err
+	}
+	req.Header.Set("User-Agent", USER_AGENT)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("Invalid HTTP response code %d", resp.StatusCode)
+	}
+
+	fp := gofeed.NewParser()
+	rawFeed, err := fp.Parse(resp.Body)
 	if err != nil {
 		return err
 	}
