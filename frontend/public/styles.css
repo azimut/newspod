@@ -1,6 +1,7 @@
 :root {
   font-size: calc(0.5em + 1vw);
   --darkness: hsl(24, 10%, 5%);
+  --darkness-secondary: hsl(24, 5%, 13%);
   --light: hsl(24, 100%, 98%);
   --deep-blue: hsl(200, 50%, 30%);
   --light-blue: hsl(200, 100%, 80%);
@@ -250,22 +251,28 @@ details[open] summary {
 /* Episode */
 
 div.episode {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
   padding: 1.2em 0.5em;
   overflow: auto; /* needed for chrome, otherwise links would change the box layout */
 }
+
 div.episode:nth-child(even) {
-  background-color: hsl(24, 5%, 13%);
+  background-color: var(--darkness-secondary);
 }
 @media (prefers-color-scheme: light) {
   div.episode:nth-child(even) {
     background-color: lightgray;
   }
 }
+
 div.episode-title {
   font-size: 2em;
 }
 div.episode-date {
   font-size: 1.2em;
+  font-family: monospace, sans-serif;
   display: flex;
   justify-content: space-between;
 }
@@ -274,8 +281,8 @@ div.episode-content {
   font-size: 1.2em;
 }
 div.episode-content-frame {
-  margin-top: 0.5em;
-  padding: 1em;
+  margin-top: 0.25em;
+  padding: 0.05em 1em;
 }
 div.episode-content code {
   font-size: 1.2em;
