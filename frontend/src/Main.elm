@@ -3,7 +3,7 @@ port module Main exposing (..)
 import Browser
 import Filesize
 import Html exposing (Html, a, article, button, details, div, footer, form, h1, header, img, input, li, main_, span, summary, text, time, ul)
-import Html.Attributes exposing (attribute, autocomplete, autofocus, class, disabled, href, id, maxlength, minlength, name, placeholder, size, src, style, type_, value)
+import Html.Attributes exposing (attribute, autocomplete, autofocus, class, disabled, href, id, maxlength, minlength, name, placeholder, size, src, style, target, type_, value)
 import Html.Events exposing (onClick, onInput, onSubmit, stopPropagationOn)
 import Http
 import Json.Decode as JD
@@ -965,8 +965,8 @@ viewFeedDetails { details, isSelected } =
                         [ div [] []
                         , Markdown.toHtml [] feedDetails.description
                         , div [ class "feed-links" ]
-                            [ a [ href feedDetails.home ] [ text "Home" ]
-                            , a [ href feedDetails.url ] [ text "RSS" ]
+                            [ a [ href feedDetails.home, target "_blank" ] [ text "Home" ]
+                            , a [ href feedDetails.url, target "_blank" ] [ text "RSS" ]
                             ]
                         ]
                     ]
