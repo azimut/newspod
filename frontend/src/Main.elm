@@ -995,18 +995,20 @@ viewEntry feedId now entry =
             ]
         , div [ class "episode-content" ]
             [ if entry.isShowingDetails then
-                case entry.content of
-                    EntryBlank ->
-                        text ""
+                div [ class "episode-content-frame" ]
+                    [ case entry.content of
+                        EntryBlank ->
+                            text ""
 
-                    EntryReceived c ->
-                        Markdown.toHtml [] c
+                        EntryReceived c ->
+                            Markdown.toHtml [] c
 
-                    EntryWaiting ->
-                        Loaders.ballTriangle 60 "#fff"
+                        EntryWaiting ->
+                            Loaders.ballTriangle 60 "#fff"
+                    ]
 
               else
-                div [] []
+                text ""
             ]
         ]
 

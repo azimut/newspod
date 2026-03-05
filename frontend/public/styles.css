@@ -273,6 +273,10 @@ div.episode-content {
   font-family: monospace, sans-serif;
   font-size: 1.2em;
 }
+div.episode-content-frame {
+  margin-top: 0.5em;
+  padding: 1em;
+}
 div.episode-content code {
   font-size: 1.2em;
   background-color: var(--light-blue);
