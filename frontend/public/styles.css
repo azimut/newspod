@@ -14,9 +14,13 @@
 
 a:link {
   color: var(--light-blue);
+  text-decoration: none;
 }
 a:visited {
   color: var(--deep-blue);
+}
+a:hover {
+  text-decoration: underline;
 }
 
 ul {
