@@ -89,6 +89,10 @@ header li > button {
   font-size: 0.4em;
 }
 
+div.feed-links > a {
+  font-size: 1.25em;
+}
+
 div.logo {
   display: flex;
   flex-direction: column;
