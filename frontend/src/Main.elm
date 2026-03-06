@@ -1,6 +1,7 @@
 port module Main exposing (..)
 
 import Browser
+import Browser.Dom as Dom
 import Filesize
 import Html exposing (Html, a, article, button, details, div, footer, form, h1, header, img, input, li, main_, span, summary, text, time, ul)
 import Html.Attributes exposing (attribute, autocomplete, autofocus, class, disabled, href, id, maxlength, minlength, name, placeholder, size, src, style, target, type_, value)
@@ -121,6 +122,7 @@ type Msg
     | NewSearchResults (List NewEntry)
     | NewError String
     | NewFeedDetails FeedDetails
+    | NoOp
 
 
 type alias Startup =
@@ -236,11 +238,13 @@ stateDecoder =
 ------------------------------
 
 
-update : Msg -> Model -> ( Model, Cmd msg )
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         InitState result ->
-            ( updateInitState result model, Cmd.none )
+            ( updateInitState result model
+            , Task.attempt (\_ -> NoOp) (Dom.focus "newsearch")
+            )
 
         InitClock n ->
             ( { model | now = n }, Cmd.none )
@@ -281,6 +285,9 @@ update msg model =
 
         ToggleTag tag ->
             ( updateToggleTag tag model, Cmd.none )
+
+        NoOp ->
+            ( model, Cmd.none )
 
 
 updateInitState : Result Http.Error Startup -> Model -> Model
