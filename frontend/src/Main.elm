@@ -431,14 +431,23 @@ updateNewSearchResults model newEntries =
                     )
                     OrderedDict.empty
                 |> OrderedDict.map (\_ es -> List.reverse es)
+
+        visibleTags = feedsTags (visibleFeeds feeds)
+        newTags = Tags.setVisible (Tags.reset model.tags) visibleTags
     in
     { model
         | feeds = feeds
         , entries = entries
         , state = ShowingResults
         , nResults = List.sum <| List.map .nResults feeds
+        , tags = newTags
     }
 
+feedsTags : List Feed -> Set.Set String
+feedsTags feeds =
+    List.foldr (\feed acc -> Set.union feed.tags acc)
+        Set.empty
+        feeds
 
 updateAskForEntries : Int -> Model -> ( Model, Cmd msg )
 updateAskForEntries feedId model =

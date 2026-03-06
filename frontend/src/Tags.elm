@@ -5,6 +5,7 @@ module Tags exposing
     , isSelected
     , noneSelected
     , reset
+    , setVisible
     , toList
     , toggleTag
     )
@@ -48,6 +49,10 @@ toggleTag tags tagName =
     else
         { tags | selected = Set.insert tagName tags.selected }
 
+
+setVisible : Tags -> Set.Set String -> Tags
+setVisible tags visible =
+    { tags | visible = visible }
 
 isVisible : Tags -> String -> Bool
 isVisible tags tagName =
