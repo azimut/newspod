@@ -15,6 +15,7 @@ import Maybe.Extra
 import OrderedDict exposing (OrderedDict)
 import Set
 import String exposing (fromInt)
+import Tags
 import Task
 import Time exposing (millisToPosix)
 import Time.Distance exposing (inWords)
@@ -39,8 +40,7 @@ type alias Model =
     , nResults : Int
     , state : State
     , now : Time.Posix
-    , tags : List String
-    , selectedTags : Set.Set String
+    , tags : Tags.Tags
     }
 
 
@@ -198,7 +198,7 @@ port receiveError : (String -> msg) -> Sub msg
 
 init : flags -> ( Model, Cmd Msg )
 init _ =
-    ( Model [] OrderedDict.empty "" Nothing Nothing 0 Starting (millisToPosix 0) [] Set.empty
+    ( Model [] OrderedDict.empty "" Nothing Nothing 0 Starting (millisToPosix 0) (Tags.fromList [])
     , Cmd.batch
         [ Task.perform InitClock Time.now
         , Http.get
@@ -298,7 +298,7 @@ updateInitState result model =
                 | dbStats = Just startup.stats
                 , feeds = List.map toFeed startup.feeds
                 , state = Idle
-                , tags = List.sort startup.tags
+                , tags = Tags.fromList startup.tags
             }
 
         Err _ ->
@@ -326,8 +326,7 @@ updateNewInput newSearch model =
     if String.isEmpty (String.trim newSearch) then
         let
             updatedFeeds =
-                List.map (\feed -> { feed | isVisible = True, isSelected = False, endOfFeed = False, currentPage = 1 })
-                    model.feeds
+                List.map resetFeed model.feeds
         in
         { model
             | currentSearch = Nothing
@@ -335,24 +334,31 @@ updateNewInput newSearch model =
             , entries = OrderedDict.empty
             , feeds = updatedFeeds
             , search = ""
-            , selectedTags = Set.empty
+            , tags = Tags.reset model.tags
             , state = Idle
         }
 
     else
-        { model
-            | search = newSearch
-            , selectedTags = Set.empty
-        }
+        { model | search = newSearch }
 
 
-computeNewStats : List Feed  -> DbStats -> DbStats
+resetFeed : Feed -> Feed
+resetFeed feed =
+    { feed
+        | isVisible = True
+        , isSelected = False
+        , endOfFeed = False
+        , currentPage = 1
+    }
+
+
+computeNewStats : List Feed -> DbStats -> DbStats
 computeNewStats feeds stats =
     let
         emptyStats =
             DbStats 0 0 stats.dbSize
     in
-        List.foldr addFeedIfVisible emptyStats feeds
+    List.foldr addFeedIfVisible emptyStats feeds
 
 
 addFeed : Feed -> DbStats -> DbStats
@@ -378,7 +384,6 @@ updateAskForSearch model =
         ( { model
             | state = WaitingForResults
             , currentSearch = Just model.search
-            , selectedTags = Set.empty
           }
         , askForSearch model.search
         )
@@ -636,46 +641,35 @@ updateNewFeedDetails feedDetails model =
 
 
 updateToggleTag : String -> Model -> Model
-updateToggleTag tag model =
+updateToggleTag tagName model =
     let
         updatedTags =
-            toggleSet tag model.selectedTags
+            Tags.toggleTag model.tags tagName
 
         updatedFeeds =
             updateVisibleFeeds updatedTags model.feeds
     in
     { model
-        | selectedTags = updatedTags
+        | tags = updatedTags
         , feeds = updatedFeeds
         , dbStats = Maybe.map (computeNewStats updatedFeeds) model.dbStats
         , nResults =
             List.sum <|
                 List.map .nResults
-                    (if Set.isEmpty updatedTags then
-                        updatedFeeds
-
-                     else
-                        List.filter .isVisible updatedFeeds
-                    )
+                    (List.filter .isVisible updatedFeeds)
     }
 
 
-updateVisibleFeeds : Set.Set String -> List Feed -> List Feed
-updateVisibleFeeds selectedTags feeds =
+updateVisibleFeeds : Tags.Tags -> List Feed -> List Feed
+updateVisibleFeeds tags feeds =
     List.map
         (\feed ->
-            { feed | isVisible = not (Set.isEmpty (Set.intersect feed.tags selectedTags)) }
+            { feed
+                | isVisible =
+                    Tags.noneSelected tags || Tags.intersect tags feed.tags
+            }
         )
         feeds
-
-
-toggleSet : String -> Set.Set String -> Set.Set String
-toggleSet needle hay =
-    if Set.member needle hay then
-        Set.remove needle hay
-
-    else
-        Set.insert needle hay
 
 
 
@@ -766,7 +760,7 @@ viewHeader model =
                 ]
             , viewStatus model
             ]
-        , ul [] (liTags model.tags model.selectedTags)
+        , ul [] (liTags model.tags)
         ]
 
 
@@ -813,25 +807,25 @@ viewStats { dbStats } =
                 ]
 
 
-liTags : List String -> Set.Set String -> List (Html Msg)
-liTags tags selectedTags =
-    List.map (liTag selectedTags) tags
+liTags : Tags.Tags -> List (Html Msg)
+liTags tags =
+    List.map (liTag tags) (Tags.toList tags)
 
 
-liTag : Set.Set String -> String -> Html Msg
-liTag selectedTags tag =
+liTag : Tags.Tags -> String -> Html Msg
+liTag tags tagName =
     li []
         [ button
-            [ btnClass tag selectedTags
-            , btnAction tag
+            [ btnClass tagName tags
+            , btnAction tagName
             ]
-            [ text tag ]
+            [ text tagName ]
         ]
 
 
-btnClass : String -> Set.Set String -> Html.Attribute Msg
-btnClass tag selectedTags =
-    if Set.member tag selectedTags then
+btnClass : String -> Tags.Tags -> Html.Attribute Msg
+btnClass tagName tags =
+    if Tags.isSelected tags tagName then
         class "enabled"
 
     else
@@ -875,7 +869,8 @@ viewMain model =
 viewFeeds : Model -> List (Html Msg)
 viewFeeds { feeds, now, entries, state } =
     let
-        visibleFeeds = List.filter .isVisible feeds
+        visibleFeeds =
+            List.filter .isVisible feeds
     in
     List.map (\feed -> viewFeed feed state now entries)
         visibleFeeds
