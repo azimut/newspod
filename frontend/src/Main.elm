@@ -432,8 +432,11 @@ updateNewSearchResults model newEntries =
                     OrderedDict.empty
                 |> OrderedDict.map (\_ es -> List.reverse es)
 
-        visibleTags = feedsTags (visibleFeeds feeds)
-        newTags = Tags.setVisible (Tags.reset model.tags) visibleTags
+        visibleTags =
+            feedsTags (visibleFeeds feeds)
+
+        newTags =
+            Tags.setVisible (Tags.reset model.tags) visibleTags
     in
     { model
         | feeds = feeds
@@ -443,11 +446,13 @@ updateNewSearchResults model newEntries =
         , tags = newTags
     }
 
+
 feedsTags : List Feed -> Set.Set String
 feedsTags feeds =
     List.foldr (\feed acc -> Set.union feed.tags acc)
         Set.empty
         feeds
+
 
 updateAskForEntries : Int -> Model -> ( Model, Cmd msg )
 updateAskForEntries feedId model =
@@ -670,7 +675,8 @@ updateToggleTag tagName model =
 
 
 visibleFeeds : List Feed -> List Feed
-visibleFeeds = List.filter .isVisible
+visibleFeeds =
+    List.filter .isVisible
 
 
 updateVisibleFeeds : Tags.Tags -> List Feed -> List Feed
@@ -679,7 +685,7 @@ updateVisibleFeeds tags feeds =
         (\feed ->
             { feed
                 | isVisible =
-                    Tags.noneSelected tags || Tags.intersect tags feed.tags
+                    Tags.noneSelected tags || Tags.match tags feed.tags
             }
         )
         feeds
@@ -840,6 +846,9 @@ btnClass : String -> Tags.Tags -> Html.Attribute Msg
 btnClass tagName tags =
     if Tags.isSelected tags tagName then
         class "enabled"
+
+    else if Tags.isDeselected tags tagName then
+        class "disabled"
 
     else
         class ""
