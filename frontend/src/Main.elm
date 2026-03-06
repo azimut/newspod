@@ -979,7 +979,7 @@ viewEntry feedId now entry =
             [ text entry.title ]
         , div [ class "episode-date" ]
             [ time [] [ text <| inWords (millisToPosix entry.date) now ]
-            , a [ href entry.url ] [ text "Download" ]
+            , a [ href entry.url, target "_blank" ] [ text "Download" ]
             ]
         , div [ class "episode-content" ]
             [ if entry.isShowingDetails then
