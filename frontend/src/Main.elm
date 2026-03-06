@@ -255,7 +255,7 @@ update msg model =
             ( updateNewSearchResults model es, Cmd.none )
 
         CloseFeed feedId ->
-            updateCloseFeed feedId model
+            ( toggleSelectedFeed model feedId, Cmd.none )
 
         AskForEntries feedId ->
             updateAskForEntries feedId model
@@ -430,11 +430,6 @@ updateNewSearchResults model newEntries =
         , state = ShowingResults
         , nResults = List.sum <| List.map .nResults feeds
     }
-
-
-updateCloseFeed : Int -> Model -> ( Model, Cmd msg )
-updateCloseFeed feedId model =
-    ( toggleSelectedFeed model feedId, Cmd.none )
 
 
 updateAskForEntries : Int -> Model -> ( Model, Cmd msg )
