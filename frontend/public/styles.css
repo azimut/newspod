@@ -294,6 +294,6 @@ div.episode-content-frame {
 }
 div.episode-content code {
   font-size: 1.2em;
-  background-color: var(--light-blue);
+  background-color: var(--light);
   color: var(--darkness);
 }
