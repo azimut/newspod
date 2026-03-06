@@ -1,6 +1,57 @@
 {
   "feeds": [
     {
+      "title": "Malicious Life",
+      "url": "https://feeds.redcircle.com/597cfd00-b29a-49c6-9622-03c8decfc35f",
+      "tags": [
+        "security"
+      ]
+    },
+    {
+      "title": "DISCARDED: Tales From the Threat Research Trenches",
+      "url": "https://www.spreaker.com/show/5745431/episodes/feed",
+      "tags": [
+        "security"
+      ]
+    },
+    {
+      "url": "https://cybersecuritysauna.libsyn.com/rss",
+      "tags": [
+        "security"
+      ]
+    },
+    {
+      "title": "Swindled",
+      "url": "https://feeds.megaphone.fm/ADL8288293115",
+      "tags": [
+        "security"
+      ]
+    },
+    {
+      "url": "http://feed.uxpodcast.com/spotify/",
+      "tags": [
+        "programming"
+      ]
+    },
+    {
+      "url": "https://gettingdefensive.com/feed/podcast/",
+      "tags": [
+        "security"
+      ]
+    },
+    {
+      "url": "https://feeds.megaphone.fm/control-loop",
+      "tags": [
+        "security"
+      ]
+    },
+    {
+      "url": "https://feeds.captivate.fm/401-access-denied/",
+      "tags": [
+        "security"
+      ]
+    },
+    {
       "url": "https://feed.syntax.fm/",
       "tags": [
         "programming"
