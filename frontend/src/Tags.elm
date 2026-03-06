@@ -40,6 +40,7 @@ reset : Tags -> Tags
 reset tags =
     { tags
         | selected = Set.empty
+        , deselected = Set.empty
         , visible = Set.fromList tags.names
     }
 
