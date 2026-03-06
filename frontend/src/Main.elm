@@ -734,7 +734,7 @@ viewHeader : Model -> Html Msg
 viewHeader model =
     let
         isStarting =
-            model.state == Starting
+            model.state == Starting || model.state == WaitingForResults
     in
     header []
         [ div [ class "logo" ]
