@@ -656,8 +656,12 @@ updateToggleTag tagName model =
         , nResults =
             List.sum <|
                 List.map .nResults
-                    (List.filter .isVisible updatedFeeds)
+                    (visibleFeeds updatedFeeds)
     }
+
+
+visibleFeeds : List Feed -> List Feed
+visibleFeeds = List.filter .isVisible
 
 
 updateVisibleFeeds : Tags.Tags -> List Feed -> List Feed
@@ -856,7 +860,7 @@ viewMain model =
             ShowingResults ->
                 let
                     filteredFeeds =
-                        resultFeeds model
+                        visibleFeeds model.feeds
 
                     feedIds =
                         OrderedDict.keys model.entries |> List.reverse
@@ -868,12 +872,8 @@ viewMain model =
 
 viewFeeds : Model -> List (Html Msg)
 viewFeeds { feeds, now, entries, state } =
-    let
-        visibleFeeds =
-            List.filter .isVisible feeds
-    in
     List.map (\feed -> viewFeed feed state now entries)
-        visibleFeeds
+        (visibleFeeds feeds)
 
 
 viewFeed : Feed -> State -> Time.Posix -> OrderedDict Int (List Entry) -> Html Msg
@@ -1028,11 +1028,6 @@ sortFeeds feeds ids acc =
 
                 Just foundFeed ->
                     sortFeeds feeds rest (foundFeed :: acc)
-
-
-resultFeeds : Model -> List Feed
-resultFeeds model =
-    List.filter .isVisible model.feeds
 
 
 subscriptions : model -> Sub Msg
