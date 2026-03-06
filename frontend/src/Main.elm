@@ -331,7 +331,7 @@ updateNewInput newSearch model =
         in
         { model
             | currentSearch = Nothing
-            , dbStats = Maybe.map (computeNewStats updatedFeeds Set.empty) model.dbStats
+            , dbStats = Maybe.map (computeNewStats updatedFeeds) model.dbStats
             , entries = OrderedDict.empty
             , feeds = updatedFeeds
             , search = ""
@@ -346,16 +346,12 @@ updateNewInput newSearch model =
         }
 
 
-computeNewStats : List Feed -> Set.Set String -> DbStats -> DbStats
-computeNewStats feeds selectedTags stats =
+computeNewStats : List Feed  -> DbStats -> DbStats
+computeNewStats feeds stats =
     let
         emptyStats =
             DbStats 0 0 stats.dbSize
     in
-    if Set.isEmpty selectedTags then
-        List.foldr addFeed emptyStats feeds
-
-    else
         List.foldr addFeedIfVisible emptyStats feeds
 
 
@@ -651,7 +647,7 @@ updateToggleTag tag model =
     { model
         | selectedTags = updatedTags
         , feeds = updatedFeeds
-        , dbStats = Maybe.map (computeNewStats updatedFeeds updatedTags) model.dbStats
+        , dbStats = Maybe.map (computeNewStats updatedFeeds) model.dbStats
         , nResults =
             List.sum <|
                 List.map .nResults
@@ -877,14 +873,9 @@ viewMain model =
 
 
 viewFeeds : Model -> List (Html Msg)
-viewFeeds { feeds, now, entries, state, selectedTags } =
+viewFeeds { feeds, now, entries, state } =
     let
-        visibleFeeds =
-            if Set.isEmpty selectedTags then
-                feeds
-
-            else
-                List.filter .isVisible feeds
+        visibleFeeds = List.filter .isVisible feeds
     in
     List.map (\feed -> viewFeed feed state now entries)
         visibleFeeds
@@ -1046,11 +1037,7 @@ sortFeeds feeds ids acc =
 
 resultFeeds : Model -> List Feed
 resultFeeds model =
-    if Set.isEmpty model.selectedTags then
-        model.feeds
-
-    else
-        List.filter .isVisible model.feeds
+    List.filter .isVisible model.feeds
 
 
 subscriptions : model -> Sub Msg
