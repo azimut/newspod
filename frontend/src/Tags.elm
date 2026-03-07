@@ -81,19 +81,16 @@ isDeselected tags tagName =
 
 
 match : Tags -> Set.Set String -> Bool
-match tags inputTags =
+match tags feedTags =
     let
         deselectedTags =
-            Set.diff inputTags tags.deselected
-
-        filteredTags =
-            if Set.isEmpty tags.selected then
-                deselectedTags
-
-            else
-                Set.intersect deselectedTags tags.selected
+            Set.diff feedTags tags.deselected
     in
-    not <| Set.isEmpty <| filteredTags
+    if Set.isEmpty tags.selected then
+        not <| Set.isEmpty <| deselectedTags
+
+    else
+        not <| Set.isEmpty <| Set.intersect deselectedTags tags.selected
 
 
 noneSelected : Tags -> Bool
