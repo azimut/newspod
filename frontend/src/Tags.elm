@@ -65,11 +65,6 @@ setVisible tags visible =
     { tags | visible = visible }
 
 
-isVisible : Tags -> String -> Bool
-isVisible tags tagName =
-    Set.member tagName tags.visible
-
-
 isSelected : Tags -> String -> Bool
 isSelected tags tagName =
     Set.member tagName tags.selected

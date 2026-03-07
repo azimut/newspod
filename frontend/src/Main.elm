@@ -779,8 +779,13 @@ viewHeader model =
                 ]
             , viewStatus model
             ]
-        , ul [] (liTags model.tags)
+        , viewTags model.tags
         ]
+
+
+viewTags : Tags.Tags -> Html Msg
+viewTags tags =
+    ul [] (liTags tags)
 
 
 viewStatus : Model -> Html Msg
