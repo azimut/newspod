@@ -9,7 +9,7 @@ From a list of RSS feeds. Generates a static site where you can perform full tex
 
 ## Features
 
-- Search and navigation can be filtered by a feed category
+- Search results can be filtered in and out by feed categories.
 - Backed by a SQLite database.
 - SQL pagination for entries on a feed.
 - Full text search.
