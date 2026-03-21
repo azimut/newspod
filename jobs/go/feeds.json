@@ -1,6 +1,12 @@
 {
   "feeds": [
     {
+      "url": "https://feeds.megaphone.fm/nopriors",
+      "tags": [
+        "ai"
+      ]
+    },
+    {
       "title": "Wading Through AI",
       "url": "https://www.computerenhance.com/feed?sectionId=339273",
       "tags": [
