@@ -1,6 +1,13 @@
 {
   "feeds": [
     {
+      "url": "https://thestanduppod.com/feed.xml",
+      "tags": [
+        "programming"
+      ]
+    },
+    {
+      "title": "No Priors",
       "url": "https://feeds.megaphone.fm/nopriors",
       "tags": [
         "ai"
@@ -1257,13 +1264,6 @@
       "tags": [
         "admin",
         "spanish"
-      ]
-    },
-    {
-      "title": "The Standup",
-      "url": "https://www.youtube.com/feeds/videos.xml?playlist_id=PL2Fq-K0QdOQiJpufsnhEd1z3xOv2JMHuk",
-      "tags": [
-        "programming"
       ]
     },
     {
