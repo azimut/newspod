@@ -498,7 +498,7 @@ updateAskForMoreEntries feedId model =
 
 entriesPerQuery : Int
 entriesPerQuery =
-    100
+    50
 
 
 nextPageIt : List Feed -> Int -> List Feed
