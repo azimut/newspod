@@ -1,6 +1,12 @@
 {
   "feeds": [
     {
+      "url": "https://media.rss.com/the-generalists/feed.xml",
+      "tags": [
+        "gamedev"
+      ]
+    },
+    {
       "url": "https://thestanduppod.com/feed.xml",
       "tags": [
         "programming"
