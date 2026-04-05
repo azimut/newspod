@@ -1,6 +1,13 @@
 {
   "feeds": [
     {
+      "title": "Ethers Club",
+      "url": "https://feeds.buzzsprout.com/1988715.rss",
+      "tags": [
+        "programming"
+      ]
+    },
+    {
       "url": "https://media.rss.com/the-generalists/feed.xml",
       "tags": [
         "gamedev"
