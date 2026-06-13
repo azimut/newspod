@@ -88,6 +88,10 @@ class Feed:
             self.entries = []
             for rawentry in info['entries']:
                 if not 'view_count' in rawentry: continue # upcoming video
+                if not 'url' in rawentry:
+                    print("Ignoring entry due missing url...")
+                    print(rawentry)
+                    continue
                 url = rawentry['url']
                 entry = Entry(url, rawentry['title'], rawentry['duration'], rawentry['view_count'], rawentry['channel'], rawentry['channel_url'], self.id)
                 self.entries.append(entry)
