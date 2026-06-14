@@ -1,6 +1,13 @@
 {
   "feeds": [
     {
+      "title": "The Rest Is Science",
+      "url": "https://feeds.megaphone.fm/GLT6907573392",
+      "tags": [
+        "science"
+      ]
+    },
+    {
       "title": "Ethers Club",
       "url": "https://feeds.buzzsprout.com/1988715.rss",
       "tags": [
